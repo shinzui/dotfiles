@@ -1,0 +1,35 @@
+[user]
+  name =  <%= print("Your Git Global Name: "); STDOUT.flush; STDIN.gets.chomp %>
+  email = <%= print("Your Git Global Email: "); STDOUT.flush; STDIN.gets.chomp %>
+[alias]
+  st = status
+  ci = commit
+  br = branch
+  co = checkout
+  df = diff
+  lg = log -p
+  who = shortlog -s --
+  spull = svn rebase
+  spush = svn dcommit
+  sfetch = svn fetch
+  review= log -p --max-count=1
+[color]
+  sh = auto
+  status = auto
+  branch = auto
+  diff = auto
+  ui = auto
+[merge]
+  summary = true
+[core]
+  editor = mate -w
+  excludesfile = <%= ENV['HOME'] %>/.gitglobalignore
+[apply]
+  whitespace = nowarn
+[github]
+  user = <%= print("GitHub Username: "); STDOUT.flush; STDIN.gets.chomp %>
+  token = <%= print("GitHub API Token: "); STDOUT.flush; STDIN.gets.chomp %>
+[push]
+  default = tracking
+[git-tmbundle]
+  gitx-path = <%= ENV['HOME'] %>/Applications/GitX.app/Contents/Resources/gitx

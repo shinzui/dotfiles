@@ -1,0 +1,15 @@
+. ~/.bash/env
+. ~/.bash/aliases
+. ~/.bash/functions
+. ~/.bash/config
+
+if [ -f ~/.bash_private ]; then
+  . ~/.bash/private
+fi
+
+. ~/bin/z.sh
+
+# rvm-install added line:
+if [[ -s /Users/shinzui/.rvm/scripts/rvm ]] ; then source /Users/shinzui/.rvm/scripts/rvm ; fi
+
+

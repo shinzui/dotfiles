@@ -1,0 +1,27 @@
+#Aliases#
+alias df='df -h'
+alias g='grep -i'
+alias h='history|g'
+alias rm='rm -i'
+alias rmf='rm -f'
+alias cp='cp -r'
+alias mv='mv -i'
+alias ls='ls -hBG'
+alias l.='ls -d .*'
+alias top='htop'
+alias ..='cd ..;'
+alias ...='cd ..;cd ..;'
+alias psgrep='ps aux|grep'
+alias k9='kill -9'
+
+alias fcache='dscacheutil -flushcache'
+
+#rails
+alias ss='ruby ./script/server'
+alias sc='ruby ./script/console'
+alias sg='ruby ./script/generate'
+
+#ruby
+alias gi='gem install'
+alias gic='gi --no-rdoc --no-ri'
+alias spec='spec -c -f nested'
