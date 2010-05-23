@@ -1,0 +1,7 @@
+.DS_STORE
+.class
+*~
+*.bak
+*.log
+*.swp
+*.tmproj
