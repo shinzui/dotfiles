@@ -1,0 +1,20 @@
+crlf off                        
+startup_message off            
+defscrollback 15000           
+shell bash                   
+shelltitle ""               
+defmonitor on              
+activity "<%n>"           
+silencewait 15           
+bell_msg "DING! (%n)"
+vbell_msg "DING! (%n)"
+vbell on
+nethack off                     # makes error messages cryptic.
+pow_detach_msg "Screen session of \$LOGNAME \$:cr:\$:nl:ended."
+autodetach on
+defutf8 on
+# minimal status line with clock flush right
+hardstatus alwayslastline "%{=b}%{G} : %{b}%w %=%{kG}%C%A"
+
+# copy screen clipboard to mac clipboard
+bind b eval "writebuf" "exec sh -c 'pbcopy < /tmp/screen-exchange'"
