@@ -21,6 +21,8 @@
   ui = auto
 [merge]
   summary = true
+[diff "exif"]
+  textconv = exiftool
 [core]
   editor = mate -w
   excludesfile = <%= ENV['HOME'] %>/.gitignore
