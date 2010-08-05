@@ -23,6 +23,9 @@ if ENV['RAILS_ENV']
   load File.dirname(__FILE__) + '/.railsrc'
 end
 
+alias pp ap
+alias q exit
+
 class Object
 
   ANSI_BOLD       = "\033[1m"

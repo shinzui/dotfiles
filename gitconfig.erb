@@ -2,12 +2,12 @@
   name =  <%= print("Your Git Global Name: "); STDOUT.flush; STDIN.gets.chomp %>
   email = <%= print("Your Git Global Email: "); STDOUT.flush; STDIN.gets.chomp %>
 [alias]
-  st = status
+  st = status -sb
   ci = commit
   br = branch
   co = checkout
   df = diff
-  lg = log -p
+  lg = log --stat --ignore-space-at-eol --abbrev-commit --relative-date --format=medium
   who = shortlog -s --
   spull = svn rebase
   spush = svn dcommit

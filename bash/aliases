@@ -16,11 +16,6 @@ alias k9='kill -9'
 
 alias fcache='dscacheutil -flushcache'
 
-#rails
-alias ss='ruby ./script/server'
-alias sc='ruby ./script/console'
-alias sg='ruby ./script/generate'
-
 #ruby
 alias gi='gem install'
 alias gic='gi --no-rdoc --no-ri'
