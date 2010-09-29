@@ -19,4 +19,3 @@ alias fcache='dscacheutil -flushcache'
 #ruby
 alias gi='gem install'
 alias gic='gi --no-rdoc --no-ri'
-alias spec='spec -c -f nested'
