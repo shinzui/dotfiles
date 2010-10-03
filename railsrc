@@ -12,3 +12,7 @@ end
 def silence_log
   change_log(nil)
 end
+
+def sql(query)
+  ActiveRecord::Base.connection.select_all(query)
+end
