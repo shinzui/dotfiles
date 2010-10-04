@@ -2,12 +2,15 @@ scriptencoding utf-8
 
 set nocompatible
 
-call pathogen#runtime_append_all_bundles()
+filetype off 
 call pathogen#helptags()
+call pathogen#runtime_append_all_bundles()
 
 set modelines=0
 syntax on
 
+"allow backspacing
+set backspace=indent,eol,start
 
 set nowrap
 set tabstop=2
@@ -35,6 +38,12 @@ set wildmode=list:longest,full
 
 set nowrap
 
+filetype on
+filetype indent on
+
+set smartindent
+set autoindent
+
 
 " statusbar
 set laststatus=2
@@ -54,9 +63,44 @@ set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
 "default color scheme
 color desert
 
+"disable beep 
+set vb t_vb=
+
+"Folding options
+set foldenable "enable 
+
+"Swap 
+set directory=~/.vim/swapfiles,/tmp,.
+
 
 " Include user's local vim config
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
+
+""" Bindings
+
+"buffers
+map <leader>[ :bprevious<CR>
+map <leader>] :bnext<CR>
+
+
+"File types
+autocmd BufNewFile,BufRead Gemfile     setfiletype ruby
+autocmd BufNewFile,BufRead config.ru   setfiletype ruby
+
+autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
+autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
+
+
+"""PLugins
+
+"NERDTree 
+map <leader>d :NERDTreeToggle<cr>
+
+"NERDCommenter
+let NERDSpaceDelims=1 
+"let NERDCreateDefaultMappings=0 "disable default mapping
+map <D-/> <plug>NERDCommenterToggle
+
 
