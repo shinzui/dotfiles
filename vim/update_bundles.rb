@@ -4,7 +4,7 @@ git_bundles = [
   "git://github.com/astashov/vim-ruby-debugger.git",
   "git://github.com/msanders/snipmate.vim.git",
   "git://github.com/scrooloose/nerdtree.git",
-  "git//github.com/scrooloose/nerdcommenter.git",
+  "git://github.com/shinzui/nerdcommenter.git",
   "git://github.com/timcharper/textile.vim.git",
   "git://github.com/tpope/vim-cucumber.git",
   "git://github.com/tpope/vim-fugitive.git",
@@ -23,10 +23,10 @@ git_bundles = [
   "git://github.com/tpope/vim-vividchalk.git",
   "git://github.com/taq/vim-rspec.git",
   "git://github.com/Townk/vim-autoclose.git",
-  "git://github.com/scrooloose/nerdcommenter.git",
   "git://github.com/robgleeson/vim-markdown-preview.git",
   "git://github.com/pangloss/vim-javascript.git",
-  "git://github.com/michaeljsmith/vim-indent-object.git"
+  "git://github.com/michaeljsmith/vim-indent-object.git",
+  "git://github.com/shinzui/vim-idleFingers.git"
 ]
 
 

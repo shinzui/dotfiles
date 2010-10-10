@@ -1,4 +1,7 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhist_cnt =2
+let g:netrw_dirhist_cnt =5
 let g:netrw_dirhist_1='/Users/shinzui/Kaihatsu/dotfiles'
 let g:netrw_dirhist_2='/Users/shinzui/Kaihatsu/affinity/chemistry'
+let g:netrw_dirhist_3='/Users/shinzui/Kaihatsu/hub/code_bucket'
+let g:netrw_dirhist_4='/Users/shinzui/Kaihatsu/affinity/chemistry'
+let g:netrw_dirhist_5='/Users/shinzui/Kaihatsu/affinity/chemistry/app/models'

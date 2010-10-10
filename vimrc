@@ -61,7 +61,7 @@ set title
 set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
 
 "default color scheme
-color desert
+color jellybeans
 
 "disable beep 
 set vb t_vb=
@@ -92,6 +92,10 @@ autocmd BufNewFile,BufRead config.ru   setfiletype ruby
 autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
 autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
 
+"ruby specific
+" bind control-l to hashrocket
+imap <C-l> <Space>=><Space>
+
 
 """PLugins
 
@@ -100,7 +104,7 @@ map <leader>d :NERDTreeToggle<cr>
 
 "NERDCommenter
 let NERDSpaceDelims=1 
-"let NERDCreateDefaultMappings=0 "disable default mapping
+let NERDCreateDefaultMappings=0 "disable default mapping
 map <D-/> <plug>NERDCommenterToggle
 
 
