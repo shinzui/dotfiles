@@ -5,7 +5,7 @@ set fuoptions=maxhorz,maxvert
 set guioptions-=T
 
 colorscheme idleFingers
-set guifont=Bitstream_Vera_Sans_Mono:h11
+set guifont=Menlo:h12
 
 if has("gui_macvim")
   " Command-T for CommandT
