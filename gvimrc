@@ -10,7 +10,9 @@ set guifont=Bitstream_Vera_Sans_Mono:h11
 if has("gui_macvim")
   " Command-T for CommandT
   macmenu &File.New\ Tab key=<nop>
-  map <D-t> :CommandT<CR>
+  " map <D-t> :CommandT<CR>
+  map <D-t> <Plug>PeepOpen
+
 
   " Command-Shift-F for Ack
   macmenu Window.Toggle\ Full\ Screen\ Mode key=<nop>

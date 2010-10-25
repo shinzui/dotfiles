@@ -107,4 +107,3 @@ let NERDSpaceDelims=1
 let NERDCreateDefaultMappings=0 "disable default mapping
 map <D-/> <plug>NERDCommenterToggle
 
-
