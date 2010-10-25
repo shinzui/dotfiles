@@ -9,6 +9,12 @@
 " Script to run the spec command inside Vim
 " To install, unpack the files on your ~/.vim directory and source it 
 "
+" The following options can be set/overridden in your .vimrc
+"   * g:RspecXSLPath     :: Path to xsl file
+"   * g:RspecRBFilePath  :: Path to vim-rspec.rb
+"   * g:RspecBin         :: Rspec binary command (in rspec 2 this is 'rspec')
+"   * g:RspecOpts        :: Opts to send to rspec call
+
 let s:xsltproc_cmd	= ""
 let s:grep_cmd			= ""
 let s:hpricot_cmd		= ""
@@ -39,6 +45,14 @@ function! s:notice_msg(msg)
 	echohl None
 endfunction
 
+function! s:fetch(varname, default)
+  if exists("g:".a:varname)
+    return eval("g:".a:varname)
+  else
+    return a:default
+  endif
+endfunction
+
 function! s:RunSpecMain(type)
 	if len(s:xsltproc_cmd)<1
 		let s:xsltproc_cmd = s:find_xslt()
@@ -62,8 +76,8 @@ function! s:RunSpecMain(type)
 	let l:bufn = bufname("%")
 
 	" filters
-	let l:xsl   = expand("~/").".vim/plugin/vim-rspec.xsl"
-	let l:rubys = expand("~/").".vim/plugin/vim-rspec.rb"
+	let l:xsl   = s:fetch("RspecXSLPath", expand("~/").".vim/plugin/vim-rspec.xsl")
+	let l:rubys = s:fetch("RspecRBPath", expand("~/").".vim/plugin/vim-rspec.rb")
 
 	" hpricot gets the priority
 	let l:type		= s:hpricot ? "hpricot" : "xsltproc"
@@ -73,7 +87,9 @@ function! s:RunSpecMain(type)
 	if a:type=="file"
 		if match(l:bufn,'_spec.rb')>=0
 			call s:notice_msg("Running spec on the current file with ".l:type." ...")
-			let l:spec  = "spec -f h ".l:bufn
+      let l:spec_bin = s:fetch("RspecBin", "spec")
+      let l:spec_opts = s:fetch("RspecOpts", "")
+      let l:spec = l:spec_bin . " " . l:spec_opts . " -f h " . l:bufn
 		else
 			call s:error_msg("Seems ".l:bufn." is not a *_spec.rb file")
 			return
@@ -105,7 +121,8 @@ function! s:RunSpecMain(type)
 			call s:error_msg("Could not find the ".l:dir." directory.")
 			return
 		end
-		let l:spec = "spec -f h ".l:dir." -p **/*_spec.rb"
+    let l:spec = s:fetch("RspecBin", "spec") . s:fetch("RspecOpts", "")
+    let l:spec = l:spec . " -f h " . l:dir . " -p **/*_spec.rb"
 	end		
 
 	" run the spec command
