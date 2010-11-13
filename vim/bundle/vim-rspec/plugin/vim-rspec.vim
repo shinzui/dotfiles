@@ -75,6 +75,14 @@ function! s:RunSpecMain(type)
 	end		
 	let l:bufn = bufname("%")
 
+   " find the installed rspec command
+   let l:default_cmd = ""
+   if executable("spec")==1
+      let l:default_cmd = "spec"
+   elseif executable("rspec")==1
+      let l:default_cmd = "rspec"
+   end
+
 	" filters
 	let l:xsl   = s:fetch("RspecXSLPath", expand("~/").".vim/plugin/vim-rspec.xsl")
 	let l:rubys = s:fetch("RspecRBPath", expand("~/").".vim/plugin/vim-rspec.rb")
@@ -87,7 +95,7 @@ function! s:RunSpecMain(type)
 	if a:type=="file"
 		if match(l:bufn,'_spec.rb')>=0
 			call s:notice_msg("Running spec on the current file with ".l:type." ...")
-      let l:spec_bin = s:fetch("RspecBin", "spec")
+      let l:spec_bin = s:fetch("RspecBin",l:default_cmd)
       let l:spec_opts = s:fetch("RspecOpts", "")
       let l:spec = l:spec_bin . " " . l:spec_opts . " -f h " . l:bufn
 		else

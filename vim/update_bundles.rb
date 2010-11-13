@@ -28,8 +28,11 @@ git_bundles = [
   "git://github.com/michaeljsmith/vim-indent-object.git",
   "git://github.com/shinzui/vim-idleFingers.git",
   "git://github.com/airblade/vim-rooter.git",
-  "git@github.com:shinzui/gundo.vim.git",
-  "git://github.com/shemerey/vim-peepopen.git"
+  "git://github.com/shinzui/gundo.vim.git",
+  "git://github.com/shemerey/vim-peepopen.git",
+  "git://github.com/vim-scripts/scratch.vim.git",
+  "git://github.com/shinzui/vim-snipmate-ruby-snippets.git",
+  "git://github.com/vim-scripts/ZoomWin.git"
 ]
 
 
