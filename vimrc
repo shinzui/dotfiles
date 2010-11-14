@@ -101,9 +101,25 @@ imap <C-l> <Space>=><Space>
 
 "NERDTree 
 map <leader>d :NERDTreeToggle<cr>
+map <leader>r :NERDTreeFind<cr>
 
 "NERDCommenter
 let NERDSpaceDelims=1 
 let NERDCreateDefaultMappings=0 "disable default mapping
 map <D-/> <plug>NERDCommenterToggle
 
+" CTags
+map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
+
+"ConqueTerm
+let g:ConqueTerm_SendVisKey = '<F7>'
+
+" Git
+vmap <Leader>g :<C-U>!git blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR> 
+
+
+" ZoomWin 
+map <Leader>z :ZoomWin<CR>
+
+"Current path
+cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
