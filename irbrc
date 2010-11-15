@@ -110,4 +110,8 @@ def quick(repetitions = 100, &block)
   nil
 end
 
+def toggle_echo 
+  irb_context.echo = !irb_context.echo 
+end
+
 puts "#{ANSI_GRAY}~> Console extensions:#{ANSI_RESET} #{$console_extensions.join(' ')}#{ANSI_RESET}"
