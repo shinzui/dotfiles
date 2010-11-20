@@ -7,7 +7,8 @@ set guioptions-=T
 " remove ugly scrollbars
 set guioptions=aAce
 
-colorscheme idleFingers
+colorscheme molokai
+"colorscheme idleFingers
 set guifont=Menlo:h12
 
 if has("gui_macvim")
