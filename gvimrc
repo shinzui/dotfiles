@@ -4,6 +4,9 @@ set fuoptions=maxhorz,maxvert
 " start without the toolbar
 set guioptions-=T
 
+" remove ugly scrollbars
+set guioptions=aAce
+
 colorscheme idleFingers
 set guifont=Menlo:h12
 
