@@ -44,6 +44,8 @@ filetype indent on
 set smartindent
 set autoindent
 
+set relativenumber
+
 
 " statusbar
 set laststatus=2
@@ -71,6 +73,10 @@ set foldenable "enable
 
 "Swap 
 set directory=~/.vim/swapfiles,/tmp,.
+
+"Persistent undo
+set undofile
+
 
 
 " Include user's local vim config
@@ -116,6 +122,9 @@ let g:ConqueTerm_SendVisKey = '<F7>'
 
 " Git
 vmap <Leader>g :<C-U>!git blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR> 
+
+"Strip all trailing whitespace
+nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
 
 
 " ZoomWin 
