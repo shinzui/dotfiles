@@ -32,7 +32,8 @@ git_bundles = [
   "git://github.com/shemerey/vim-peepopen.git",
   "git://github.com/vim-scripts/scratch.vim.git",
   "git://github.com/shinzui/vim-snipmate-ruby-snippets.git",
-  "git://github.com/vim-scripts/ZoomWin.git"
+  "git://github.com/vim-scripts/ZoomWin.git",
+  "git://github.com/kchmck/vim-coffee-script.git"
 ]
 
 
