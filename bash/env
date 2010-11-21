@@ -1,7 +1,7 @@
 export PATH=$HOME/bin:~/.gem/ruby/1.8/bin:/usr/local/sbin:$PATH
 
 export CDPATH='.:~'
-export EDITOR='mate -w'
+export EDITOR='vim'
 
 export HISTCONTROL=erasedups
 export HISTSIZE=5000
