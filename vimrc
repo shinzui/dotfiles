@@ -69,7 +69,10 @@ color jellybeans
 set vb t_vb=
 
 "Folding options
-set foldenable "enable 
+set nofoldenable 
+set foldmethod=syntax
+set foldnestmax=10
+"set foldlevel=1
 
 "Swap 
 set directory=~/.vim/swapfiles,/tmp,.
