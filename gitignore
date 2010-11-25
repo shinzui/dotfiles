@@ -5,3 +5,13 @@
 *.log
 *.swp
 *.tmproj
+*.gem
+/.bundle
+vendor/bundle
+lib/bundler/man
+coverage
+rdoc
+spec/reports
+.yardoc
+_yardoc
+capybara-*.html
