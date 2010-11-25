@@ -40,6 +40,7 @@ set nowrap
 
 filetype on
 filetype indent on
+filetype plugin indent on
 
 set smartindent
 set autoindent
@@ -103,6 +104,7 @@ autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
 
 "ruby specific
 " bind control-l to hashrocket
+
 imap <C-l> <Space>=><Space>
 
 
