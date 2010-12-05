@@ -15,6 +15,7 @@ set backspace=indent,eol,start
 set nowrap
 set tabstop=2
 set shiftwidth=2
+set softtabstop=2
 set expandtab
 
 " Search config
@@ -34,6 +35,7 @@ set directory=/tmp/
 " Enable tab completion. First tab shows all matches, second tab cycles through them
 set wildmenu
 set wildmode=list:longest,full
+set wildignore+=*.o,*.obj,.git,*.rbc
 
 
 set nowrap
@@ -75,8 +77,9 @@ set foldmethod=syntax
 set foldnestmax=10
 "set foldlevel=1
 
-"Swap 
+"Swap and backup
 set directory=~/.vim/swapfiles,/tmp,.
+set backupdir=~/.vim/backup
 
 "Persistent undo
 set undofile
@@ -131,6 +134,11 @@ vmap <Leader>g :<C-U>!git blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'
 "Strip all trailing whitespace
 nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
 
+"Unimpaired 
+nmap <C-Up> [e
+nmap <C-Down> ]e
+vmap <C-Up> [egv
+vmap <C-Down> ]egv
 
 " ZoomWin 
 map <Leader>z :ZoomWin<CR>
