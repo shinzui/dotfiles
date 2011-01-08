@@ -9,11 +9,11 @@ call pathogen#runtime_append_all_bundles()
 set modelines=0
 syntax on
 
-"allow backspacing
+"allow backspacing over everything in insert mode
 set backspace=indent,eol,start
 
-set nowrap
-set tabstop=2
+set nowrap "don't wrap lines
+set tabstop=2 "tab is 2 spaces
 set shiftwidth=2
 set softtabstop=2
 set expandtab
@@ -50,6 +50,9 @@ set autoindent
 set relativenumber
 
 
+" Do not force writing modified files to switch buffers
+set hidden 
+
 " statusbar
 set laststatus=2
 set statusline=\ "
@@ -66,7 +69,7 @@ set title
 set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
 
 "default color scheme
-color jellybeans
+color desert 
 
 "disable beep 
 set vb t_vb=
@@ -90,6 +93,9 @@ if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
 
+"Enable matchit 
+runtime  macros/matchit.vim
+
 """ Bindings
 
 "buffers
@@ -104,15 +110,15 @@ autocmd BufNewFile,BufRead config.ru   setfiletype ruby
 autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
 autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
 
+"Windows
+map <C-h> <C-w>h
+map <C-j> <C-w>j
+map <C-k> <C-w>k
+map <C-l> <C-w>l
+
 "ruby specific
 " bind control-l to hashrocket
-
 imap <C-l> <Space>=><Space>
-
-"Enable matchit 
-runtime  macros/matchit.vim
-
-
 
 """PLugins
 
