@@ -20,6 +20,7 @@ let s:grep_cmd			= ""
 let s:hpricot_cmd		= ""
 let s:xslt				= 0
 let s:hpricot			= 0
+let s:helper_dir = expand("<sfile>:h")
 
 function! s:find_xslt()
 	return system("xsltproc --version | head -n1")
@@ -84,8 +85,8 @@ function! s:RunSpecMain(type)
    end
 
 	" filters
-	let l:xsl   = s:fetch("RspecXSLPath", expand("~/").".vim/plugin/vim-rspec.xsl")
-	let l:rubys = s:fetch("RspecRBPath", expand("~/").".vim/plugin/vim-rspec.rb")
+	let l:xsl   = s:fetch("RspecXSLPath", s:helper_dir."/vim-rspec.xsl")
+	let l:rubys = s:fetch("RspecRBPath", s:helper_dir."/vim-rspec.rb")
 
 	" hpricot gets the priority
 	let l:type		= s:hpricot ? "hpricot" : "xsltproc"

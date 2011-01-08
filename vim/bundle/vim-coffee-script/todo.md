@@ -22,6 +22,11 @@
         }
       └─ bracket should be put here
 
-- Interpolated assignments:
+- Fix assignments with brackets in this case:
 
-      "interpolated#{'key'}": 123
+      (a[b] = c) for d in e[f]
+
+- Highlight `++` and `--` as assignments:
+
+      ++a  --a
+      a++  a--

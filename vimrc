@@ -85,7 +85,6 @@ set backupdir=~/.vim/backup
 set undofile
 
 
-
 " Include user's local vim config
 if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
@@ -109,6 +108,10 @@ autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
 " bind control-l to hashrocket
 
 imap <C-l> <Space>=><Space>
+
+"Enable matchit 
+runtime  macros/matchit.vim
+
 
 
 """PLugins

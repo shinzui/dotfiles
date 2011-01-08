@@ -35,7 +35,9 @@ git_bundles = [
   "git://github.com/vim-scripts/ZoomWin.git",
   "git://github.com/kchmck/vim-coffee-script.git",
   "git://github.com/tpope/vim-unimpaired.git",
-  "git://github.com/kogakure/vim-sparkup.git"
+  "git://github.com/kogakure/vim-sparkup.git",
+  "git://github.com/kana/vim-textobj-user.git",
+  "git://github.com/nelstrom/vim-textobj-rubyblock.git"
 ]
 
 

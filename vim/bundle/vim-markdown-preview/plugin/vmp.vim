@@ -1,7 +1,28 @@
-let g:VMPoutputformat    = 'html'
-let g:VMPoutputdirectory = '/tmp'
-let g:VMPhtmlreader      = 'open'
-let g:VMPstylesheet      = 'github.css'
+
+if !exists('g:VMPoutputformat')
+	let g:VMPoutputformat = 'html'
+endif
+
+if !exists('g:VMPoutputdirectory')
+	let g:VMPoutputdirectory = '/tmp'
+endif
+
+if !exists('g:VMPhtmlreader')
+	if has('mac')
+		let g:VMPhtmlreader = 'open'
+	elseif has('win32') || has('win64')
+		let g:VMPhtmlreader = 'start'
+	elseif has('unix') && executable('xdg-open')
+		let g:VMPhtmlreader = 'xdg-open'
+	else
+		let g:VMPhtmlreader = ''
+	end
+endif
+
+if !exists('g:VMPstylesheet')
+	let g:VMPstylesheet = 'github.css'
+endif
+
 
 function! PreviewMKD()
 
@@ -54,9 +75,15 @@ ruby << RUBY
   case Vim.evaluate('g:VMPoutputformat')
     when 'html'
       reader = Vim.evaluate('g:VMPhtmlreader')
-      file = File.join(output_dir, name + '.html')
-      File.open(file, 'w') { |f| f.write(layout) }
-      Vim.command("silent ! #{reader} '%s' &" % [ file ])
+
+      if reader == ''
+          Vim.message('No suitable HTML reader found! Please set g:VMPhtmlreader.')
+      else
+        file = File.join(output_dir, name + '.html')
+        File.open(file, 'w') { |f| f.write(layout) }
+        Vim.command("silent ! #{reader} '%s'" % [ file ])
+        Vim.command 'redraw!'
+      end
     when 'pdf'
       Vim.message('output format not implemented yet.')
     else
