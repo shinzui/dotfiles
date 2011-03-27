@@ -36,7 +36,9 @@ set directory=/tmp/
 set wildmenu
 set wildmode=list:longest,full
 set wildignore+=*.o,*.obj,.git,*.rbc
-
+set wildignore+=vendor/rails/**
+set wildignore+=vendor/ruby/**
+set wildignore+=vendor/cache/**
 
 set nowrap
 
@@ -49,6 +51,7 @@ set autoindent
 
 set relativenumber
 
+set autoread
 
 " Do not force writing modified files to switch buffers
 set hidden 

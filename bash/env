@@ -1,7 +1,8 @@
-export PATH=$HOME/bin:~/.gem/ruby/1.8/bin:/usr/local/sbin:$PATH
+export PATH=$HOME/bin:`brew --prefix`/bin:`brew --prefix`/sbin:$PATH
 
 export CDPATH='.:~'
 export EDITOR='vim'
+export INPUTRC=~/.inputrc 
 
 export HISTCONTROL=erasedups
 export HISTSIZE=5000
