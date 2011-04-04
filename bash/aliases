@@ -20,3 +20,7 @@ alias fcache='dscacheutil -flushcache'
 #ruby
 alias gi='gem install'
 alias gic='gi --no-rdoc --no-ri'
+alias b='bundle'
+alias bi='b install --path vendor'
+alias bu='b update'
+alias be='b exec'
