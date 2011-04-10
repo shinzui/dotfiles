@@ -7,7 +7,7 @@ set guioptions-=T
 " remove ugly scrollbars
 set guioptions=aAce
 
-colorscheme molokai
+colorscheme solarized
 "colorscheme idleFingers
 set guifont=Menlo:h12
 

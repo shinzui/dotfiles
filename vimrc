@@ -72,7 +72,7 @@ set title
 set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
 
 "default color scheme
-color desert 
+color solarized 
 
 "disable beep 
 set vb t_vb=
