@@ -39,6 +39,7 @@ set wildignore+=*.o,*.obj,.git,*.rbc
 set wildignore+=vendor/rails/**
 set wildignore+=vendor/ruby/**
 set wildignore+=vendor/cache/**
+set wildignore+=doc/yard/**
 
 set nowrap
 
@@ -122,6 +123,10 @@ map <C-l> <C-w>l
 "ruby specific
 " bind control-l to hashrocket
 imap <C-l> <Space>=><Space>
+
+"Format file
+map <silent> <F5> mmgg=G`m
+imap <silent> <F5> <esc> mmgg=G`m
 
 """PLugins
 
