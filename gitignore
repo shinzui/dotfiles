@@ -6,9 +6,8 @@
 *.log
 *.swp
 *.tmproj
-*.gem
-/.bundle
-vendor/bundle
+.bundle
+vendor/bundle/
 lib/bundler/man
 coverage
 rdoc
