@@ -19,6 +19,7 @@ if has("gui_macvim")
   " Command-T for CommandT
   macmenu &File.New\ Tab key=<nop>
   map <D-t> :CommandT<CR>
+  imap <D-t> <Esc>:CommandT<CR>
 
 
   " Command-Shift-F for Ack
@@ -34,6 +35,12 @@ endif
 " Project Tree
 autocmd VimEnter * call s:CdIfDirectory(expand("<amatch>"))
 
+
+" ConqueTerm wrapper
+function StartTerm()
+  execute 'ConqueTerm ' . $SHELL . ' --login'
+  setlocal listchars=tab:\ \ 
+endfunction
 
 " If the parameter is a directory, cd into it
 function s:CdIfDirectory(directory)

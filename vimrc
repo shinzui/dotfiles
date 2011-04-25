@@ -108,8 +108,9 @@ map <leader>] :bnext<CR>
 
 
 "File types
-autocmd BufNewFile,BufRead Gemfile     setfiletype ruby
+autocmd BufNewFile,BufRead {Rakefile,Gemfile,Thorfile} setfiletype=ruby
 autocmd BufNewFile,BufRead config.ru   setfiletype ruby
+autocmd BufNewFile,BufRead *.json  setfiletype javascript
 
 autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
 autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
@@ -130,8 +131,11 @@ imap <silent> <F5> <esc> mmgg=G`m
 
 """PLugins
 
+"Gundo
+nnoremap <F6> :GundoToggle<cr>
+
 "NERDTree 
-map <leader>d :NERDTreeToggle<cr>
+map <leader>n :NERDTreeToggle<cr>
 map <leader>r :NERDTreeFind<cr>
 
 "NERDCommenter
@@ -141,9 +145,13 @@ map <D-/> <plug>NERDCommenterToggle
 
 " CTags
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
+map <C-\> :tnext<CR>
 
 "ConqueTerm
 let g:ConqueTerm_SendVisKey = '<F7>'
+
+"Command-T
+let g:CommandTMaxHeight=30
 
 " Git
 vmap <Leader>g :<C-U>!git blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR> 
