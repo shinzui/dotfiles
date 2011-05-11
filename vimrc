@@ -39,7 +39,7 @@ set wildignore+=*.o,*.obj,.git,*.rbc
 set wildignore+=vendor/rails/**
 set wildignore+=vendor/ruby/**
 set wildignore+=vendor/cache/**
-set wildignore+=doc/yard/**
+set wildignore+=doc/yard/**,.yardoc/**
 
 set nowrap
 

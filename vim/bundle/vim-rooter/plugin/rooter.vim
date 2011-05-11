@@ -5,6 +5,10 @@
 " Released under the MIT licence.
 "
 " This will happen automatically for typical Ruby webapp files.
+" If you don't want it to happen automatically, create the file
+" `.vim/after/plugin/vim-rooter.vim` with the single command:
+"
+"     autocmd! rooter
 "
 " You can invoke it manually with <Leader>cd (usually \cd).
 " To change the mapping, put this in your .vimrc:
@@ -39,10 +43,15 @@ endif
 " Functions
 "
 
-" Find the root directory of the current file, i.e the closest parent directory 
-" containing a <scm_type> directory, or an empty string if no such directory 
+" Find the root directory of the current file, i.e the closest parent directory
+" containing a <scm_type> directory, or an empty string if no such directory
 " is found.
 function! s:FindSCMDirectory(scm_type)
+  " Don't try to change directories when on a virtual filesystem (netrw, fugitive,...).
+  if match(expand('%:p'), '^\<.\+\>://.*') != -1
+    return ""
+  endif
+
   let dir_current_file = expand("%:p:h")
   let scm_dir = finddir(a:scm_type, dir_current_file . ";")
   " If we're at the project root or we can't find one above us
@@ -53,7 +62,7 @@ function! s:FindSCMDirectory(scm_type)
   endif
 endfunction
 
-" Returns the root directory for the current file based on the list of 
+" Returns the root directory for the current file based on the list of
 " known SCM directory names.
 function! s:FindRootDirectory()
   " add any future tools here
@@ -97,7 +106,10 @@ noremap <SID>ChangeToRootDirectory :call <SID>ChangeToRootDirectory()<CR>
 "
 
 command! Rooter :call <SID>ChangeToRootDirectory()
-autocmd BufEnter *.rb,*.html,*.haml,*.erb,*.rjs,*.css,*.js :Rooter
+augroup rooter
+  autocmd!
+  autocmd BufEnter *.rb,*.html,*.haml,*.erb,*.rjs,*.css,*.js :Rooter
+augroup END
 
 "
 " Boilerplate

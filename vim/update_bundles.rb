@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 git_bundles = [
-  "git://github.com/astashov/vim-ruby-debugger.git",
+  #"git://github.com/astashov/vim-ruby-debugger.git",
   "git://github.com/msanders/snipmate.vim.git",
   "git://github.com/scrooloose/nerdtree.git",
   "git://github.com/shinzui/nerdcommenter.git",
@@ -42,14 +42,13 @@ git_bundles = [
   "git://github.com/ecomba/vim-ruby-refactoring.git",
   "git://github.com/wincent/Command-T.git",
   "git://github.com/altercation/vim-colors-solarized.git",
-  "git://github.com/godlygeek/tabular.git"
+  "git://github.com/godlygeek/tabular.git",
+  "git://github.com/rygwdn/vim-conque.git"
 ]
 
 
 vim_org_scripts = [
   ["IndexedSearch", "7062",  "plugin"],
-  ["gist",          "12732", "plugin"],
-  ["conque",        "14040", "zip"],
   ["jquery",        "12107", "syntax"],
   ["bufexplorer",   "12904", "zip"],
   ["taglist",       "7701",  "zip"],

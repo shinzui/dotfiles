@@ -1,1 +1,2 @@
 . ~/.bash/bashrc
+. ~/.inputrc
