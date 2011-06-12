@@ -43,7 +43,8 @@ git_bundles = [
   "git://github.com/wincent/Command-T.git",
   "git://github.com/altercation/vim-colors-solarized.git",
   "git://github.com/godlygeek/tabular.git",
-  "git://github.com/rygwdn/vim-conque.git"
+  "git://github.com/rygwdn/vim-conque.git",
+  "git://github.com/vim-scripts/dbext.vim.git"
 ]
 
 

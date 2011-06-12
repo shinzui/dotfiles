@@ -7,7 +7,7 @@ if [ -f ~/.bash_private ]; then
   . ~/.bash/private
 fi
 
-. ~/bin/z.sh
+. `brew --prefix`/etc/profile.d/z.sh
 
 if $(grc &>/dev/null)
 then

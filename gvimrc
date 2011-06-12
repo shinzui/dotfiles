@@ -8,9 +8,7 @@ set guioptions-=T
 set guioptions=aAce
 
 colorscheme solarized
-"colorscheme idleFingers
-set guifont=Menlo:h12
-
+set guifont=Menlo:h11
 
 "Used by Rails plugin
 command-bar -nargs=1 OpenURL :!open <args> 
@@ -21,20 +19,16 @@ if has("gui_macvim")
   map <D-t> :CommandT<CR>
   imap <D-t> <Esc>:CommandT<CR>
 
-
   " Command-Shift-F for Ack
   macmenu Window.Toggle\ Full\ Screen\ Mode key=<nop>
   map <D-F> :Ack<space>
 
   " Command-e for ConqueTerm
   map <D-e> :call StartTerm()<CR>
-
 endif
-
 
 " Project Tree
 autocmd VimEnter * call s:CdIfDirectory(expand("<amatch>"))
-
 
 " ConqueTerm wrapper
 function StartTerm()
