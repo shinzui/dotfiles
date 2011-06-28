@@ -1,4 +1,5 @@
 scriptencoding utf-8
+set encoding=utf-8
 
 set nocompatible
 
@@ -128,6 +129,9 @@ imap <C-l> <Space>=><Space>
 "Format file
 map <silent> <F5> mmgg=G`m
 imap <silent> <F5> <esc> mmgg=G`m
+
+"root save
+cmap w!! %!sudo tee > /dev/null %
 
 """PLugins
 

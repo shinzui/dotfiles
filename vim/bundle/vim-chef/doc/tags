@@ -1,0 +1,14 @@
+/cookbooks/	chef.txt	/*\/cookbooks\/*
+chef-changelog	chef.txt	/*chef-changelog*
+chef-commands	chef.txt	/*chef-commands*
+chef-config	chef.txt	/*chef-config*
+chef-contents	chef.txt	/*chef-contents*
+chef-finder	chef.txt	/*chef-finder*
+chef-hook	chef.txt	/*chef-hook*
+chef-introduction	chef.txt	/*chef-introduction*
+chef-notes	chef.txt	/*chef-notes*
+chef-todo	chef.txt	/*chef-todo*
+chef-usage	chef.txt	/*chef-usage*
+chef-variables	chef.txt	/*chef-variables*
+chef.txt	chef.txt	/*chef.txt*
+related	chef.txt	/*related*

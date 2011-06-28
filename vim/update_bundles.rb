@@ -22,7 +22,6 @@ git_bundles = [
   "git://github.com/vim-ruby/vim-ruby.git",
   "git://github.com/mileszs/ack.vim.git",
   "git://github.com/tpope/vim-vividchalk.git",
-  "git://github.com/vim-scripts/AutoClose.git",
   "git://github.com/taq/vim-rspec.git",
   "git://github.com/robgleeson/vim-markdown-preview.git",
   "git://github.com/pangloss/vim-javascript.git",
@@ -30,7 +29,6 @@ git_bundles = [
   "git://github.com/shinzui/vim-idleFingers.git",
   "git://github.com/airblade/vim-rooter.git",
   "git://github.com/shinzui/gundo.vim.git",
-  "git://github.com/shemerey/vim-peepopen.git",
   "git://github.com/vim-scripts/scratch.vim.git",
   "git://github.com/shinzui/vim-snipmate-ruby-snippets.git",
   "git://github.com/vim-scripts/ZoomWin.git",
@@ -39,12 +37,18 @@ git_bundles = [
   "git://github.com/kogakure/vim-sparkup.git",
   "git://github.com/kana/vim-textobj-user.git",
   "git://github.com/nelstrom/vim-textobj-rubyblock.git",
+  "git://github.com/tsaleh/vim-matchit.git",
   "git://github.com/ecomba/vim-ruby-refactoring.git",
   "git://github.com/wincent/Command-T.git",
   "git://github.com/altercation/vim-colors-solarized.git",
   "git://github.com/godlygeek/tabular.git",
   "git://github.com/rygwdn/vim-conque.git",
-  "git://github.com/vim-scripts/dbext.vim.git"
+  "git://github.com/vim-scripts/dbext.vim.git",
+  "git://github.com/t9md/vim-chef.git",
+  "git://github.com/Shougo/unite.vim.git",
+  "git://github.com/h1mesuke/unite-outline.git",
+  "git://github.com/tpope/vim-endwise.git",
+  "git://github.com/chrismetcalf/vim-yankring.git"
 ]
 
 
