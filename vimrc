@@ -41,6 +41,7 @@ set wildignore+=vendor/rails/**
 set wildignore+=vendor/ruby/**
 set wildignore+=vendor/cache/**
 set wildignore+=doc/yard/**,.yardoc/**
+set wildignore+=log
 
 set nowrap
 
@@ -109,9 +110,11 @@ map <leader>] :bnext<CR>
 
 
 "File types
-autocmd BufNewFile,BufRead {Rakefile,Gemfile,Thorfile} setfiletype=ruby
-autocmd BufNewFile,BufRead config.ru   setfiletype ruby
-autocmd BufNewFile,BufRead *.json  setfiletype javascript
+autocmd BufNewFile,BufRead {Rakefile,Gemfile,Thorfile,Vagrantfile} set filetype=ruby
+autocmd BufNewFile,BufRead config.ru  set filetype=ruby
+autocmd BufNewFile,Bufread *.{md,markdown,mdown,mkd,mkdn} set filetype=markdown
+autocmd BufNewFile,Bufread *.yml.example set filetype=yaml
+autocmd BufNewFile,BufRead *.json  set filetype javascript
 
 autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
 autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
@@ -135,8 +138,14 @@ cmap w!! %!sudo tee > /dev/null %
 
 """PLugins
 
+"ToggleBG included in solarized
+call togglebg#map("<F4>")
+
 "Gundo
 nnoremap <F6> :GundoToggle<cr>
+
+"Yank Ring
+nnoremap <silent> <Leader>y :YRShow<cr>
 
 "NERDTree 
 map <leader>n :NERDTreeToggle<cr>
