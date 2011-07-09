@@ -23,12 +23,11 @@ git_bundles = [
   "git://github.com/mileszs/ack.vim.git",
   "git://github.com/tpope/vim-vividchalk.git",
   "git://github.com/taq/vim-rspec.git",
-  "git://github.com/robgleeson/vim-markdown-preview.git",
   "git://github.com/pangloss/vim-javascript.git",
   "git://github.com/michaeljsmith/vim-indent-object.git",
   "git://github.com/shinzui/vim-idleFingers.git",
   "git://github.com/airblade/vim-rooter.git",
-  "git://github.com/shinzui/gundo.vim.git",
+  "git://github.com/sjl/gundo.vim.git",
   "git://github.com/vim-scripts/scratch.vim.git",
   "git://github.com/shinzui/vim-snipmate-ruby-snippets.git",
   "git://github.com/vim-scripts/ZoomWin.git",
@@ -48,7 +47,8 @@ git_bundles = [
   "git://github.com/Shougo/unite.vim.git",
   "git://github.com/h1mesuke/unite-outline.git",
   "git://github.com/tpope/vim-endwise.git",
-  "git://github.com/chrismetcalf/vim-yankring.git"
+  "git://github.com/chrismetcalf/vim-yankring.git",
+  "git://github.com/robgleeson/hammer.vim.git"
 ]
 
 
