@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2011.
+" Last Modified: 10 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,10 +32,10 @@ function! unite#mappings#define_default_mappings()"{{{
   " Plugin keymappings"{{{
   nnoremap <silent><buffer> <Plug>(unite_exit)  :<C-u>call <SID>exit()<CR>
   nnoremap <silent><buffer> <Plug>(unite_choose_action)  :<C-u>call <SID>choose_action()<CR>
-  nnoremap <silent><buffer> <Plug>(unite_insert_enter)  :<C-u>call <SID>insert_enter()<CR>
-  nnoremap <silent><buffer> <Plug>(unite_insert_head)  :<C-u>call <SID>insert_head()<CR>
-  nnoremap <silent><buffer> <Plug>(unite_append_enter)  :<C-u>call <SID>append_enter()<CR>
-  nnoremap <silent><buffer> <Plug>(unite_append_end)  :<C-u>call <SID>append_end()<CR>
+  nnoremap <expr><buffer> <Plug>(unite_insert_enter)  <SID>insert_enter('i')
+  nnoremap <expr><buffer> <Plug>(unite_insert_head)   <SID>insert_enter('0'.(len(unite#get_current_unite().prompt)-1).'li')
+  nnoremap <expr><buffer> <Plug>(unite_append_enter)  <SID>insert_enter('a')
+  nnoremap <expr><buffer> <Plug>(unite_append_end)    <SID>insert_enter('A')
   nnoremap <silent><buffer> <Plug>(unite_toggle_mark_current_candidate)  :<C-u>call <SID>toggle_mark()<CR>
   nnoremap <silent><buffer> <Plug>(unite_redraw)  :<C-u>call <SID>redraw()<CR>
   nnoremap <silent><buffer> <Plug>(unite_rotate_next_source)  :<C-u>call <SID>rotate_source(1)<CR>
@@ -50,11 +50,13 @@ function! unite#mappings#define_default_mappings()"{{{
   nnoremap <silent><buffer> <Plug>(unite_delete_backward_path)  :<C-u>call <SID>normal_delete_backward_path()<CR>
   nnoremap <silent><buffer> <Plug>(unite_restart)  :<C-u>call <SID>restart()<CR>
   nnoremap <buffer><silent> <Plug>(unite_toggle_mark_all_candidates)  :<C-u>call <SID>toggle_mark_candidates(0, len(unite#get_unite_candidates()) - 1)<CR>
+  nnoremap <buffer><silent> <Plug>(unite_toggle_transpose_window)  :<C-u>call <SID>toggle_transpose_window()<CR>
+  nnoremap <buffer><silent> <Plug>(unite_narrowing_path)  :<C-u>call <SID>narrowing_path()<CR>
 
   vnoremap <buffer><silent> <Plug>(unite_toggle_mark_selected_candidates)  :<C-u>call <SID>toggle_mark_candidates(getpos("'<")[1] - unite#get_current_unite().prompt_linenr-1, getpos("'>")[1] - unite#get_current_unite().prompt_linenr - 1)<CR>
 
   inoremap <silent><buffer> <Plug>(unite_exit)  <ESC>:<C-u>call <SID>exit()<CR>
-  inoremap <silent><buffer> <Plug>(unite_insert_leave)  <C-o>:<C-u>call <SID>insert_leave()<CR>
+  inoremap <silent><buffer> <Plug>(unite_insert_leave)  <ESC>
   inoremap <silent><expr><buffer> <Plug>(unite_delete_backward_char)  col('.') <= (len(unite#get_current_unite().prompt)+1) ? "\<C-o>:\<C-u>call \<SID>exit()\<Cr>" : "\<C-h>"
   inoremap <expr><buffer> <Plug>(unite_delete_backward_line)  repeat("\<C-h>", col('.')-(len(unite#get_current_unite().prompt)+1))
   inoremap <expr><buffer> <Plug>(unite_delete_backward_word)  col('.') <= (len(unite#get_current_unite().prompt)+1) ? '' : "\<C-w>"
@@ -69,6 +71,8 @@ function! unite#mappings#define_default_mappings()"{{{
   inoremap <silent><buffer> <Plug>(unite_quick_match_default_action)  <C-o>:<C-u>call <SID>quick_match()<CR>
   inoremap <silent><buffer> <Plug>(unite_input_directory)   <C-o>:<C-u>call <SID>input_directory()<CR>
   inoremap <silent><buffer><expr> <Plug>(unite_do_default_action)   unite#do_action(unite#get_current_unite().context.default_action)
+  inoremap <buffer><silent> <Plug>(unite_toggle_transpose_window)  <C-o>:<C-u>call <SID>toggle_transpose_window()<CR>
+  inoremap <buffer><silent> <Plug>(unite_narrowing_path)  <C-o>:<C-u>call <SID>narrowing_path()<CR>
   "}}}
 
   if exists('g:unite_no_default_keymappings') && g:unite_no_default_keymappings
@@ -107,7 +111,6 @@ function! unite#mappings#define_default_mappings()"{{{
   xmap <buffer> <Space>   <Plug>(unite_toggle_mark_selected_candidates)
 
   " Insert mode key-mappings.
-  imap <buffer> <ESC>     <Plug>(unite_insert_leave)
   imap <buffer> <TAB>     <Plug>(unite_choose_action)
   imap <buffer> <C-n>     <Plug>(unite_select_next_line)
   imap <buffer> <Down>     <Plug>(unite_select_next_line)
@@ -135,11 +138,11 @@ function! unite#mappings#narrowing(word)"{{{
   let l:unite.input = escape(a:word, ' *')
   call setline(unite#get_current_unite().prompt_linenr, unite#get_current_unite().prompt . unite#get_current_unite().input)
   call unite#redraw()
-  if unite#get_current_unite().is_insert
+  if l:unite.is_insert
     execute unite#get_current_unite().prompt_linenr
     startinsert!
   else
-    execute unite#get_current_unite().prompt_linenr+1
+    execute unite#get_current_unite().prompt_linenr
     normal! 0z.
   endif
 endfunction"}}}
@@ -207,6 +210,7 @@ function! unite#mappings#do_action(action_name, ...)"{{{
 
   if l:is_redraw
     call unite#force_redraw()
+    normal! zz
   endif
 endfunction"}}}
 
@@ -293,8 +297,12 @@ function! s:restart()"{{{
   call unite#start(l:sources, l:context)
 endfunction"}}}
 function! s:delete_backward_path()"{{{
-  let l:input = getline(unite#get_current_unite().prompt_linenr)[len(unite#get_current_unite().prompt):]
-  return repeat("\<C-h>", len(matchstr(l:input, '[^/]*.$')))
+  let l:unite    = unite#get_current_unite()
+  let l:prompt   = l:unite.prompt
+  let l:input    = getline(l:unite.prompt_linenr)[len(l:prompt):]
+  let l:startcol = match(l:input, '[^/]*.$') + 1 + len(l:prompt)
+  let l:endcol   = virtcol('.')
+  return repeat("\<C-h>", (l:startcol < l:endcol ? l:endcol - l:startcol : 0))
 endfunction"}}}
 function! s:normal_delete_backward_path()"{{{
   let l:modifiable_save = &l:modifiable
@@ -371,51 +379,15 @@ function! s:choose_action()"{{{
   call unite#force_quit_session()
   call unite#start([['action'] + l:candidates], l:context)
 endfunction"}}}
-function! s:insert_enter()"{{{
-  let l:unite = unite#get_current_unite()
-
-  if line('.') != l:unite.prompt_linenr
-    execute l:unite.prompt_linenr
-    startinsert!
-  else
-    startinsert
-
-    if col('.') <= len(l:unite.prompt)+1
-      let l:pos = getpos('.')
-      let l:pos[2] = len(l:unite.prompt)+1
-      call setpos('.', l:pos)
-    endif
-  endif
-
-  let l:unite.is_insert = 1
-endfunction"}}}
-function! s:insert_leave()"{{{
-  let l:unite = unite#get_current_unite()
-
-  stopinsert
-  if line('.') != l:unite.prompt_linenr
-    normal! 0
-  endif
-
-  let l:unite.is_insert = 0
+function! s:insert_enter(key)"{{{
+  setlocal modifiable
+  return a:key
 endfunction"}}}
 function! s:insert_head()"{{{
   let l:pos = getpos('.')
   let l:pos[2] = len(unite#get_current_unite().prompt)+1
   call setpos('.', l:pos)
-  call s:insert_enter()
-endfunction"}}}
-function! s:append_enter()"{{{
-  call s:insert_enter()
-  if col('.')+1 == col('$')
-    startinsert!
-  elseif col('$') != len(unite#get_current_unite().prompt)+1
-    normal! l
-  endif
-endfunction"}}}
-function! s:append_end()"{{{
-  call s:insert_enter()
-  startinsert!
+  call s:insert_enter(col('.'))
 endfunction"}}}
 function! s:redraw()"{{{
   call unite#clear_message()
@@ -575,6 +547,26 @@ function! s:loop_cursor_up()"{{{
       return '0' . repeat('k', l:count)
     endif
   endif
+endfunction"}}}
+function! s:toggle_transpose_window()"{{{
+  " Toggle vertical/horizontal view.
+  let l:context = unite#get_context()
+  let l:direction = l:context.vertical ?
+        \ (l:context.direction ==# 'topleft' ? 'K' : 'J') :
+        \ (l:context.direction ==# 'topleft' ? 'H' : 'L')
+
+  execute 'silent wincmd ' . l:direction
+
+  let l:context.vertical = !l:context.vertical
+endfunction"}}}
+function! s:narrowing_path()"{{{
+  if line('.') <= unite#get_current_unite().prompt_linenr
+    " Ignore.
+    return
+  endif
+
+  let l:candidate = unite#get_unite_candidates()[line('.') - (unite#get_current_unite().prompt_linenr+1)]
+  call unite#mappings#narrowing(has_key(l:candidate, 'action__path')? l:candidate.action__path : l:candidate.word)
 endfunction"}}}
 
 function! unite#mappings#complete_actions(arglead, cmdline, cursorpos)"{{{
