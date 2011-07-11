@@ -156,6 +156,9 @@ let NERDSpaceDelims=1
 let NERDCreateDefaultMappings=0 "disable default mapping
 map <D-/> <plug>NERDCommenterToggle
 
+"Hammer
+let g:HammerQuiet=1 
+
 " CTags
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
 map <C-\> :tnext<CR>
