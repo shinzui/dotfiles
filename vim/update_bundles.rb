@@ -48,7 +48,8 @@ git_bundles = [
   "git://github.com/h1mesuke/unite-outline.git",
   "git://github.com/tpope/vim-endwise.git",
   "git://github.com/chrismetcalf/vim-yankring.git",
-  "git://github.com/robgleeson/hammer.vim.git"
+  "git://github.com/robgleeson/hammer.vim.git",
+  "git://github.com/mattn/zencoding-vim.git"
 ]
 
 
