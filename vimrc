@@ -41,7 +41,7 @@ set wildignore+=vendor/rails/**
 set wildignore+=vendor/ruby/**
 set wildignore+=vendor/cache/**
 set wildignore+=doc/yard/**,.yardoc/**
-set wildignore+=log
+set wildignore+=log/
 
 set nowrap
 
@@ -75,7 +75,10 @@ set title
 set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
 
 "default color scheme
-color solarized 
+colorscheme solarized 
+set background=dark
+
+
 
 "disable beep 
 set vb t_vb=
@@ -148,7 +151,7 @@ nnoremap <F6> :GundoToggle<cr>
 nnoremap <silent> <Leader>y :YRShow<cr>
 
 "NERDTree 
-map <leader>n :NERDTreeToggle<cr>
+map <leader>f :NERDTreeToggle<cr>
 map <leader>r :NERDTreeFind<cr>
 
 "NERDCommenter
