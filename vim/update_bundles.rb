@@ -49,7 +49,9 @@ git_bundles = [
   "git://github.com/tpope/vim-endwise.git",
   "git://github.com/chrismetcalf/vim-yankring.git",
   "git://github.com/robgleeson/hammer.vim.git",
-  "git://github.com/mattn/zencoding-vim.git"
+  "git://github.com/mattn/zencoding-vim.git",
+  "git://github.com/tpope/vim-bundler.git",
+  "git://github.com/tpope/gem-ctags.git"
 ]
 
 
