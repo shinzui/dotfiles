@@ -1,7 +1,7 @@
 "=============================================================================
 " File    : autoload/unite/sources/outline/defaults/cpp.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-05-11
+" Updated : 2011-08-29
 "
 " Licensed under the MIT license:
 " http://www.opensource.org/licenses/mit-license.php
@@ -9,7 +9,7 @@
 "=============================================================================
 
 " Default outline info for C++
-" Version: 0.1.6
+" Version: 0.1.8
 
 function! unite#sources#outline#defaults#cpp#outline_info()
   return s:outline_info
@@ -18,6 +18,9 @@ endfunction
 let s:Ctags = unite#sources#outline#import('Ctags')
 let s:Util  = unite#sources#outline#import('Util')
 
+"-----------------------------------------------------------------------------
+" Outline Info
+
 let s:outline_info = {
       \ 'heading_groups': {
       \   'namespace': ['namespace'],
@@ -25,8 +28,20 @@ let s:outline_info = {
       \   'function' : ['function'],
       \   'macro'    : ['macro'],
       \ },
+      \
       \ 'not_match_patterns': [
       \   s:Util.shared_pattern('*', 'parameter_list'),
+      \ ],
+      \
+      \ 'highlight_rules': [
+      \   { 'name'   : 'parameter_list',
+      \     'pattern': '/(.*)/' },
+      \   { 'name'   : 'type',
+      \     'pattern': '/\S\+\ze : \(class\|enum\|struct\|typedef\)/' },
+      \   { 'name'   : 'function',
+      \     'pattern': '/\(operator\>.*\|\h\w*\)\ze\s*(/' },
+      \   { 'name'   : 'macro',
+      \     'pattern': '/\h\w*\ze\%( (.*)\)\= : macro/' },
       \ ],
       \}
 

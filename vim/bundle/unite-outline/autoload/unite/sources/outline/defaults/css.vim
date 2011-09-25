@@ -1,7 +1,7 @@
 "=============================================================================
 " File    : autoload/unite/sources/outline/defaults/css.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-04-19
+" Updated : 2011-08-29
 "
 " Licensed under the MIT license:
 " http://www.opensource.org/licenses/mit-license.php
@@ -17,8 +17,12 @@ endfunction
 
 let s:Util = unite#sources#outline#import('Util')
 
+"-----------------------------------------------------------------------------
+" Outline Info
+
 let s:outline_info = {
       \ 'heading-1': s:Util.shared_pattern('c', 'heading-1'),
+      \
       \ 'skip': {
       \   'header': {
       \     'leading': '^@charset',

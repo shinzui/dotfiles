@@ -29,13 +29,16 @@ endfunction
 
 let s:color_table = {
             \ 'recipes':    "Identifier",
-            \ 'attributes': "vimCommand",
-            \ 'templates':  "PreProc",
-            \ 'files':      "PreProc"
+            \ 'attributes': "Keyword",
+            \ 'templates':  "Define",
+            \ 'files':      "Define",
+            \ 'definitions': "String",
+            \ 'providers':   "String",
+            \ 'resources':   "String",
             \ }
 
 function! s:finderBase.msghl(msgs, sep) "{{{1
-    echohl Function
+    echohl Identifier
     echo "[". self.id ."] "
     let last = len(a:msgs) - 1
     for idx in range(len(a:msgs))

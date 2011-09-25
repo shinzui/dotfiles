@@ -111,6 +111,8 @@ class Conque:
     # used for auto_read actions
     read_count = 0
 
+    # input buffer, array of ordinals
+    input_buffer = []
 
     def open(self):
         """ Start program and initialize this instance. 
@@ -159,10 +161,6 @@ class Conque:
         read -- Check program for new output when finished
 
         """
-        # check if window size has changed
-        if read:
-            self.update_window_size()
-
         # write and read
         self.proc.write(input)
 
@@ -214,6 +212,10 @@ class Conque:
         else:
             self.write(input, set_cursor, read)
 
+
+    def write_buffered_ord(self, chr):
+        """ Add character ordinal to input buffer. In case we're not allowed to modify buffer a time of input. """
+        self.input_buffer.append(chr)
 
 
     def read(self, timeout=1, set_cursor=True, return_output=False, update_buffer=True):
@@ -276,7 +278,7 @@ class Conque:
                         if nr in CONQUE_CTL:
                             getattr(self, 'ctl_' + CONQUE_CTL[nr])()
                         else:
-                            logging.info('escape not found for ' + str(s))
+                            logging.info('control not found for ' + str(s))
                             pass
 
                     # check for escape sequence match 
@@ -287,7 +289,7 @@ class Conque:
                             logging.debug(str(csi))
                             getattr(self, 'csi_' + CONQUE_ESCAPE[s[-1]])(csi)
                         else:
-                            logging.info('escape not found for ' + str(s))
+                            logging.info('csi not found for ' + str(s))
                             pass
 
                     # check for title match 
@@ -301,7 +303,7 @@ class Conque:
                         if s[-1] in CONQUE_ESCAPE_HASH:
                             getattr(self, 'hash_' + CONQUE_ESCAPE_HASH[s[-1]])()
                         else:
-                            logging.info('escape not found for ' + str(s))
+                            logging.info('hash not found for ' + str(s))
                             pass
 
                     # check for charset match 
@@ -310,7 +312,7 @@ class Conque:
                         if s[-1] in CONQUE_ESCAPE_CHARSET:
                             getattr(self, 'charset_' + CONQUE_ESCAPE_CHARSET[s[-1]])()
                         else:
-                            logging.info('escape not found for ' + str(s))
+                            logging.info('charset not found for ' + str(s))
                             pass
 
                     # check for other escape match 
@@ -332,10 +334,6 @@ class Conque:
 
             # we need to set the cursor position
             self.cursor_set = False
-
-            # redraw screen for immediate feedback
-            #if not CONQUE_FAST_MODE:
-            #    vim.command('redraw')
 
         except:
             logging.info('read error')
@@ -361,6 +359,13 @@ class Conque:
         to execute this command, typically set to go off after 50 ms of inactivity.
 
         """
+        # process buffered input if any
+        if len(self.input_buffer):
+            for chr in self.input_buffer:
+                self.write_ord(chr, set_cursor=False, read=False)
+            self.input_buffer = []
+            self.read(1)
+
         # check subprocess status, but not every time since it's CPU expensive
         if self.read_count % 32 == 0:
             if not self.proc.is_alive():
@@ -390,6 +395,11 @@ class Conque:
         if self.cursor_set:
             return
 
+        # check if window size has changed
+        if not CONQUE_FAST_MODE:
+            self.update_window_size()
+            logging.info('window size!')
+
         # otherwise set cursor position
         try:
             self.set_cursor(self.l, self.c)
@@ -397,6 +407,7 @@ class Conque:
             logging.info('cursor set error')
             logging.info(traceback.format_exc())
             pass
+
         self.cursor_set = True
 
 

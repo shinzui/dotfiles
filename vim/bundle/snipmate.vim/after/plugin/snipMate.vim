@@ -26,7 +26,7 @@ snor ` b<bs>`
 snor % b<bs>%
 snor U b<bs>U
 snor ^ b<bs>^
-"snor \ b<bs>\
+snor \ b<bs>\
 snor <c-x> b<bs><c-x>
 
 " By default load snippets in snippets_dir
