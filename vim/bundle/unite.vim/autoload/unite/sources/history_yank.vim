@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: changes.vim
+" FILE: history_yank.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Sep 2011.
+" Last Modified: 27 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,51 +28,53 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Variables  "{{{
+let s:yank_histories = []
+
+call unite#util#set_default('g:unite_source_history_yank_limit', 100)
 "}}}
 
-function! unite#sources#change#define()"{{{
+function! unite#sources#history_yank#define()"{{{
   return s:source
+endfunction"}}}
+function! unite#sources#history_yank#_append()"{{{
+  if empty(s:yank_histories) ||
+        \ s:yank_histories[0] != @"
+    " Append @" value.
+    call insert(s:yank_histories, @")
+
+    if g:unite_source_history_yank_limit > len(s:yank_histories)
+      let s:yank_histories =
+            \ s:yank_histories[ : g:unite_source_history_yank_limit - 1]
+    endif
+  endif
 endfunction"}}}
 
 let s:source = {
-      \ 'name' : 'change',
-      \ 'description' : 'candidates from changes',
-      \ 'hooks' : {},
-      \ }
+      \ 'name' : 'history/yank',
+      \ 'description' : 'candidates from yank history',
+      \ 'action_table' : {},
+      \}
 
-let s:cached_result = []
-function! s:source.hooks.on_init(args, context)"{{{
-  " Get changes list.
-  redir => redir
-  silent! changes
-  redir END
-
-  let result = []
-  let max_width = (winwidth(0) - 5)
-  for change in split(redir, '\n')[1:]
-    let list = split(change)
-    if len(list) < 4
-      continue
-    endif
-
-    let [linenr, col, text] = [list[1], list[2]+1, join(list[3:])]
-
-    call add(result, {
-          \ 'word' : unite#util#truncate_smart(printf('%4d-%-3d  %s', linenr, col, text),
-          \           max_width, max_width/3, '..'),
-          \ 'kind' : 'jump_list',
-          \ 'action__path' : unite#util#substitute_path_separator(fnamemodify(expand('%'), ':p')),
-          \ 'action__buffer_nr' : bufnr('%'),
-          \ 'action__line' : linenr,
-          \ 'action__col' : col,
-          \ })
-  endfor
-
-  let a:context.source__result = reverse(result)
-endfunction"}}}
 function! s:source.gather_candidates(args, context)"{{{
-  return a:context.source__result
+  return map(copy(s:yank_histories), '{
+        \ "word" : v:val,
+        \ "kind" : "word",
+        \ }')
 endfunction"}}}
+
+" Actions"{{{
+let s:source.action_table.delete = {
+      \ 'description' : 'delete from yank history',
+      \ 'is_invalidate_cache' : 1,
+      \ 'is_quit' : 0,
+      \ 'is_selectable' : 1,
+      \ }
+function! s:source.action_table.delete.func(candidates)"{{{
+  for candidate in a:candidates
+    call filter(s:yank_histories, 'v:val !=# candidate.word')
+  endfor
+endfunction"}}}
+"}}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

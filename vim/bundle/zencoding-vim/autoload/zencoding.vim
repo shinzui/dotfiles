@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 24-Feb-2011.
+" Last Change: 26-Sep-2011.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -597,6 +597,7 @@ function! s:zen_getFileType()
   if type == 'xslt' | let type = 'xsl' | endif
   if type == 'htmldjango' | let type = 'html' | endif
   if type == 'html.django_template' | let type = 'html' | endif
+  if type == 'scss' | let type = 'css' | endif
   if synIDattr(synID(line("."), col("."), 1), "name") =~ '^css'
     let type = 'css'
   endif
@@ -691,6 +692,9 @@ function! zencoding#expandAbbr(mode) range
       let part = matchstr(line, '\([a-zA-Z0-9_\@:|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
+      while part =~ '<.*>'
+          let part = substitute(part, '^.*<.\{-}>', '', '')
+      endwhile
     endif
     let rest = getline('.')[len(line):]
     let str = part
@@ -775,7 +779,7 @@ function! zencoding#imageSize()
   if filereadable(fn)
     let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
   else
-    let hex = substitute(system('curl -s "'.fn.'" | xxd -p'), '\n', '', 'g')
+    let hex = substitute(system(g:zencoding_curl_command.' "'.fn.'" | xxd -p'), '\n', '', 'g')
   endif
 
   if hex =~ '^89504e470d0a1a0a'
@@ -1085,7 +1089,7 @@ endfunction
 "==============================================================================
 function! s:get_content_from_url(url)
   silent! new
-  silent! exec '0r!curl -s -L "'.substitute(a:url, '#.*', '', '').'"'
+  silent! exec '0r!'.g:zencoding_curl_command.' "'.substitute(a:url, '#.*', '', '').'"'
   let ret = join(getline(1, '$'), "\n")
   silent! bw!
   return ret
@@ -1106,7 +1110,7 @@ function! s:get_text_from_html(buf)
   let m = split(buf, mx)
   for str in m
     let c = split(str, '<[^>]*?>')
-    let str = substitute(str, '<[^>]\{-}>', '', 'g')
+    let str = substitute(str, '<[^>]\{-}>', ' ', 'g')
     let str = substitute(str, '&gt;', '>', 'g')
     let str = substitute(str, '&lt;', '<', 'g')
     let str = substitute(str, '&quot;', '"', 'g')
@@ -1120,8 +1124,8 @@ function! s:get_text_from_html(buf)
     if l > threshold_len
       let per = len(c) / l
       if max < l && per < threshold_per
-          let max = l
-          let res = str
+        let max = l
+        let res = str
       endif
     endif
   endfor
@@ -2055,6 +2059,15 @@ let s:zen_settings = {
 \    },
 \    'mustache': {
 \        'extends': 'html'
+\    },
+\    'xsd': {
+\        'extends': 'html',
+\        'snippets': {
+\            'xsd:w3c': "<?xml version=\"1.0\"?>\n"
+\                    ."<xsd:schema xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\">\n"
+\                    ."    <xsd:element name=\"\" type=\"\"/>\n"
+\                    ."</xsd:schema>\n"
+\        }
 \    }
 \}
 

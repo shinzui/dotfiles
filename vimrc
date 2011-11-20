@@ -122,6 +122,8 @@ autocmd BufNewFile,BufRead *.json  set filetype javascript
 autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
 autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
 
+autocmd BufReadPost fugitive://* set bufhidden=delete
+
 "Windows
 map <C-h> <C-w>h
 map <C-j> <C-w>j

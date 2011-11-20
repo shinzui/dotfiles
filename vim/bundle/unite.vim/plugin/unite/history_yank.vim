@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: changes.vim
+" FILE: history_yank.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Sep 2011.
+" Last Modified: 05 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,57 +24,25 @@
 " }}}
 "=============================================================================
 
+if exists('g:loaded_unite_source_history_yank')
+  finish
+endif
+
 let s:save_cpo = &cpo
 set cpo&vim
 
-" Variables  "{{{
-"}}}
+if exists('g:unite_source_history_yank_enable')
+      \ && g:unite_source_history_yank_enable
+  augroup plugin-unite-history-yank
+    autocmd!
+    autocmd CursorMoved * call unite#sources#history_yank#_append()
+  augroup END
+endif
 
-function! unite#sources#change#define()"{{{
-  return s:source
-endfunction"}}}
-
-let s:source = {
-      \ 'name' : 'change',
-      \ 'description' : 'candidates from changes',
-      \ 'hooks' : {},
-      \ }
-
-let s:cached_result = []
-function! s:source.hooks.on_init(args, context)"{{{
-  " Get changes list.
-  redir => redir
-  silent! changes
-  redir END
-
-  let result = []
-  let max_width = (winwidth(0) - 5)
-  for change in split(redir, '\n')[1:]
-    let list = split(change)
-    if len(list) < 4
-      continue
-    endif
-
-    let [linenr, col, text] = [list[1], list[2]+1, join(list[3:])]
-
-    call add(result, {
-          \ 'word' : unite#util#truncate_smart(printf('%4d-%-3d  %s', linenr, col, text),
-          \           max_width, max_width/3, '..'),
-          \ 'kind' : 'jump_list',
-          \ 'action__path' : unite#util#substitute_path_separator(fnamemodify(expand('%'), ':p')),
-          \ 'action__buffer_nr' : bufnr('%'),
-          \ 'action__line' : linenr,
-          \ 'action__col' : col,
-          \ })
-  endfor
-
-  let a:context.source__result = reverse(result)
-endfunction"}}}
-function! s:source.gather_candidates(args, context)"{{{
-  return a:context.source__result
-endfunction"}}}
+let g:loaded_unite_source_history_yank = 1
 
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
+" __END__
 " vim: foldmethod=marker

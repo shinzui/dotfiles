@@ -103,4 +103,9 @@ vim_org_scripts.each do |name, script_id, script_type|
     %x(unzip -d #{name} #{local_file})
   end
 end
+tomorrow_path = "tomorrow-theme/colors"
+FileUtils.mkdir_p(tomorrow_path)
+%w{Tomorrow-Night-Blue Tomorrow-Night-Eighties Tomorrow-Night Tomorrow}.each do |item|
+  `curl https://raw.github.com/ChrisKempson/Tomorrow-Theme/master/Vim/#{item}.vim > #{tomorrow_path}/#{item.downcase}.vim`
+end 
 
