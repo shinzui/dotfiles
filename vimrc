@@ -96,6 +96,8 @@ set backupdir=~/.vim/backup
 "Persistent undo
 set undofile
 
+"Highlight conflict markers 
+match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
 " Include user's local vim config
 if filereadable(expand("~/.vimrc.local"))
@@ -106,6 +108,9 @@ endif
 runtime  macros/matchit.vim
 
 """ Bindings
+
+"
+inoremap jk <esc>
 
 "buffers
 map <leader>[ :bprevious<CR>

@@ -14,7 +14,5 @@ then
   source `brew --prefix`/etc/grc.bashrc
 fi
 
-# rvm-install added line:
-if [[ -s /Users/shinzui/.rvm/scripts/rvm ]] ; then source /Users/shinzui/.rvm/scripts/rvm ; fi
-
+eval "$(rbenv init -)"
 

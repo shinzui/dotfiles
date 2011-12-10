@@ -7,11 +7,13 @@
 *.swp
 *.tmproj
 .bundle
+.rbenv-version
 vendor/bundle/
 lib/bundler/man
 coverage
 rdoc
 spec/reports
+tags
 .yardoc
 _yardoc
 capybara-*.html
