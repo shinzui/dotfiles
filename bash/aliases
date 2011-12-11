@@ -1,4 +1,5 @@
 #Aliases#
+alias _='sudo'
 alias df='df -h'
 alias g='grep -i'
 alias h='history|g'
@@ -6,6 +7,7 @@ alias rm='rm -i'
 alias rmf='rm -f'
 alias cp='cp -r'
 alias mv='mv -i'
+alias md='mkdir -p'
 alias ls='ls -hBG'
 alias l.='ls -d .*'
 alias top='htop'
@@ -17,10 +19,18 @@ alias fn='find . -name'
 
 alias fcache='dscacheutil -flushcache'
 
+alias tmux='TERM=xterm-256color tmux'
+
 #ruby
 alias gi='gem install'
 alias gic='gi --no-rdoc --no-ri'
+
+#bundler
 alias b='bundle'
 alias bi='b install --path vendor'
 alias bu='b update'
 alias be='b exec'
+alias bl='b list'
+
+#OSX
+finder='open -a Finder'
