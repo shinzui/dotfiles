@@ -10,56 +10,54 @@
     
     
 
-    <meta content="authenticity_token" name="csrf-param" />
-<meta name="csrf-token" />
-
-    <link href="https://a248.e.akamai.net/assets.github.com/stylesheets/bundles/github-ed04e8b8be3e88286d2fedb5ade5607df0599719.css" media="screen" rel="stylesheet" type="text/css" />
     
 
-    <script src="https://a248.e.akamai.net/assets.github.com/javascripts/bundles/jquery-0afaa9d8025004af7fc6f2a561837057d3f21298.js" type="text/javascript"></script>
-    <script src="https://a248.e.akamai.net/assets.github.com/javascripts/bundles/github-b1872f46a080aa92c45573ca095de24a21d5f9ff.js" type="text/javascript"></script>
+    <link href="https://a248.e.akamai.net/assets.github.com/stylesheets/bundles/github-23473ca2d6000428460a536dc4d62ff131be973b.css" media="screen" rel="stylesheet" type="text/css" />
+    
+
+    <script src="https://a248.e.akamai.net/assets.github.com/javascripts/bundles/jquery-f9e740d10a70e9aeef9e8c1511ea3b7dbcb3e417.js" type="text/javascript"></script>
+    <script src="https://a248.e.akamai.net/assets.github.com/javascripts/bundles/github-8d5b608448cb9156dcf4ed3af176b16419e5e834.js" type="text/javascript"></script>
     
 
     
   </head>
 
 
-  <body class="logged_out   env-production ">
+  <body class="logged_out   vis-public env-production ">
     
 
 
     
 
-    <div id="main">
-      <div id="header" class="true">
+      <div id="header" class="true clearfix">
+        <div class="container" class="clearfix">
           <a class="logo" href="https://github.com">
-            <img alt="github" class="default svg" height="45" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov6.svg" />
-            <img alt="github" class="default png" height="45" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov6.png" />
-            <!--[if (gt IE 8)|!(IE)]><!-->
-            <img alt="github" class="hover svg" height="45" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov6-hover.svg" />
-            <img alt="github" class="hover png" height="45" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov6-hover.png" />
-            <!--<![endif]-->
+            <img class="blacktocat" src="/images/modules/header/blacktocat.png">
+            <img alt="GitHub" class="github-logo-4x" height="30" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov7@4x.png?1323882717" />
+            <img alt="GitHub" class="github-logo" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov7.png?1323882717" />
           </a>
 
-        <div class="topsearch">
-    <!--
+                <!--
       make sure to use fully qualified URLs here since this nav
       is used on error pages on other domains
     -->
-    <ul class="nav logged_out">
+    <ul class="top-nav logged_out">
         <li class="pricing"><a href="https://github.com/plans">Signup and Pricing</a></li>
         <li class="explore"><a href="https://github.com/explore">Explore GitHub</a></li>
       <li class="features"><a href="https://github.com/features">Features</a></li>
         <li class="blog"><a href="https://github.com/blog">Blog</a></li>
       <li class="login"><a href="https://github.com/login?return_to=%2FChrisKempson%2FTomorrow-Theme%2Fmaster%2FVim%2FTomorrow.vim">Login</a></li>
     </ul>
-</div>
 
+
+        </div>
       </div>
 
       
+
         <div class="site">
-          
+          <div class="container">
+            
 
 <style type="text/css">
     * {
@@ -127,26 +125,25 @@
 
 
 <div id="parallax_illustration">
-  <img alt="404 | &ldquo;This is not the web page you are looking for&rdquo;" class="js-plaxify" data-xrange="20" data-yrange="10" height="249" id="parallax_error_text" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_errortext.png" width="271" />
-  <img alt="Octobi Wan Catnobi" class="js-plaxify" data-xrange="10" data-yrange="10" height="230" id="parallax_octocat" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_octocat.png" width="188" />
-  <img alt="land speeder" class="js-plaxify" data-xrange="10" data-yrange="10" height="156" id="parallax_speeder" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_speeder.png" width="440" />
-  <img alt="Octobi Wan Catnobi's shadow" class="js-plaxify" data-xrange="10" data-yrange="10" height="49" id="parallax_octocatshadow" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_octocatshadow.png" width="166" />
-  <img alt="land speeder's shadow" class="js-plaxify" data-xrange="10" data-yrange="10" height="75" id="parallax_speedershadow" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_speedershadow.png" width="430" />
-  <img alt="building" class="js-plaxify" data-invert="true" data-xrange="50" data-yrange="20" height="123" id="parallax_building_1" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_building_1.png" width="304" />
-  <img alt="building" class="js-plaxify" data-invert="true" data-xrange="75" data-yrange="30" height="50" id="parallax_building_2" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_building_2.png" width="116" />
-  <img alt="building" class="js-plaxify" data-invert="true" data-xrange="0" data-yrange="40" height="415" id="parallax_bg" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_bg.jpg" width="940" />
+  <img alt="404 | &ldquo;This is not the web page you are looking for&rdquo;" class="js-plaxify" data-xrange="20" data-yrange="10" height="249" id="parallax_error_text" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_errortext.png?1315928456" width="271" />
+  <img alt="Octobi Wan Catnobi" class="js-plaxify" data-xrange="10" data-yrange="10" height="230" id="parallax_octocat" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_octocat.png?1315928456" width="188" />
+  <img alt="land speeder" class="js-plaxify" data-xrange="10" data-yrange="10" height="156" id="parallax_speeder" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_speeder.png?1315928456" width="440" />
+  <img alt="Octobi Wan Catnobi's shadow" class="js-plaxify" data-xrange="10" data-yrange="10" height="49" id="parallax_octocatshadow" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_octocatshadow.png?1315928456" width="166" />
+  <img alt="land speeder's shadow" class="js-plaxify" data-xrange="10" data-yrange="10" height="75" id="parallax_speedershadow" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_speedershadow.png?1315928456" width="430" />
+  <img alt="building" class="js-plaxify" data-invert="true" data-xrange="50" data-yrange="20" height="123" id="parallax_building_1" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_building_1.png?1315928456" width="304" />
+  <img alt="building" class="js-plaxify" data-invert="true" data-xrange="75" data-yrange="30" height="50" id="parallax_building_2" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_building_2.png?1315928456" width="116" />
+  <img alt="building" class="js-plaxify" data-invert="true" data-xrange="0" data-yrange="40" height="415" id="parallax_bg" src="https://a248.e.akamai.net/assets.github.com/images/modules/404/parallax_bg.jpg?1315928456" width="940" />
 </div>
 
 </script>
 
+          </div>
         </div>
-    </div>
-
     <!-- footer -->
     <div id="footer" >
       
   <div class="upper_footer">
-     <div class="site" class="clearfix">
+     <div class="container" class="clearfix">
 
        <!--[if IE]><h4 id="blacktocat_ie">GitHub Links</h4><![endif]-->
        <![if !IE]><h4 id="blacktocat">GitHub Links</h4><![endif]>
@@ -188,7 +185,7 @@
   </div><!-- /.upper_footer -->
 
 <div class="lower_footer">
-  <div class="site" class="clearfix">
+  <div class="container" class="clearfix">
     <!--[if IE]><div id="legal_ie"><![endif]-->
     <![if !IE]><div id="legal"><![endif]>
       <ul>
@@ -197,7 +194,7 @@
           <li><a href="https://github.com/security">Security</a></li>
       </ul>
 
-      <p>&copy; 2011 <span id="_rrt" title="0.06364s from fe5.rs.github.com">GitHub</span> Inc. All rights reserved.</p>
+      <p>&copy; 2011 <span id="_rrt" title="0.02060s from fe11.rs.github.com">GitHub</span> Inc. All rights reserved.</p>
     </div><!-- /#legal or /#legal_ie-->
 
       <div class="sponsor">
@@ -231,7 +228,7 @@
       </dl>
     </div><!-- /.column.first -->
 
-    <div class="column middle" style=&#39;display:none&#39;>
+    <div class="column middle" style='display:none'>
       <h3>Commit list</h3>
       <dl class="keyboard-mappings">
         <dt>j</dt>
@@ -251,7 +248,7 @@
       </dl>
     </div><!-- /.column.first -->
 
-    <div class="column last" style=&#39;display:none&#39;>
+    <div class="column last" style='display:none'>
       <h3>Pull request list</h3>
       <dl class="keyboard-mappings">
         <dt>j</dt>
@@ -269,7 +266,7 @@
 
   </div><!-- /.columns.equacols -->
 
-  <div style=&#39;display:none&#39;>
+  <div style='display:none'>
     <div class="rule"></div>
 
     <h3>Issues</h3>
@@ -336,7 +333,7 @@
     </div>
   </div>
 
-  <div style=&#39;display:none&#39;>
+  <div style='display:none'>
     <div class="rule"></div>
 
     <h3>Issues Dashboard</h3>
@@ -359,7 +356,7 @@
     </div>
   </div>
 
-  <div style=&#39;display:none&#39;>
+  <div style='display:none'>
     <div class="rule"></div>
 
     <h3>Network Graph</h3>
@@ -486,6 +483,7 @@ http://github.com - automatic!
 <p>Blockquotes</p>
      <pre>
 As Kanye West said:
+
 > We're living the future so
 > the present is our past.
 </pre>
@@ -525,6 +523,7 @@ I think you should use an
 
   </div>
 </div>
+
 
     <div class="context-overlay"></div>
 

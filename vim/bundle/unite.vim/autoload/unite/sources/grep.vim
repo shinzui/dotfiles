@@ -2,7 +2,7 @@
 " FILE: grep.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
 "          Tomohiro Nishimura <tomohiro68 at gmail.com>
-" Last Modified: 21 Sep 2011.
+" Last Modified: 07 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,6 +30,10 @@ call unite#util#set_default('g:unite_source_grep_command', 'grep')
 call unite#util#set_default('g:unite_source_grep_default_opts', '-Hn')
 call unite#util#set_default('g:unite_source_grep_recursive_opt', '-R')
 call unite#util#set_default('g:unite_source_grep_max_candidates', 100)
+call unite#util#set_default('g:unite_source_grep_ignore_pattern',
+      \'\~$\|\.\%(o\|exe\|dll\|bak\|sw[po]\)$\|'.
+      \'\%(^\|/\)\.\%(hg\|git\|bzr\|svn\)\%($\|/\)\|'.
+      \'\%(^\|/\)tags\%(-\a*\)\?$')
 "}}}
 
 " Actions "{{{
@@ -75,26 +79,28 @@ let s:grep_source = {
       \ }
 
 function! s:grep_source.hooks.on_init(args, context) "{{{
-  let target  = get(a:args, 0, '')
-  if type(target) != type([])
-    if target == ''
-      let target = input('Target: ', '**', 'file')
-    endif
-
-    if target == '%' || target == '#'
-      let target = unite#util#escape_file_searching(bufname(target))
-    elseif target ==# '$buffers'
-      let target = join(map(filter(range(1, bufnr('$')), 'buflisted(v:val)'),
-            \ 'unite#util#escape_file_searching(bufname(v:val))'))
-    elseif target == '**'
-      " Optimized.
-      let target = '* ' . g:unite_source_grep_recursive_opt
-    endif
-
-    let a:context.source__target = [target]
+  if type(get(a:args, 0, '')) == type([])
+    let default = join(get(a:args, 0, ''))
   else
-    let a:context.source__target = target
+    let default = get(a:args, 0, '')
   endif
+  if default == ''
+    let default = '**'
+  endif
+
+  let target = input('Target: ', default, 'file')
+
+  if target == '%' || target == '#'
+    let target = unite#util#escape_file_searching(bufname(target))
+  elseif target ==# '$buffers'
+    let target = join(map(filter(range(1, bufnr('$')), 'buflisted(v:val)'),
+          \ 'unite#util#escape_file_searching(bufname(v:val))'))
+  elseif target == '**'
+    " Optimized.
+    let target = '* ' . g:unite_source_grep_recursive_opt
+  endif
+
+  let a:context.source__target = [target]
 
   let a:context.source__extra_opts = get(a:args, 1, '')
 
@@ -102,6 +108,13 @@ function! s:grep_source.hooks.on_init(args, context) "{{{
   if a:context.source__input == ''
     let a:context.source__input = input('Pattern: ')
   endif
+
+
+  let targets = map(filter(split(target), 'v:val !~ "^-"'),
+        \ 'substitute(v:val, "*\\+$", "", "")')
+  let a:context.source__directory =
+        \ (len(targets) == 1) ?
+        \ unite#util#substitute_path_separator(expand(targets[0])) : ''
 endfunction"}}}
 function! s:grep_source.hooks.on_syntax(args, context)"{{{
   syntax case ignore
@@ -158,15 +171,30 @@ function! s:grep_source.async_gather_candidates(args, context) "{{{
     \  'v:val =~ "^.\\+:.\\+:.\\+$"'),
     \ '[v:val, split(v:val[2:], ":")]')
 
+  if g:unite_source_grep_ignore_pattern != ''
+    call filter(candidates, 'v:val[0][:1].v:val[1][0] !~ '
+          \ . string(g:unite_source_grep_ignore_pattern))
+  endif
+
+  if isdirectory(a:context.source__directory)
+    let cwd = getcwd()
+    lcd `=a:context.source__directory`
+  endif
+
   return map(candidates,
     \ '{
-    \   "word": v:val[0],
+    \   "word": unite#util#substitute_path_separator(
+    \                   fnamemodify(v:val[0], ":.")),
     \   "kind": "jump_list",
     \   "action__path": unite#util#substitute_path_separator(
     \                   fnamemodify(v:val[0][:1].v:val[1][0], ":p")),
     \   "action__line": v:val[1][1],
     \   "action__text": join(v:val[1][2:], ":"),
     \ }')
+
+  if isdirectory(a:context.source__directory)
+    lcd `=cwd`
+  endif
 endfunction "}}}
 
 " vim: foldmethod=marker

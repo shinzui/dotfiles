@@ -2,7 +2,7 @@
 " FILE: line.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu at gmail.com>
 "          t9md <taqumd at gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 28 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -82,23 +82,38 @@ function! s:unite_source.gather_candidates(args, context)
         call unite#print_message('[line] direction: ' . direction)
     endif
 
-    let [start, end] =
-                \ direction ==# 'forward' ?
-                \ [a:context.source__linenr, '$'] :
-                \ direction ==# 'backward' ?
-                \ [1, a:context.source__linenr] :
-                \ [1, '$']
+    let lines = (direction ==# 'forward' || direction ==# 'backward') ?
+                \ s:get_lines(a:context, direction) :
+                \ (s:get_lines(a:context, 'forward')
+                \  + s:get_lines(a:context, 'backward')[: -2])
 
-    let lines = map(getbufline(a:context.source__bufnr, start, end),
-                \ '{"nr": v:key+start, "val": v:val }')
-    let a:context.source__format = '%' . strlen(len(lines)) . 'd: %s'
+    let _ = map(lines, "{
+                \ 'word' : v:val[1],
+                \ 'action__line' : v:val[0],
+                \ 'action__text' : v:val[1],
+                \ 'action__pattern' : escape(v:val[1], '~\" \\.^$[]*'),
+                \ }")
+    let a:context.source__format = '%' . strlen(len(_)) . 'd: %s'
 
-    return map(lines, '{
-                \   "word": v:val.val,
-                \   "action__line": v:val.nr,
-                \   "action__text": v:val.val
-                \ }')
+    return _
 endfunction
+
+function! s:get_lines(context, direction)"{{{
+    let [start, end] =
+                \ a:direction ==# 'forward' ?
+                \ [a:context.source__linenr, '$'] :
+                \ [1, a:context.source__linenr]
+
+    let _ = []
+    let linenr = start
+    for line in getbufline(a:context.source__bufnr, start, end)
+        call add(_, [linenr, line])
+
+        let linenr += 1
+    endfor
+
+    return _
+endfunction"}}}
 
 function! s:unite_source.hooks.on_post_filter(args, context)
     call s:hl_refresh(a:context)

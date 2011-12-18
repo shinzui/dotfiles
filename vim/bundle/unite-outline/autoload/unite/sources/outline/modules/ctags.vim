@@ -1,8 +1,8 @@
 "=============================================================================
 " File    : autoload/unite/source/outline/lib/ctags.vim
 " Author  : h1mesuke <himesuke@gmail.com>
-" Updated : 2011-09-03
-" Version : 0.5.0
+" Updated : 2011-10-14
+" Version : 0.5.1
 " License : MIT license {{{
 "
 "   Permission is hereby granted, free of charge, to any person obtaining
@@ -113,7 +113,7 @@ function! s:execute_ctags(context)
   " extracted from the buffer which he/she is watching now, we need to process
   " the buffer's content not its file's content.
 
-  let filetype = a:context.buffer.major_filetype
+  let filetype = a:context.buffer.filetype
   " Assemble the command-line.
   let lang_info = s:Ctags.lang_info[filetype]
   let opts  = ' -f - --excmd=number --fields=afiKmsSzt --sort=no '
@@ -196,7 +196,7 @@ endfunction
 " returns a tree of the headings.
 "
 function! s:Ctags_extract_headings(context)
-  let filetype = a:context.buffer.major_filetype
+  let filetype = a:context.buffer.filetype
   if !s:Ctags_exists()
     call unite#print_message("[unite-outline] Sorry, Exuberant Ctags required.")
     return []
@@ -212,7 +212,9 @@ function! s:Ctags_extract_headings(context)
   let lang_info = s:Ctags.lang_info[filetype]
   let scope_kinds_pattern = '^\%(' . join(lang_info.scope_kinds, '\|') . '\)$'
   let scope_table = {}
-  let tag_name_counter = {}
+
+  " Tag name counter
+  let s:counter = {}
 
   " Build a heading tree processing a List of tag objects.
   let root = s:Tree.new()
@@ -227,10 +229,6 @@ function! s:Ctags_extract_headings(context)
 
     " Remove extra spaces to normalize the parameter list.
     let heading.word = substitute(substitute(heading.word, '(\s*', '(', ''), '\s*)', ')', '')
-    " Append an ID suffix (#2, #3, ...) to the heading word if the heading is
-    " the second or subsequent one that has the tag's name.
-    call s:count_tag_name(tag, tag_name_counter)
-    let heading.word .= s:get_tag_name_id_suffix(tag, tag_name_counter)
 
     if tag.kind =~# scope_kinds_pattern
       " The heading has its scope, in other words, it is able to have child
@@ -265,6 +263,7 @@ function! s:Ctags_extract_headings(context)
       call s:Tree.append_child(root, heading)
     endif
   endfor
+  unlet! s:counter
 
   " Merge orphaned pseudo headings.
   let pseudo_headings = filter(values(scope_table), 'has_key(v:val, "__pseudo__")')
@@ -300,7 +299,7 @@ endfunction
 
 " Creates a pseudo heading from {tag}.
 " Pseudo headings are the headings whose tags don't exists actually because
-" they are ones of the other file.
+" maybe they belong to the other files.
 "
 function! s:create_pseudo_heading(tag)
   let heading = {
@@ -331,30 +330,24 @@ function! s:get_tag_access_mark(tag)
   return get(s:OOP_ACCESS_MARKS, access, '_') . ' '
 endfunction
 
-function! s:count_tag_name(tag, counter)
-  let name = a:tag.qualified_name
-  if has_key(a:counter, name)
-    let a:counter[name] += 1
-  else
-    let a:counter[name] = 1
-  endif
-endfunction
-
-" Returns an ID suffix (#2, #3, ...) of {tag}.
-" If the tag is the first one that has its name, returns empty String.
+" Count up {tag}'s name and returns an ID suffix (#2, #3, ...) for {tag}.
+" If the {tag} is the first one that has the name, returns empty String.
 "
-function! s:get_tag_name_id_suffix(tag, counter)
+function! s:get_tag_id(tag)
   let name = a:tag.qualified_name
   if has_key(a:tag, 'signature')
     let name .= a:tag.signature
   endif
-  if has_key(a:counter, name) && a:counter[name] > 1
-    return ' #' . a:counter[name]
+  if has_key(s:counter, name)
+    let s:counter[name] += 1
+    return ' #' . s:counter[name]
   else
+    let s:counter[name] = 1
     return ''
   endif
 endfunction
 
+" TODO: Specifying ctags's -I option from some variable.
 "-----------------------------------------------------------------------------
 " C/C++
 "
@@ -388,28 +381,51 @@ function! s:Ctags.lang_info.cpp.create_heading(tag, context)
         \ }
   let ignore = 0
   if heading.type ==# 'function'
+    " Function
     if a:tag.name =~# '^[[:upper:]_]\{3,}$'
+      " Application of a macro was incorrectly parsed as a function
+      " definition.
       let ignore = 1
     elseif has_key(a:tag, 'signature')
       let heading.word .= ' ' . a:tag.signature
     else
       let heading.word .= ' ' . s:get_param_list(a:context, a:tag.lnum)
     endif
-  else
-    if heading.type ==# 'macro'
-      if line =~# '#undef\>'
-        let ignore = 1
-      elseif line =~# a:tag.name . '('
+    let heading.word .= s:get_tag_id(a:tag)
+  elseif heading.type ==# 'macro'
+    " Macro
+    if line =~# '#undef\>'
+      let ignore = 1
+    else
+      " Append its parameter list if exists.
+      if line =~# a:tag.name . '('
         let heading.word .= ' ' . s:get_param_list(a:context, a:tag.lnum)
-        let heading.group = 'function'
       endif
+      " Append what the macro will be expanded to.
+      let heading.word .= s:get_tag_id(a:tag) .
+            \ ' => ' . s:get_expanded(a:context, a:tag.lnum, a:tag.name)
     endif
-    let heading.word .= ' : ' . a:tag.kind
+  else
+    " Otehrs
+    let heading.word .= s:get_tag_id(a:tag) . ' : ' . a:tag.kind
   endif
   if has_key(a:tag, 'implementation')
     let heading.word .= ' <' . a:tag.implementation . '>'
   endif
   return ignore ? {} : heading
+endfunction
+
+function! s:get_expanded(context, lnum, macro)
+  let line = a:context.lines[a:lnum]
+  let expanded = matchstr(line, a:macro . '\%(([^)]*)\)\=\s\+\zs.*')
+  let lnum = a:lnum + 1
+  while strlen(expanded) < 10 && expanded =~ '\\\s*$'
+    let expanded .= substitute(a:context.lines[lnum], '^\s*', ' ', '')
+    let lnum += 1
+  endwhile
+  let expanded = substitute(expanded, '\\\s*$', ' ...', '')
+  let expanded = substitute(expanded, '\s*\\\s*', ' ', 'g')
+  return expanded
 endfunction
 
 let s:Ctags.lang_info.c = copy(s:Ctags.lang_info.cpp)
@@ -436,38 +452,5 @@ let s:Ctags.lang_info.java = {
       \ 'scope_kinds'  : ['interface', 'class', 'enum'],
       \ 'scope_delim'  : '.',
       \ }
-
-"-----------------------------------------------------------------------------
-" Python
-"
-"  [c] classes
-"  [f] functions
-"  [m] class members
-"   v  variables
-"   i  imports
-"
-let s:Ctags.lang_info.python = {
-      \ 'name': 'Python',
-      \ 'ctags_options': ' --python-kinds=cfm ',
-      \ 'scope_kinds'  : ['function', 'class', 'member'],
-      \ 'scope_delim'  : '.',
-      \ }
-function! s:Ctags.lang_info.python.create_heading(tag, context)
-  let heading = {
-        \ 'word' : a:tag.name,
-        \ 'type' : a:tag.kind,
-        \ 'lnum' : a:tag.lnum,
-        \ }
-  let ignore = 0
-  if heading.type =~# '^\%(function\|member\)'
-    let heading.word .= ' ' . s:get_param_list(a:context, a:tag.lnum)
-  elseif heading.type ==# 'variable'
-    " NOTE: ctags always generates tags for variables.
-    let ignore = 1
-  else
-    let heading.word .= ' : ' . a:tag.kind
-  endif
-  return ignore ? {} : heading
-endfunction
 
 " vim: filetype=vim

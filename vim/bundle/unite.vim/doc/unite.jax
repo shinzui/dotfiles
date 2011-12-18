@@ -1,6 +1,6 @@
-*unite.txt*	すべてのsourceを統合する
+*unite.txt*	すべてのsourceを統合する究極のインタフェース
 
-Version: 3.0
+Version: 3.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 Japanese Documentation Author: naoina
 License: MIT license  {{{
@@ -101,6 +101,10 @@ uniteを起動すると、デフォルトの状態ではウィンドウが水平
 <
 上記は hogeにマッチかつ、piyoにマッチする候補にマッチする。
 
+ORマッチングは"|"を用いれば可能である。
+>
+	hoge|piyo
+<
 除外パターンを!で記述できる。例えば
 >
 	hoge !piyo
@@ -166,6 +170,7 @@ http://www.ustream.tv/recorded/11240673
 		バッファ名を付けることで、|unite#set_substitute_pattern()|など
 		の設定を共通化することができる。指定しないと、'default'が使われ
 		る。
+		Note: バッファ名にスペースを含めてはならない。
 
 						*unite-options-input*
 		-input={input-text}
@@ -259,6 +264,14 @@ http://www.ustream.tv/recorded/11240673
 		-toggle
 		同一バッファ名のuniteウインドウが表示されている場合は、閉じる。
 
+						*unite-options-quick-match*
+		-quick-match
+		クイックマッチモードで開始する。
+
+						*unite-options-create*
+		-create
+		既に開いているuniteバッファは再利用せず、新しく生成する。
+
 :UniteWithCurrentDir [{options}] {sources}	*:UniteWithCurrentDir*
 		初期の絞込みテキストが現在のディレクトリである他は|:Unite|と同
 		一である。
@@ -280,17 +293,32 @@ http://www.ustream.tv/recorded/11240673
 		|:UniteWithInput|と同じであるが、入力する文字列はデイレクトリと
 		みなされ、自動的に変換される。
 
-:UniteResume [{options}] [{buffer-name}]		*:UniteResume*
+:UniteResume [{options}] [{buffer-name}]	*:UniteResume*
 		以前開いた{buffer-name}という名前のuniteバッファを再利用する。
 		{buffer-name}を省略すると、以前使用したバッファを再利用する。
 		絞込みテキストや候補はそのままの状態となる。
 		{options}を与えると、context情報を上書きする。
+
+:UniteClose {buffer-name}			*:UniteClose*
+		{buffer-name}という名前のuniteバッファを閉じる。開かれていなけ
+		れば何もしない。
 
 sourceのコマンド				*unite-sources-commands*
 
 :UniteBookmarkAdd [{file}]			*:UniteBookmarkAdd*
 		ブックマークリストにファイルを追加する。引数が指定されなかった
 		場合、現在のファイルの現在位置が記録される。
+
+:UniteSessionSave [{session-name}]		*:UniteSessionSave*
+		{session-name}にセッションデータを保存する。
+		もし{session-name}が省略された場合、|v:this_session|か
+		|g:unite_source_session_default_session_name|を使用する。
+
+:UniteSessionLoad [{session-name}]		*:UniteSessionLoad*
+		{session-name}からセッションデータを読み出す。
+		もし{session-name}が省略された場合、|v:this_session|か
+		|g:unite_source_session_default_session_name|を使用する。
+		セッションデータが存在しない場合、自動的に作成する。
 
 ------------------------------------------------------------------------------
 変数						*unite-variables*
@@ -467,6 +495,14 @@ g:unite_source_grep_max_candidates		*g:unite_source_grep_max_candidates*
 
 		初期値は100である。
 
+g:unite_source_grep_ignore_pattern		*g:unite_source_grep_ignore_pattern*
+		|unite-source-grep|の候補に表示しないファイルの正規表現パター
+		ンを指定する。マッチングはファイルのフルパスに対して行われる。
+		この変数が空文字列以外であれば、指定した正規表現で結果をフィル
+		タリングする。
+
+		初期値は autoload/unite/sources/grep.vim を参照。
+
 g:unite_source_find_command			*g:unite_source_find_command*
 		"find"コマンドを指定する。
 
@@ -476,6 +512,14 @@ g:unite_source_find_max_candidates		*g:unite_source_find_max_candidates*
 		|unite-source-find|の候補の最大数を指定する。
 
 		初期値は100である。
+
+g:unite_source_find_ignore_pattern		*g:unite_source_find_ignore_pattern*
+		|unite-source-find|の候補に表示しないファイルの正規表現パター
+		ンを指定する。マッチングはファイルのフルパスに対して行われる。
+		この変数が空文字列以外であれば、指定した正規表現で結果をフィル
+		タリングする。
+
+		初期値は autoload/unite/sources/find.vim を参照。
 
 g:unite_source_line_enable_highlight		*g:unite_source_line_enable_highlight*
 		検索キーワードをハイライトするか制御する。
@@ -520,9 +564,47 @@ g:unite_source_alias_aliases			*g:unite_source_alias_aliases*
 <
 		初期値は{}である。
 
+g:unite_source_menu_menus			*g:unite_source_menu_menus*
+		|unite-source-menu|が使用するメニューを定義する。
+		この変数は辞書であり、キーとして定義するmenuの名前、
+		値として次の属性を持つものである。
+
+		candidates		(リストか辞書)	(必須)
+		menuの中身となる候補を定義する。
+		この属性は辞書でもよいが、キーは無視される。
+
+		map			(関数)		(任意)
+		この属性が与えられている場合、map(key, value)の処理結果が
+		candidatesとなる。
+
+		description		(文字列)	(任意)
+		menuの説明用文字列。
+
+		例えば、次の設定では"test"というmenuが定義される。
+>
+		let g:unite_source_menu_menus = {}
+		let g:unite_source_menu_menus.test = {
+		      \     'description' : 'Test menu',
+		      \ }
+		let g:unite_source_menu_menus.test.candidates = {
+		      \       'ghci'      : 'VimShellInteractive ghci',
+		      \       'python'    : 'VimShellInteractive python',
+		      \       'Unite Beautiful Attack' : 'Unite -auto-preview colorscheme',
+		      \     }
+		function g:unite_source_menu_menus.test.map(key, value)
+		  return {
+		        \       'word' : a:key, 'kind' : 'command',
+		        \       'action__command' : a:value,
+		        \     }
+		endfunction
+		
+		nnoremap <silent> fm  :<C-u>Unite menu:test<CR>
+<
+		初期値は{}である。
+
 g:unite_source_history_yank_enable		*g:unite_source_history_yank_enable*
-		|unite-source-history/yank|を有効化するかどうか決定する
-		。この変数が定義され、値が0以外なら有効化される。値は
+		|unite-source-history/yank|を有効化するかどうか決定する。
+		この変数が定義され、値が0以外なら有効化される。値は
 		.vimrc内でセットしなければならない。
 
 		この変数はデフォルトで定義されない。
@@ -532,6 +614,28 @@ g:unite_source_history_yank_limit		*g:unite_source_history_yank_limit*
 		する。
 		
 		初期値は100である。
+
+g:unite_source_session_default_session_name	*g:unite_source_session_default_session_name*
+		デフォルトで使用されるセッション名。
+		
+		初期値は"default"である。
+
+g:unite_source_session_path			*g:unite_source_session_path*
+		セッションを保存する基準となるパス。
+		
+		初期値は|g:unite_data_directory|. '/session'である。
+
+g:unite_source_session_options			*g:unite_source_session_options*
+		内部で|:mksession|を実行するときに保存するオプション。
+		設定できる値は'sessionoptions'を参照せよ。
+		
+		初期値は"blank,buffers,curdir,folds,help,tabpages,winsize"である。
+
+g:unite_source_session_enable_auto_save		*g:unite_source_session_enable_auto_save*
+		セッションを自動的に保存するかどうか指定する。
+		Note: この変数は.vimrc内でセットされなければならない。
+		
+		初期値は"0"である。
 
 kindの変数					*unite-kinds-variables*
 
@@ -560,7 +664,10 @@ g:unite_kind_openable_persist_open_blink_time	*g:unite_kind_openable_persist_ope
 ノーマルモードマッピング
 
 <Plug>(unite_exit)				*<Plug>(unite_exit)*
-		uniteを終了する。
+		uniteを終了する。前のuniteバッファメニューは復元される。
+
+<Plug>(unite_all_exit)				*<Plug>(unite_all_exit)*
+		uniteバッファメニューを全て閉じ、uniteを終了する。
 
 <Plug>(unite_restart)				*<Plug>(unite_restart)*
 		uniteを再起動する。
@@ -661,6 +768,9 @@ g:unite_kind_openable_persist_open_blink_time	*g:unite_kind_openable_persist_ope
 <Plug>(unite_toggle_max_candidates)		*<Plug>(unite_toggle_max_candidates)*
 		uniteバッファのmax_candidatesの有効化・無効化をトグルする。
 
+<Plug>(unite_quick_help)			*<Plug>(unite_quick_help)*
+		uniteバッファのマッピングを見る。
+
 インサートモードマッピング
 
 <Plug>(unite_exit)				*i_<Plug>(unite_exit)*
@@ -755,9 +865,11 @@ g:unite_kind_openable_persist_open_blink_time	*g:unite_kind_openable_persist_ope
 --------	-----------------------------
 i		|<Plug>(unite_insert_enter)|
 I		|<Plug>(unite_insert_head)|
-a		|<Plug>(unite_append_enter)|
+a		候補を選択している場合は|<Plug>(unite_choose_action)|アクション、
+		そうでなければ|<Plug>(unite_append_enter)|
 A		|<Plug>(unite_append_end)|
 q		|<Plug>(unite_exit)|
+Q		|<Plug>(unite_all_exit)|
 <C-r>		|<Plug>(unite_restart)|
 <Space>		|<Plug>(unite_toggle_mark_current_candidate)|
 *		|<Plug>(unite_toggle_mark_all_candidates)|
@@ -775,6 +887,7 @@ k		|<Plug>(unite_loop_cursor_up)|
 <Up>		|<Plug>(unite_loop_cursor_up)|
 J		|<Plug>(unite_skip_cursor_down)|
 K		|<Plug>(unite_skip_cursor_up)|
+?		|<Plug>(unite_quick_help)|
 <CR>		候補を選択している場合は default アクションの実行
 d		候補を選択している場合は delete アクションの実行
 b		候補を選択している場合は bookmark アクションの実行
@@ -896,9 +1009,9 @@ unite#smart_map({narrow-map}, {select-map})			*unite#smart_map()*
 		inoremap <buffer><expr> ' unite#smart_map("'", unite#do_action('preview'))
 <
 unite#mappings#set_current_filters({filters})			*unite#mappings#set_current_filters()*
-		|unite#set_buffer_name_option()|で設定された、現在のuniteバッフ
-		ァのfilterを動的に変更する。以下のように、キーマッピングとして
-		呼び出すことも可能である。
+		|unite#set_profile()|で設定された、現在のuniteバッファのfilter
+		を動的に変更する。以下のように、キーマッピングとして呼び出すこ
+		とも可能である。
 >
   nnoremap <buffer><expr> S      unite#mappings#set_current_filters(
         \ empty(unite#mappings#get_current_filters()) ? ['sorter_reverse'] : [])
@@ -906,12 +1019,12 @@ unite#mappings#set_current_filters({filters})			*unite#mappings#set_current_filt
 unite#mappings#get_current_filters()				*unite#mappings#get_current_filters()*
 		現在のuniteバッファのfilterを取得する。
 
-unite#set_substitute_pattern({buffer-name}, {pattern}, {subst} [, {priority}])
+unite#set_substitute_pattern({profile-name}, {pattern}, {subst} [, {priority}])
 						*unite#set_substitute_pattern()*
-		uniteのバッファ名{buffer-name}における絞込みテキストの置換パタ
-		ーンを指定する。{buffer-name}を""とすると、"default"となり、
+		uniteのバッファ名{profile-name}における絞込みテキストの置換パタ
+		ーンを指定する。{profile-name}を""とすると、"default"となり、
 		|:Unite|で-buffer-name=を省略したときに使われるbuffer-nameと同
-		じになる。{buffer-name}は","区切りで複数指定ができる。
+		じになる。{profile-name}は","区切りで複数指定ができる。
 		{pattern}は置換対象の正規表現、{subst}は置換する文字列である。
 		同じ{pattern}を複数回指定すると、設定は上書きされる。
 		{subst}を""とすると、{pattern}は無効化される。{priority}とは置
@@ -928,7 +1041,7 @@ unite#set_substitute_pattern({buffer-name}, {pattern}, {subst} [, {priority}])
 		上の設定は/を越えずに曖昧検索をするが、下の場合は/を越えて曖昧
 		検索することができる。
 		
-		初期値は次のように設定されていて、buffer_nameがfilesのバッファ
+		初期値は次のように設定されていて、profile_nameがfilesのバッファ
 		において、~を$HOME、/は部分マッチできるように、ワイルドカードを
 		付加するようになっている。
 >
@@ -938,16 +1051,22 @@ unite#set_substitute_pattern({buffer-name}, {pattern}, {subst} [, {priority}])
 		call unite#set_substitute_pattern('files', '/\ze[^~.*]', '/*', 100)
 		call unite#set_substitute_pattern('files', '\.', '*.', 1000)
 <
-unite#get_substitute_pattern({buffer-name})
+		{subst}にリストを与えると、複数の絞り込みテキストから検索することができる。
+		Note: リストに置換されるのは一度のみである。
+>
+		call unite#set_substitute_pattern('files', '^\.v/',
+		\ [expand('~/.vim/'), unite#util#substitute_path_separator($HOME) . '/.bundle/*/'], 1000)
+<
+unite#get_substitute_pattern({profile-name})
 						*unite#get_substitute_pattern()*
-		uniteのバッファ名{buffer-name}における絞込みテキストの置換パタ
-		ーンを取得する。{buffer-name}に置換パターンが定義されていない
+		uniteのバッファ名{profile-name}における絞込みテキストの置換パタ
+		ーンを取得する。{profile-name}に置換パターンが定義されていない
 		と、エラーになる。デバッグ用である。
 
-unite#set_buffer_name_option({buffer-name}, {option-name}, {value})
-						*unite#set_buffer_name_option()*
-		uniteのバッファ名{buffer-name}における{option-name}のオプショ
-		ンを{value}に設定する。
+unite#set_profile({profile-name}, {option-name}, {value})
+						*unite#set_profile()*
+		uniteのプロファイル名{buffer-name}における{option-name}のオプシ
+		ョンを{value}に設定する。
 		
 		現在、次のオプション名が有効である。
 		
@@ -965,12 +1084,18 @@ unite#set_buffer_name_option({buffer-name}, {option-name}, {value})
 		ignorecase			(数値)
 		uniteバッファで一時的にセットされる'ignorecase'オプションの値を
 		決定する。省略すると、'ignorecase'の値と同じになる。
-		ただし、buffer_nameが"files"の場合は初期値が"1"になっている。
+		ただし、profile_nameが"files"の場合は初期値が"1"になっている。
 		
 		smartcase			(数値)
 		大文字が入力されているときに、'ignorecase'オプションの値を無視
 		するかどうか決定する。省略すると、'smartcase'の値と同じになる。
-		ただし、buffer_nameが"files"の場合は初期値が"0"になっている。
+		ただし、profile_nameが"files"の場合は初期値が"0"になっている。
+
+unite#set_buffer_name_option({buffer-name}, {option-name}, {value})
+						*unite#set_buffer_name_option()*
+		この関数は以前のバージョンとの互換性のために残されている。使用
+		は推奨されない。代わりに|unite#set_profile()|を使用するべきであ
+		る。
 
 unite#custom_default_action({kind}, {default-action})
 						*unite#custom_default_action()*
@@ -992,7 +1117,8 @@ unite#custom_action({kind}, {name}, {action})
 		function! my_tabopen.func(candidates)
 		  call unite#take_action('tabopen', a:candidates)
 		
-		  let dir = isdirectory(a:candidate.word) ? a:candidate.word : fnamemodify(a:candidate.word, ':p:h')
+		  let dir = isdirectory(a:candidate.word) ?
+		  \ a:candidate.word : fnamemodify(a:candidate.word, ':p:h')
 		  execute g:unite_kind_openable_lcd_command '`=dir`'
 		endfunction
 		call unite#custom_action('file,buffer', 'tabopen', my_tabopen)
@@ -1109,14 +1235,14 @@ directory_mru	最近使用したカレントディレクトリを候補とする
 		列される。
 
 						*unite-source-file_rec*
-file_rec	入力された絞り込みテキストのディレクトリまたは、現在ディレクト
-		リ直下のファイルすべてを候補とする。ディレクトリや隠しファイル
-		は候補から除外される。候補が多すぎる場合はフリーズするかもしれ
-		ない。候補はsource内でキャッシュされるため、キャッシュを更新
-		するためには、|<Plug>(unite_redraw)|を用いる。
+file_rec	引数で与えられたディレクトリまたは、現在ディレクトリ直下のファ
+		イルを再帰的に(recursive)検索し、候補とする。ディレクトリや隠し
+		ファイルは候補から除外される。候補が多すぎる場合はフリーズする
+		かもしれない。候補はsource内でキャッシュされるため、キャッシュ
+		を更新するためには、|<Plug>(unite_redraw)|を用いる。
 
 		source引数：
-		1. 絞り込み文字列
+		1. 検索を開始するディレクトリ
 
 						*unite-source-file_rec/async*
 file_rec/async	|unite-source-file_rec|と同じだが、候補の取得を完全に非同期
@@ -1126,15 +1252,23 @@ file_rec/async	|unite-source-file_rec|と同じだが、候補の取得を完全
 		http://github.com/Shougo/vimproc/tree/master
 
 		source引数：
-		1. 絞り込み文字列
+		1. 検索を開始するディレクトリ
 
 						*unite-source-buffer*
 buffer		開いているバッファを候補とする。バッファは使用した順番に整列さ
 		れる。
+		引数1が"!"ならば、|buflisted()|でないバッファも表示する。
+		引数1が"?"ならば、|buflisted()|でないバッファのみ表示する。
+
+		source引数：
+		1. ! / ?
 
 						*unite-source-buffer_tab*
 buffer_tab	現在のタブで開いたバッファを候補とする。バッファは使用した順番
-		に整列される。
+		に整列される。引数はbuffer sourceと同じである。
+
+		source引数：
+		1. ! / ?
 
 						*unite-source-tab*
 tab		開いているタブを候補とする。t:cwdをカレントディレクトリ、
@@ -1155,6 +1289,10 @@ register	レジスタに保存されている文字列を候補とする。
 
 						*unite-source-bookmark*
 bookmark	ブックマークされたファイルやディレクトリを候補とする。
+		引数が省略されると、"default"が使用される。
+
+		source引数：
+		1. bookmarkファイル名
 
 						*unite-source-source*
 source		uniteのsource名そのものを候補とする。
@@ -1180,6 +1318,9 @@ command		VimのExコマンドを候補とする。
 
 						*unite-source-mapping*
 mapping		ユーザーが定義したマッピングを候補とする。
+
+		source引数：
+		1. ターゲットとなるバッファの番号
 
 						*unite-source-grep*
 grep		"grep"コマンドを実行した結果を候補とする。
@@ -1261,6 +1402,15 @@ alias		すでに存在するsourceの定義をコピーし、aliasのsourceを�
 		参照せよ。
 		Note: このsourceはtacroeによって作成された。
 
+						*unite-source-menu*
+menu		予め定義されたメニューを候補とする。いちいちsourceを定義する
+		必要がない。引数が与えられない場合、menuの一覧を候補とする。
+		メニューの作り方については、|g:unite_source_menu_menus|を参
+		照せよ。
+
+		source引数：
+		1. メニューの名前
+
 						*unite-source-history/yank*
 history/yank	ヤンクされたテキストの履歴を候補とする。
 		このsourceを使用するためには、
@@ -1268,6 +1418,13 @@ history/yank	ヤンクされたテキストの履歴を候補とする。
 		ない。
 		Note: このsourceは|g:unite_source_history_yank_enable|
 		が0か定義されていないときに無効化される。
+
+						*unite-source-process*
+process		プロセスリストを候補とする。
+		Note: このsourceには"ps"外部コマンドが必要である。
+
+						*unite-source-session*
+session		セッションリストを候補とする。
 
 ==============================================================================
 kind						*unite-kinds*
@@ -1407,6 +1564,9 @@ completion	補完
 
 						*unite-kind-source*
 source		unite.vimのsource
+		この候補を実行すると、現在のuniteバッファで指定したsourceが起動
+		される。unite.vimのバッファを閉じるともとのsourceが復元される。
+		uniteバッファを簡易的なメニューのように使用できる。
 
 			action__source_name	(文字列)	(必須)
 				実行するsourceの名前
@@ -1475,6 +1635,37 @@ matcher_fuzzy	ユーザーが入力したパターンを曖昧検索として、
 		call unite#custom_filters('file,buffer,file_rec',
 		\ ['matcher_fuzzy', 'sorter_default', 'converter_default'])
 <
+						*unite-filter-matcher_migemo*
+matcher_migemo	migemoを使用して、候補をフィルタリングするmatcher。"!"は否定と
+		なる。絞り込みにはwordを使用する。日本語が候補に含まれていなけ
+		れば意味はない。
+		
+		migemoについての詳しい解説は、こちらのページを参照せよ。
+		http://0xcc.net/migemo/
+		http://www.kaoriya.net/software/cmigemo
+		
+		Note: このfilterは|+migemo|が有効になっているか、"cmigemo"がシ
+		ステムにインストールされていなければ動作しない。
+		このfilterは|unite-filter-matcher_regexp|よりさらに動作が遅い。
+		特に、"cmigemo"を使用する場合は絞り込むごとに外部プロセスを起動
+		するため、さらに遅くなる。候補が数千もあるような場合には向かな
+		い。
+		
+		migemoの辞書ファイルは|+migemo|が有効化されている場合は、
+		'migemodict'を使用する。|+migemo|が有効化されていないか、
+		'migemodict'の値が不正な場合、matcher_migemoは辞書ファイルの自
+		動認識を試みる。
+		辞書ファイルを自動認識するパスは、$VIMもしくは'runtimepath'中の
+		"dict/'migemo/'.&encoding.'/migemo-dict'",
+		"dict/&encoding.'/migemo-dict'", "dict/migemo-dict"である。それ
+		でも見つからない場合、システムのmigemo辞書として、
+		"/usr/local/share/migemo/"から検索しようとする。
+
+		次の例は、line sourceにmatcher_migemoを適用する例である。
+>
+		call unite#custom_filters('line',
+		\ ['matcher_migemo', 'sorter_default', 'converter_default'])
+<
 						*unite-filter-sorter_default*
 sorter_default	|unite-filter-default|により呼び出される、デフォルトのsorter。
 		初期状態では、["sorter_nothing"]のsorterを呼び出す。
@@ -1532,6 +1723,7 @@ common					*unite-action-common*
 	yank_escape	エスケープした候補文字列をヤンクする
 	ex		候補をエスケープして、コマンドラインに入力した状態にする
 	insert		現在のバッファに文字列を挿入する
+	preview		候補の文字列を表示する
 
 openable					*unite-action-openable*
 オープン可能ファイルのインタフェースを定義している。内部でopenアクションを呼
@@ -1628,6 +1820,10 @@ completion					*unite-action-completion*
 uri						*unite-action-uri*
 	start		ファイルを関連付けで開く
 
+source						*unite-action-source*
+	start		sourceを起動する
+	edit		sourceの引数を変更する
+
 source別アクション
 
 file_mru					*unite-action-file_mru*
@@ -1643,6 +1839,16 @@ register					*unite-action-register*
 	edit		レジスタの中身を変更する
 	delete		レジスタの中身を空にする
 
+process						*unite-action-process*
+	sigterm		プロセスにSIGTERMを送る(デフォルト)
+	sigkill		プロセスにSIGKILLを送る
+
+session					*unite-action-session*
+	load		セッションを読み込む(デフォルト)
+	delete		セッションを削除する
+	open		セッションを編集する
+	rename		セッション名を変更する
+
 						*unite-default-action*
 デフォルトアクション
 
@@ -1655,6 +1861,7 @@ tab		open
 directory	narrow
 word		insert
 jump_list	open
+source		start
 
 ==============================================================================
 sourceの作成					*unite-create-source*
@@ -1896,6 +2103,10 @@ NOTATION					*unite-notation*
 			buffer_name		(文字列)
 				uniteバッファの名前。
 
+			profile_name		(文字列)
+				uniteバッファで使用するプロファイルの名前。
+				省略されると、buffer_nameと同じになる。
+
 			prompt			(文字列)
 				uniteバッファのプロンプト文字列。
 
@@ -1977,6 +2188,12 @@ NOTATION					*unite-notation*
 				候補が入力にマッチしたかどうか。省略すると1となる。
 				matcherによっては一部の候補を0にセットする。
 				これが0の場合、一部の移動時にスキップされる。
+
+			is_multiline		(数値)		(任意)
+				候補を複数行に分割するかどうか。省略すると0となる。
+				これが1の場合、abbr(abbrを省略している場合は
+				word)は改行文字で分割される。abbrが改行文字を含
+				まない場合、ウインドウ幅で自動的に分割される。
 
 			source__{name}		(不定)		(任意)
 				source独自の付加情報。source側で自由に使用でき
@@ -2179,7 +2396,12 @@ description		文字列		(任意)
 	" For optimize.
 	let g:unite_source_file_mru_filename_format = ''
 	
->
+	" For unite-session.
+	" Save session automatically.
+	"let g:unite_source_session_enable_auto_save = 1
+	" Load session automatically.
+	"autocmd VimEnter * UniteSessionLoad
+<
 ==============================================================================
 ユーザーのsource				*unite-user-sources*
 

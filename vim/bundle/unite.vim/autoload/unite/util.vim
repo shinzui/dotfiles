@@ -66,6 +66,9 @@ endfunction
 function! unite#util#get_last_status(...)
   return call(s:V.get_last_status, a:000)
 endfunction
+function! unite#util#get_last_errmsg()
+  return unite#util#has_vimproc() ? vimproc#get_last_errmsg() : ''
+endfunction
 function! unite#util#sort_by(...)
   return call(s:V.Data.List.sort_by, a:000)
 endfunction
@@ -140,6 +143,13 @@ function! unite#util#alternate_buffer()"{{{
   else
     bnext
   endif
+endfunction"}}}
+function! unite#util#is_cmdwin()"{{{
+  silent! noautocmd wincmd p
+  silent! noautocmd wincmd p
+
+  call unite#_resize_window()
+  return v:errmsg =~ '^E11:'
 endfunction"}}}
 
 let &cpo = s:save_cpo

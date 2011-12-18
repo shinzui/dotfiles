@@ -129,6 +129,8 @@ autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
 
 autocmd BufReadPost fugitive://* set bufhidden=delete
 
+autocmd User Rails Rnavcommand fabricator spec/fabricators -suffix=_fabricator.rb -default=model()
+
 "Windows
 map <C-h> <C-w>h
 map <C-j> <C-w>j
@@ -168,6 +170,7 @@ map <D-/> <plug>NERDCommenterToggle
 
 "Hammer
 let g:HammerQuiet=1 
+map <leader>p :Hammer<CR>
 
 " CTags
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>

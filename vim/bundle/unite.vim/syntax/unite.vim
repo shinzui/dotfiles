@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/unite.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Sep 2011.
+" Last Modified: 13 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,13 +45,13 @@ syntax match uniteSourceArgs /:\S\+/ contained
 syntax match uniteInputLine /\%2l.*/
       \ contains=uniteInputPrompt,uniteInputPromptError,uniteInputSpecial
 
-syntax match uniteQuickMatchLine /^.:.*/
+syntax match uniteQuickMatchLine /^.|.*/
       \ contains=uniteQuickMatchTrigger,uniteCandidateSourceName,uniteCandidateAbbr
 syntax match uniteMarkedLine /^\*.*/
 syntax match uniteNonMarkedLine /^- .*/
       \ contains=uniteCandidateMarker,uniteCandidateSourceName,uniteCandidateAbbr
 syntax match uniteCandidateMarker /^- / contained
-syntax match uniteQuickMatchTrigger /^.:/ contained
+syntax match uniteQuickMatchTrigger /^.|/ contained
 
 syntax region   uniteError   start=+!!!+ end=+!!!+ contains=uniteErrorHidden oneline
 if has('conceal')
@@ -72,6 +72,7 @@ highlight default link uniteQuickMatchTrigger  Special
 highlight default link uniteMarkedLine  Statement
 highlight default link uniteCandidateSourceName  Type
 highlight default link uniteCandidateMarker  Special
+highlight default link uniteCandidateInputKeyword  Function
 
 " The following definitions are for <Plug>(unite-choose-action).
 highlight default link uniteChooseAction  NONE

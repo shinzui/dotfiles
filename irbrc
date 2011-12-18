@@ -34,7 +34,7 @@ rescue LoadError
 end
 $console_extensions = []
 
-extend_console 'ap' do
+extend_console 'awesome_print' do
   alias pp ap
 end
 

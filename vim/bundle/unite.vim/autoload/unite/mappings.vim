@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 23 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,37 +30,75 @@ set cpo&vim
 " Define default mappings.
 function! unite#mappings#define_default_mappings()"{{{
   " Plugin keymappings"{{{
-  nnoremap <silent><buffer> <Plug>(unite_exit)  :<C-u>call <SID>exit()<CR>
-  nnoremap <silent><buffer> <Plug>(unite_choose_action)  :<C-u>call <SID>choose_action()<CR>
-  nnoremap <expr><buffer> <Plug>(unite_insert_enter)  <SID>insert_enter('i')
-  nnoremap <expr><buffer> <Plug>(unite_insert_head)   <SID>insert_enter('0'.(len(unite#get_current_unite().prompt)-1).'li')
-  nnoremap <expr><buffer> <Plug>(unite_append_enter)  <SID>insert_enter('a')
-  nnoremap <expr><buffer> <Plug>(unite_append_end)    <SID>insert_enter('A')
-  nnoremap <silent><buffer> <Plug>(unite_toggle_mark_current_candidate)  :<C-u>call <SID>toggle_mark()<CR>
-  nnoremap <silent><buffer> <Plug>(unite_redraw)  :<C-u>call <SID>redraw()<CR>
-  nnoremap <silent><buffer> <Plug>(unite_rotate_next_source)  :<C-u>call <SID>rotate_source(1)<CR>
-  nnoremap <silent><buffer> <Plug>(unite_rotate_previous_source)  :<C-u>call <SID>rotate_source(0)<CR>
-  nnoremap <silent><buffer> <Plug>(unite_print_candidate)  :<C-u>call <SID>print_candidate()<CR>
-  nnoremap <buffer><expr> <Plug>(unite_cursor_top)  unite#get_current_unite().prompt_linenr.'G0z.'
-  nnoremap <buffer><expr> <Plug>(unite_loop_cursor_down)  <SID>loop_cursor_down(0)
-  nnoremap <buffer><expr> <Plug>(unite_loop_cursor_up)  <SID>loop_cursor_up(0)
-  nnoremap <buffer><expr> <Plug>(unite_skip_cursor_down)  <SID>loop_cursor_down(1)
-  nnoremap <buffer><expr> <Plug>(unite_skip_cursor_up)  <SID>loop_cursor_up(1)
-  nnoremap <silent><buffer> <Plug>(unite_quick_match_default_action)  :<C-u>call <SID>quick_match()<CR>
-  nnoremap <silent><buffer> <Plug>(unite_input_directory)   :<C-u>call <SID>input_directory()<CR>
-  nnoremap <silent><buffer><expr> <Plug>(unite_do_default_action)   unite#do_action(unite#get_current_unite().context.default_action)
-  nnoremap <silent><buffer> <Plug>(unite_delete_backward_path)  :<C-u>call <SID>normal_delete_backward_path()<CR>
-  nnoremap <silent><buffer> <Plug>(unite_restart)  :<C-u>call <SID>restart()<CR>
-  nnoremap <buffer><silent> <Plug>(unite_toggle_mark_all_candidates)  :<C-u>call <SID>toggle_mark_candidates(0, len(unite#get_unite_candidates()) - 1)<CR>
-  nnoremap <buffer><silent> <Plug>(unite_toggle_transpose_window)  :<C-u>call <SID>toggle_transpose_window()<CR>
-  nnoremap <buffer><silent> <Plug>(unite_toggle_auto_preview)  :<C-u>call <SID>toggle_auto_preview()<CR>
-  nnoremap <buffer><silent> <Plug>(unite_narrowing_path)  :<C-u>call <SID>narrowing_path()<CR>
-  nnoremap <buffer><silent> <Plug>(unite_narrowing_input_history)  :<C-u>call <SID>narrowing_input_history()<CR>
-  nnoremap <buffer><silent> <Plug>(unite_toggle_max_candidates)  :<C-u>call <SID>toggle_max_candidates()<CR>
+  nnoremap <silent><buffer> <Plug>(unite_exit)
+        \ :<C-u>call <SID>exit()<CR>
+  nnoremap <silent><buffer> <Plug>(unite_all_exit)
+        \ :<C-u>call <SID>all_exit()<CR>
+  nnoremap <silent><buffer> <Plug>(unite_choose_action)
+        \ :<C-u>call <SID>choose_action()<CR>
+  nnoremap <expr><buffer> <Plug>(unite_insert_enter)
+        \ <SID>insert_enter('i')
+  nnoremap <expr><buffer> <Plug>(unite_insert_head)
+        \ <SID>insert_enter('0'.(len(unite#get_current_unite().prompt)-1).'li')
+  nnoremap <expr><buffer> <Plug>(unite_append_enter)
+        \ <SID>insert_enter('a')
+  nnoremap <expr><buffer> <Plug>(unite_append_end)
+        \ <SID>insert_enter('A')
+  nnoremap <silent><buffer> <Plug>(unite_toggle_mark_current_candidate)
+        \ :<C-u>call <SID>toggle_mark()<CR>
+  nnoremap <silent><buffer> <Plug>(unite_redraw)
+        \ :<C-u>call <SID>redraw()<CR>
+  nnoremap <silent><buffer> <Plug>(unite_rotate_next_source)
+        \ :<C-u>call <SID>rotate_source(1)<CR>
+  nnoremap <silent><buffer> <Plug>(unite_rotate_previous_source)
+        \ :<C-u>call <SID>rotate_source(0)<CR>
+  nnoremap <silent><buffer> <Plug>(unite_print_candidate)
+        \ :<C-u>call <SID>print_candidate()<CR>
+  nnoremap <buffer><expr> <Plug>(unite_cursor_top)
+        \ unite#get_current_unite().prompt_linenr.'G0z.'
+  nnoremap <buffer><expr> <Plug>(unite_loop_cursor_down)
+        \ <SID>loop_cursor_down(0)
+  nnoremap <buffer><expr> <Plug>(unite_loop_cursor_up)
+        \ <SID>loop_cursor_up(0)
+  nnoremap <buffer><expr> <Plug>(unite_skip_cursor_down)
+        \ <SID>loop_cursor_down(1)
+  nnoremap <buffer><expr> <Plug>(unite_skip_cursor_up)
+        \ <SID>loop_cursor_up(1)
+  nnoremap <silent><buffer> <Plug>(unite_quick_match_default_action)
+        \ :<C-u>call unite#mappings#_quick_match(0)<CR>
+  nnoremap <silent><buffer> <Plug>(unite_quick_match_choose_action)
+        \ :<C-u>call unite#mappings#_quick_match(1)<CR>
+  nnoremap <silent><buffer> <Plug>(unite_input_directory)
+        \ :<C-u>call <SID>input_directory()<CR>
+  nnoremap <silent><buffer><expr> <Plug>(unite_do_default_action)
+        \ unite#do_action(unite#get_current_unite().context.default_action)
+  nnoremap <silent><buffer> <Plug>(unite_delete_backward_path)
+        \ :<C-u>call <SID>normal_delete_backward_path()<CR>
+  nnoremap <silent><buffer> <Plug>(unite_restart)
+        \ :<C-u>call <SID>restart()<CR>
+  nnoremap <buffer><silent> <Plug>(unite_toggle_mark_all_candidates)
+        \ :<C-u>call <SID>toggle_mark_candidates(0,
+        \     len(unite#get_unite_candidates()) - 1)<CR>
+  nnoremap <buffer><silent> <Plug>(unite_toggle_transpose_window)
+        \ :<C-u>call <SID>toggle_transpose_window()<CR>
+  nnoremap <buffer><silent> <Plug>(unite_toggle_auto_preview)
+        \ :<C-u>call <SID>toggle_auto_preview()<CR>
+  nnoremap <buffer><silent> <Plug>(unite_narrowing_path)
+        \ :<C-u>call <SID>narrowing_path()<CR>
+  nnoremap <buffer><silent> <Plug>(unite_narrowing_input_history)
+        \ :<C-u>call <SID>narrowing_input_history()<CR>
+  nnoremap <buffer><silent> <Plug>(unite_toggle_max_candidates)
+        \ :<C-u>call <SID>toggle_max_candidates()<CR>
+  nnoremap <buffer><silent> <Plug>(unite_quick_help)
+        \ :<C-u>call <SID>quick_help()<CR>
 
-  vnoremap <buffer><silent> <Plug>(unite_toggle_mark_selected_candidates)  :<C-u>call <SID>toggle_mark_candidates(getpos("'<")[1] - unite#get_current_unite().prompt_linenr-1, getpos("'>")[1] - unite#get_current_unite().prompt_linenr - 1)<CR>
+  vnoremap <buffer><silent> <Plug>(unite_toggle_mark_selected_candidates)
+        \ :<C-u>call <SID>toggle_mark_candidates(getpos("'<")[1]
+        \  - unite#get_current_unite().prompt_linenr-1,
+        \ getpos("'>")[1] - unite#get_current_unite().prompt_linenr - 1)<CR>
 
-  inoremap <silent><buffer> <Plug>(unite_exit)  <ESC>:<C-u>call <SID>exit()<CR>
+  inoremap <silent><buffer> <Plug>(unite_exit)
+        \ <ESC>:<C-u>call <SID>exit()<CR>
   inoremap <silent><expr><buffer> <Plug>(unite_insert_leave)
         \ (line('.') <= unite#get_current_unite().prompt_linenr) ?
         \ "\<ESC>0".(unite#get_current_unite().prompt_linenr+1)."G" : "\<ESC>0"
@@ -70,9 +108,11 @@ function! unite#mappings#define_default_mappings()"{{{
   inoremap <expr><buffer> <Plug>(unite_delete_backward_line)
         \ repeat("\<C-h>", col('.')-(len(unite#get_current_unite().prompt)+1))
   inoremap <expr><buffer> <Plug>(unite_delete_backward_word)
-        \ col('.') <= (len(unite#get_current_unite().prompt)+1) ? '' : "\<C-w>"
+        \ col('.') <= (len(unite#get_current_unite().prompt)+1) ?
+        \ '' : "\<C-w>"
   inoremap <expr><buffer> <Plug>(unite_delete_backward_path)
-        \ col('.') <= (len(unite#get_current_unite().prompt)+1) ? '' : <SID>delete_backward_path()
+        \ col('.') <= (len(unite#get_current_unite().prompt)+1) ?
+        \ '' : <SID>delete_backward_path()
   inoremap <expr><buffer> <Plug>(unite_select_next_line)
         \ pumvisible() ? "\<C-n>" : <SID>loop_cursor_down(0)
   inoremap <expr><buffer> <Plug>(unite_select_previous_line)
@@ -85,17 +125,30 @@ function! unite#mappings#define_default_mappings()"{{{
         \ pumvisible() ? "\<PageDown>" : repeat("\<Down>", winheight(0))
   inoremap <expr><buffer> <Plug>(unite_select_previous_page)
         \ pumvisible() ? "\<PageUp>" : repeat("\<Up>", winheight(0))
-  inoremap <silent><buffer> <Plug>(unite_toggle_mark_current_candidate)  <C-o>:<C-u>call <SID>toggle_mark()<CR>
-  inoremap <silent><buffer> <Plug>(unite_choose_action)  <C-o>:<C-u>call <SID>choose_action()<CR>
-  inoremap <silent><buffer> <Plug>(unite_move_head)  <C-o>:<C-u>call <SID>insert_head()<CR>
-  inoremap <silent><buffer> <Plug>(unite_quick_match_default_action)  <C-o>:<C-u>call <SID>quick_match()<CR>
-  inoremap <silent><buffer> <Plug>(unite_input_directory)   <C-o>:<C-u>call <SID>input_directory()<CR>
-  inoremap <silent><buffer><expr> <Plug>(unite_do_default_action)   unite#do_action(unite#get_current_unite().context.default_action)
-  inoremap <buffer><silent> <Plug>(unite_toggle_transpose_window)  <C-o>:<C-u>call <SID>toggle_transpose_window()<CR>
-  inoremap <buffer><silent> <Plug>(unite_toggle_auto_preview)  <C-o>:<C-u>call <SID>toggle_auto_preview()<CR>
-  inoremap <buffer><silent> <Plug>(unite_narrowing_path)  <C-o>:<C-u>call <SID>narrowing_path()<CR>
-  inoremap <buffer><silent> <Plug>(unite_narrowing_input_history)  <C-o>:<C-u>call <SID>narrowing_input_history()<CR>
-  inoremap <buffer><silent> <Plug>(unite_toggle_max_candidates)  <C-o>:<C-u>call <SID>toggle_max_candidates()<CR>
+  inoremap <silent><buffer> <Plug>(unite_toggle_mark_current_candidate)
+        \ <C-o>:<C-u>call <SID>toggle_mark()<CR>
+  inoremap <silent><buffer> <Plug>(unite_choose_action)
+        \ <C-o>:<C-u>call <SID>choose_action()<CR>
+  inoremap <silent><buffer> <Plug>(unite_move_head)
+        \ <C-o>:<C-u>call <SID>insert_head()<CR>
+  inoremap <silent><buffer> <Plug>(unite_quick_match_default_action)
+        \ <C-o>:<C-u>call unite#mappings#_quick_match(0)<CR>
+  inoremap <silent><buffer> <Plug>(unite_quick_match_choose_action)
+        \ <C-o>:<C-u>call unite#mappings#_quick_match(1)<CR>
+  inoremap <silent><buffer> <Plug>(unite_input_directory)
+        \ <C-o>:<C-u>call <SID>input_directory()<CR>
+  inoremap <silent><buffer><expr> <Plug>(unite_do_default_action)
+        \ unite#do_action(unite#get_current_unite().context.default_action)
+  inoremap <buffer><silent> <Plug>(unite_toggle_transpose_window)
+        \ <C-o>:<C-u>call <SID>toggle_transpose_window()<CR>
+  inoremap <buffer><silent> <Plug>(unite_toggle_auto_preview)
+        \ <C-o>:<C-u>call <SID>toggle_auto_preview()<CR>
+  inoremap <buffer><silent> <Plug>(unite_narrowing_path)
+        \ <C-o>:<C-u>call <SID>narrowing_path()<CR>
+  inoremap <buffer><silent> <Plug>(unite_narrowing_input_history)
+        \ <C-o>:<C-u>call <SID>narrowing_input_history()<CR>
+  inoremap <buffer><silent> <Plug>(unite_toggle_max_candidates)
+        \ <C-o>:<C-u>call <SID>toggle_max_candidates()<CR>
   "}}}
 
   if exists('g:unite_no_default_keymappings') && g:unite_no_default_keymappings
@@ -105,9 +158,9 @@ function! unite#mappings#define_default_mappings()"{{{
   " Normal mode key-mappings.
   nmap <buffer> i         <Plug>(unite_insert_enter)
   nmap <buffer> I         <Plug>(unite_insert_head)
-  nmap <buffer> a         <Plug>(unite_append_enter)
   nmap <buffer> A         <Plug>(unite_append_end)
   nmap <buffer> q         <Plug>(unite_exit)
+  nmap <buffer> Q         <Plug>(unite_all_exit)
   nmap <buffer> <CR>      <Plug>(unite_do_default_action)
   nmap <buffer> <Space>   <Plug>(unite_toggle_mark_current_candidate)
   nmap <buffer> <Tab>     <Plug>(unite_choose_action)
@@ -126,17 +179,29 @@ function! unite#mappings#define_default_mappings()"{{{
   nmap <buffer> <C-r>     <Plug>(unite_restart)
   nmap <buffer> *         <Plug>(unite_toggle_mark_all_candidates)
   nmap <buffer> M         <Plug>(unite_toggle_max_candidates)
+  nmap <buffer> ?         <Plug>(unite_quick_help)
 
-  nnoremap <silent><buffer><expr> d   unite#smart_map('d', unite#do_action('delete'))
-  nnoremap <silent><buffer><expr> b   unite#smart_map('b', unite#do_action('bookmark'))
-  nnoremap <silent><buffer><expr> e   unite#smart_map('e', unite#do_action('edit'))
-  nnoremap <silent><buffer><expr> p   unite#do_action('preview')
-  nmap <silent><buffer><expr> x       unite#smart_map('x', "\<Plug>(unite_quick_match_default_action)")
-  nnoremap <silent><buffer><expr> t   unite#smart_map('t', unite#do_action('tabopen'))
-  inoremap <silent><buffer><expr> t   unite#smart_map('t', unite#do_action('tabopen'))
+  nmap <silent><buffer><expr> a
+        \ unite#smart_map("\<Plug>(unite_append_enter)",
+        \                 "\<Plug>(unite_choose_action)")
+  nnoremap <silent><buffer><expr> d
+        \ unite#smart_map('d', unite#do_action('delete'))
+  nnoremap <silent><buffer><expr> b
+        \ unite#smart_map('b', unite#do_action('bookmark'))
+  nnoremap <silent><buffer><expr> e
+        \ unite#smart_map('e', unite#do_action('edit'))
+  nnoremap <silent><buffer><expr> p
+        \ unite#do_action('preview')
+  nmap <silent><buffer><expr> x
+        \ unite#smart_map('x', "\<Plug>(unite_quick_match_default_action)")
+  nnoremap <silent><buffer><expr> t
+        \ unite#smart_map('t', unite#do_action('tabopen'))
+  inoremap <silent><buffer><expr> t
+        \ unite#smart_map('t', unite#do_action('tabopen'))
 
   " Visual mode key-mappings.
-  xmap <buffer> <Space>   <Plug>(unite_toggle_mark_selected_candidates)
+  xmap <buffer> <Space>
+        \ <Plug>(unite_toggle_mark_selected_candidates)
 
   " Insert mode key-mappings.
   imap <buffer> <TAB>     <Plug>(unite_choose_action)
@@ -154,23 +219,27 @@ function! unite#mappings#define_default_mappings()"{{{
   imap <buffer> <C-a>     <Plug>(unite_move_head)
   imap <buffer> <Home>    <Plug>(unite_move_head)
 
-  inoremap <silent><buffer><expr> d         unite#smart_map('d', unite#do_action('delete'))
-  inoremap <silent><buffer><expr> e         unite#smart_map('e', unite#do_action('edit'))
-  imap <silent><buffer><expr> <Space>       unite#smart_map(' ', "\<Plug>(unite_toggle_mark_current_candidate)")
-  imap <silent><buffer><expr> x             unite#smart_map('x', "\<Plug>(unite_quick_match_default_action)")
+  inoremap <silent><buffer><expr> d
+        \ unite#smart_map('d', unite#do_action('delete'))
+  inoremap <silent><buffer><expr> e
+        \ unite#smart_map('e', unite#do_action('edit'))
+  imap <silent><buffer><expr> <Space>
+        \ unite#smart_map(' ', "\<Plug>(unite_toggle_mark_current_candidate)")
+  imap <silent><buffer><expr> x
+        \ unite#smart_map('x', "\<Plug>(unite_quick_match_default_action)")
 endfunction"}}}
 
 function! unite#mappings#narrowing(word)"{{{
   setlocal modifiable
   let unite = unite#get_current_unite()
   let unite.input = escape(a:word, ' *')
-  call setline(unite#get_current_unite().prompt_linenr, unite#get_current_unite().prompt . unite#get_current_unite().input)
+  let prompt_linenr = unite.prompt_linenr
+  call setline(prompt_linenr, unite.prompt . unite.input)
   call unite#redraw()
+  execute prompt_linenr
   if unite.is_insert
-    execute unite#get_current_unite().prompt_linenr
     startinsert!
   else
-    execute unite#get_current_unite().prompt_linenr
     normal! 0z.
   endif
 endfunction"}}}
@@ -178,6 +247,7 @@ function! unite#mappings#do_action(action_name, ...)"{{{
   let candidates = get(a:000, 0, unite#get_marked_candidates())
   let new_context = get(a:000, 1, {})
   let is_clear_marks = get(a:000, 2, 1)
+  let sources = get(a:000, 3, {})
 
   let unite = unite#get_current_unite()
   if empty(candidates)
@@ -208,11 +278,13 @@ function! unite#mappings#do_action(action_name, ...)"{{{
     endfor
   endif
 
-  let action_tables = s:get_action_table(a:action_name, candidates)
+  let action_tables = s:get_action_table(
+        \ a:action_name, candidates, sources)
 
   if !empty(new_context)
     " Set new context.
-    let new_context = extend(deepcopy(unite#get_context()), new_context)
+    let new_context = extend(
+          \ deepcopy(unite#get_context()), new_context)
     let old_context = unite#set_context(new_context)
   endif
 
@@ -225,7 +297,7 @@ function! unite#mappings#do_action(action_name, ...)"{{{
   for table in action_tables
     " Check quit flag.
     if table.action.is_quit
-      call unite#quit_session()
+      call unite#all_quit_session(0)
       let is_quit = 1
     endif
 
@@ -265,11 +337,11 @@ function! unite#mappings#set_current_filters(filters)"{{{
   return mode() ==# 'i' ? "\<C-r>\<ESC>" : "g\<ESC>"
 endfunction"}}}
 
-function! s:get_action_table(action_name, candidates)"{{{
+function! s:get_action_table(action_name, candidates, sources)"{{{
   let action_tables = []
   let Self = unite#get_self_functions()[-1]
   for candidate in a:candidates
-    let action_table = s:get_candidate_action_table(candidate)
+    let action_table = s:get_candidate_action_table(candidate, a:sources)
 
     let action_name =
           \ a:action_name ==# 'default' ?
@@ -328,16 +400,19 @@ function! s:get_actions(candidates, sources)"{{{
 
   return actions
 endfunction"}}}
-function! s:get_candidate_action_table(candidate, ...)"{{{
+function! s:get_candidate_action_table(candidate, sources)"{{{
   let Self = unite#get_self_functions()[-1]
 
   return unite#get_action_table(a:candidate.source, a:candidate.kind, Self,
-        \ 0, get(a:000, 0, {}))
+        \ 0, a:sources)
 endfunction"}}}
 
 " key-mappings functions.
 function! s:exit()"{{{
   call unite#force_quit_session()
+endfunction"}}}
+function! s:all_exit()"{{{
+  call unite#all_quit_session()
 endfunction"}}}
 function! s:restart()"{{{
   let unite = unite#get_current_unite()
@@ -365,6 +440,10 @@ function! s:normal_delete_backward_path()"{{{
 endfunction"}}}
 function! s:toggle_mark()"{{{
   let candidate = unite#get_current_candidate()
+  if empty(candidate)
+    return
+  endif
+
   let candidate.unite__is_marked = !candidate.unite__is_marked
   let candidate.unite__marked_time = localtime()
 
@@ -393,10 +472,14 @@ function! s:toggle_mark_candidates(start, end)"{{{
     let cnt += 1
   endwhile
 endfunction"}}}
+function! s:quick_help()"{{{
+  let unite = unite#get_current_unite()
+
+  call unite#start_temporary([['mapping', bufnr('%')]], {}, 'mapping-help')
+endfunction"}}}
 function! s:choose_action()"{{{
   let unite = unite#get_current_unite()
   if line('$') < (unite.prompt_linenr+1)
-        \ || unite.context.temporary
     " Ignore.
     return
   endif
@@ -469,7 +552,7 @@ function! s:insert_selected_candidate()"{{{
   let candidate = unite#get_current_candidate()
   call unite#mappings#narrowing(candidate.word)
 endfunction"}}}
-function! s:quick_match()"{{{
+function! unite#mappings#_quick_match(is_choose)"{{{
   if !empty(unite#get_marked_candidates())
     call unite#util#print_error('Marked candidates is detected.')
     return
@@ -496,8 +579,13 @@ function! s:quick_match()"{{{
 
   if has_key(quick_match_table, char)
         \ && quick_match_table[char] < len(unite.candidates)
-    call unite#mappings#do_action(unite.context.default_action,
-          \ [ unite.candidates[quick_match_table[char]] ])
+    let candidates = [ unite.candidates[quick_match_table[char]] ]
+    if a:is_choose
+      call unite#mappings#_choose_action(candidates)
+    else
+      call unite#mappings#do_action(
+            \ unite.context.default_action, candidates)
+    endif
   else
     call unite#util#print_error('Canceled.')
   endif
@@ -520,9 +608,14 @@ function! s:loop_cursor_down(is_skip_not_matched)"{{{
     endif
   endif
 
-  let num = (line('.') <= prompt_linenr) ? 0 :
-        \ (line('.') - (prompt_linenr + 1))
+  let num = line('.') - (prompt_linenr + 1)
   let cnt = 1
+  if line('.') <= prompt_linenr
+    let cnt += prompt_linenr - line('.')
+  endif
+  if is_insert && line('.') == prompt_linenr
+    let cnt += 1
+  endif
 
   while 1
     let candidate = get(unite#get_unite_candidates(), num + cnt, {})
@@ -534,10 +627,6 @@ function! s:loop_cursor_down(is_skip_not_matched)"{{{
 
     break
   endwhile
-
-  if is_insert && line('.') == prompt_linenr
-    let cnt += 1
-  endif
 
   if is_insert
     return "\<Home>" . repeat("\<Down>", cnt)
@@ -558,12 +647,12 @@ function! s:loop_cursor_up(is_skip_not_matched)"{{{
     endif
   endif
 
-  let num = (line('.') <= prompt_linenr) ? 0 :
-        \ (line('.') - (prompt_linenr + 1))
-
+  let num = line('.') - (prompt_linenr + 1)
   let cnt = 1
-
-  if is_insert && line('.') == prompt_linenr + 2
+  if line('.') <= prompt_linenr
+    let cnt += prompt_linenr - line('.')
+  endif
+  if is_insert && line('.') == prompt_linenr+2
     let cnt += 1
   endif
 
@@ -680,7 +769,8 @@ function! s:source_action.gather_candidates(args, context)"{{{
         \ '"[action] candidates: ".v:val.abbr."(".v:val.source.")"'))
 
   " Process Alias.
-  let actions = s:get_actions(candidates, unite#get_context().source__sources)
+  let actions = s:get_actions(candidates,
+        \ unite#get_context().source__sources)
 
   " Uniq.
   let uniq_actions = {}
@@ -690,13 +780,17 @@ function! s:source_action.gather_candidates(args, context)"{{{
     endif
   endfor
 
-  let max = max(map(values(uniq_actions), 'len(v:val.name)'))
+  let max = max(map(values(actions), 'len(v:val.name)'))
+
+  let sources = map(copy(candidates), 'v:val.source')
 
   return sort(map(filter(values(uniq_actions), 'v:val.is_listed'), '{
-        \   "word": v:val.name,
-        \   "abbr": printf("%-' . max . 's -- %s", v:val.name, v:val.description),
-        \   "source__candidates": candidates,
-        \   "action__action": actions[v:val.name],
+        \   "word" : v:val.name,
+        \   "abbr" : printf("%-' . max . 's -- %s",
+        \       v:val.name, v:val.description),
+        \   "source__candidates" : candidates,
+        \   "action__action" : v:val,
+        \   "source__sources" : sources,
         \ }'), 's:compare_word')
 endfunction"}}}
 
@@ -711,7 +805,26 @@ let s:source_action.action_table.do = {
       \ 'description' : 'do action',
       \ }
 function! s:source_action.action_table.do.func(candidate)"{{{
-  call unite#mappings#do_action(a:candidate.word, a:candidate.source__candidates)
+  let context = unite#get_context()
+  call unite#mappings#do_action(a:candidate.word,
+   \ a:candidate.source__candidates, {}, 1,
+   \ context.source__sources)
+
+  " Check quit flag.
+  if !a:candidate.action__action.is_quit
+        \ && context.temporary
+    call unite#resume_from_temporary(context)
+
+    " Check invalidate cache flag.
+    if a:candidate.action__action.is_invalidate_cache
+      for source_name in a:candidate.source__sources
+        call unite#invalidate_cache(source_name)
+      endfor
+
+      call unite#force_redraw()
+      normal! zb
+    endif
+  endif
 endfunction"}}}
 "}}}
 "}}}
@@ -727,8 +840,8 @@ let s:source_input = {
 
 function! s:source_input.gather_candidates(args, context)"{{{
   let context = unite#get_context()
-  let inputs = unite#get_buffer_name_option(
-        \ context.old_buffer_info[0].buffer_name, 'unite__inputs')
+  let inputs = unite#get_profile(
+        \ context.old_buffer_info[0].profile_name, 'unite__inputs')
   let key = context.old_source_names_string
   if !has_key(inputs, key)
     return []
@@ -759,8 +872,8 @@ let s:source_input.action_table.delete = {
       \ }
 function! s:source_input.action_table.delete.func(candidates)"{{{
   let context = unite#get_context()
-  let inputs = unite#get_buffer_name_option(
-        \ context.old_buffer_info[0].buffer_name, 'unite__inputs')
+  let inputs = unite#get_profile(
+        \ context.old_buffer_info[0].profile_name, 'unite__inputs')
   let key = context.old_source_names_string
   if !has_key(inputs, key)
     return
