@@ -52,14 +52,14 @@ git_bundles = [
   "git://github.com/mattn/zencoding-vim.git",
   "git://github.com/tpope/vim-bundler.git",
   "git://github.com/tpope/gem-ctags.git",
-  "git://github.com/sjl/threesome.vim.git"
+  "git://github.com/sjl/threesome.vim.git",
+  "git://github.com/jeetsukumaran/vim-buffergator.git"
 ]
 
 
 vim_org_scripts = [
   ["IndexedSearch", "7062",  "plugin"],
   ["jquery",        "12107", "syntax"],
-  ["bufexplorer",   "12904", "zip"],
   ["taglist",       "7701",  "zip"],
   ["color-sampler", "12179", "zip"]
 ]

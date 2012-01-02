@@ -12,11 +12,11 @@
 
     
 
-    <link href="https://a248.e.akamai.net/assets.github.com/stylesheets/bundles/github-23473ca2d6000428460a536dc4d62ff131be973b.css" media="screen" rel="stylesheet" type="text/css" />
+    <link href="https://a248.e.akamai.net/assets.github.com/stylesheets/bundles/github-ce4abc8fb736cacb557664dcd8194a5486c74f6b.css" media="screen" rel="stylesheet" type="text/css" />
     
 
-    <script src="https://a248.e.akamai.net/assets.github.com/javascripts/bundles/jquery-f9e740d10a70e9aeef9e8c1511ea3b7dbcb3e417.js" type="text/javascript"></script>
-    <script src="https://a248.e.akamai.net/assets.github.com/javascripts/bundles/github-8d5b608448cb9156dcf4ed3af176b16419e5e834.js" type="text/javascript"></script>
+    <script src="https://a248.e.akamai.net/assets.github.com/javascripts/bundles/jquery-6c2aad85e5c2becfaac6d62ce0f290d10fa1725e.js" type="text/javascript"></script>
+    <script src="https://a248.e.akamai.net/assets.github.com/javascripts/bundles/github-724a1478428e953614c0459ba27f5d900fc109be.js" type="text/javascript"></script>
     
 
     
@@ -31,13 +31,16 @@
 
       <div id="header" class="true clearfix">
         <div class="container" class="clearfix">
-          <a class="logo" href="https://github.com">
-            <img class="blacktocat" src="/images/modules/header/blacktocat.png">
-            <img alt="GitHub" class="github-logo-4x" height="30" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov7@4x.png?1323882770" />
+          <a class="site-logo" href="https://github.com">
+            <!--[if IE]>
             <img alt="GitHub" class="github-logo" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov7.png?1323882770" />
+            <img alt="GitHub" class="github-logo-hover" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov7-hover.png?1324325405" />
+            <![endif]-->
+            <img alt="GitHub" class="github-logo-4x" height="30" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov7@4x.png?1323882770" />
+            <img alt="GitHub" class="github-logo-4x-hover" height="30" src="https://a248.e.akamai.net/assets.github.com/images/modules/header/logov7@4x-hover.png?1324325405" />
           </a>
 
-                <!--
+                  <!--
       make sure to use fully qualified URLs here since this nav
       is used on error pages on other domains
     -->
@@ -50,6 +53,8 @@
     </ul>
 
 
+
+          
         </div>
       </div>
 
@@ -139,9 +144,10 @@
 
           </div>
         </div>
-    <!-- footer -->
-    <div id="footer" >
-      
+
+      <!-- footer -->
+      <div id="footer" >
+        
   <div class="upper_footer">
      <div class="container" class="clearfix">
 
@@ -155,15 +161,17 @@
          <li><a href="https://github.com/features">Features</a></li>
          <li><a href="https://github.com/contact">Contact &amp; Support</a></li>
          <li><a href="https://github.com/training">Training</a></li>
+         <li><a href="http://enterprise.github.com/">GitHub Enterprise</a></li>
          <li><a href="http://status.github.com/">Site Status</a></li>
        </ul>
 
        <ul class="footer_nav">
          <h4>Tools</h4>
+         <li><a href="http://get.gaug.es/">Gauges: Analyze web traffic</a></li>
+         <li><a href="http://speakerdeck.com">Speakerdeck: Presentations</a></li>
+         <li><a href="https://gist.github.com">Gist: Code snippets</a></li>
          <li><a href="http://mac.github.com/">GitHub for Mac</a></li>
          <li><a href="http://mobile.github.com/">Issues for iPhone</a></li>
-         <li><a href="https://gist.github.com">Gist: Code Snippets</a></li>
-         <li><a href="http://enterprise.github.com/">GitHub Enterprise</a></li>
          <li><a href="http://jobs.github.com/">Job Board</a></li>
        </ul>
 
@@ -194,7 +202,7 @@
           <li><a href="https://github.com/security">Security</a></li>
       </ul>
 
-      <p>&copy; 2011 <span id="_rrt" title="0.02330s from fe5.rs.github.com">GitHub</span> Inc. All rights reserved.</p>
+      <p>&copy; 2012 <span id="_rrt" title="0.09836s from fe5.rs.github.com">GitHub</span> Inc. All rights reserved.</p>
     </div><!-- /#legal or /#legal_ie-->
 
       <div class="sponsor">
@@ -208,7 +216,7 @@
   </div><!-- /.site -->
 </div><!-- /.lower_footer -->
 
-    </div><!-- /#footer -->
+      </div><!-- /#footer -->
 
     
 

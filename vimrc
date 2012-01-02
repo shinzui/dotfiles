@@ -122,7 +122,7 @@ autocmd BufNewFile,BufRead {Rakefile,Gemfile,Thorfile,Vagrantfile} set filetype=
 autocmd BufNewFile,BufRead config.ru  set filetype=ruby
 autocmd BufNewFile,Bufread *.{md,markdown,mdown,mkd,mkdn} set filetype=markdown
 autocmd BufNewFile,Bufread *.yml.example set filetype=yaml
-autocmd BufNewFile,BufRead *.json  set filetype javascript
+autocmd BufNewFile,BufRead *.json  set filetype=javascript
 
 autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
 autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
@@ -199,3 +199,8 @@ map <Leader>z :ZoomWin<CR>
 
 "Current path
 cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
+
+"BufferGator
+let g:buffergator_viewport_split_policy="T"
+let g:buffergator_sort_regime="mru"
+let g:buffergator_split_size="10"
