@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: unite.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Dec 2011.
+" Last Modified: 10 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,14 +25,15 @@
 " Version: 3.1, for Vim 7.2
 "=============================================================================
 
-if v:version < 702
+if exists('g:loaded_unite')
+  finish
+elseif v:version < 702
   echoerr 'unite.vim does not work this version of Vim "' . v:version . '".'
   finish
-elseif exists('g:loaded_unite')
-  finish
-elseif $SUDO_USER != ''
-  echoerr '"sudo vim" is detected. Please use sudo.vim or other plugins instead.'
-  echoerr 'unite.vim is disabled.'
+elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
+      \ && $HOME !=# expand('~'.$USER)
+  echoerr '"sudo vim" and $HOME is not same to /root are detected.'
+        \.'Please use sudo.vim plugin instead of sudo command or set always_set_home in sudoers.'
   finish
 endif
 
@@ -75,25 +76,30 @@ let g:unite_abbr_highlight =
 let g:unite_cursor_line_highlight =
       \ get(g:, 'unite_cursor_line_highlight', 'PmenuSel')
 let g:unite_data_directory =
-      \ get(g:, 'unite_data_directory', expand('~/.unite'))
-if !isdirectory(fnamemodify(g:unite_data_directory, ':p'))
-  call mkdir(iconv(fnamemodify(g:unite_data_directory, ':p'),
-        \    &encoding, &termencoding), 'p')
+      \ substitute(fnamemodify(get(
+      \   g:, 'unite_data_directory', '~/.unite'),
+      \  ':p'), '\\', '/', 'g')
+if !isdirectory(g:unite_data_directory)
+  call mkdir(g:unite_data_directory)
 endif
 "}}}
 
 " Wrapper command.
-command! -nargs=+ -complete=customlist,unite#complete_source Unite call s:call_unite_empty(<q-args>)
+command! -nargs=+ -complete=customlist,unite#complete_source Unite
+      \ call s:call_unite_empty(<q-args>)
 function! s:call_unite_empty(args)"{{{
   let [args, options] = s:parse_options_args(a:args)
   call unite#start(args, options)
 endfunction"}}}
 
-command! -nargs=+ -complete=customlist,unite#complete_source UniteWithCurrentDir call s:call_unite_current_dir(<q-args>)
+command! -nargs=+ -complete=customlist,unite#complete_source UniteWithCurrentDir
+      \ call s:call_unite_current_dir(<q-args>)
 function! s:call_unite_current_dir(args)"{{{
   let [args, options] = s:parse_options_args(a:args)
   if !has_key(options, 'input')
-    let path = &filetype ==# 'vimfiler' ? b:vimfiler.current_dir : unite#substitute_path_separator(fnamemodify(getcwd(), ':p'))
+    let path = &filetype ==# 'vimfiler' ?
+          \ b:vimfiler.current_dir :
+          \ unite#substitute_path_separator(fnamemodify(getcwd(), ':p'))
     if path !~ '/$'
       let path .= '/'
     endif
@@ -103,11 +109,14 @@ function! s:call_unite_current_dir(args)"{{{
   call unite#start(args, options)
 endfunction"}}}
 
-command! -nargs=+ -complete=customlist,unite#complete_source UniteWithBufferDir call s:call_unite_buffer_dir(<q-args>)
+command! -nargs=+ -complete=customlist,unite#complete_source UniteWithBufferDir
+      \ call s:call_unite_buffer_dir(<q-args>)
 function! s:call_unite_buffer_dir(args)"{{{
   let [args, options] = s:parse_options_args(a:args)
   if !has_key(options, 'input')
-    let path = &filetype ==# 'vimfiler' ? b:vimfiler.current_dir : unite#substitute_path_separator(fnamemodify(bufname('%'), ':p:h'))
+    let path = &filetype ==# 'vimfiler' ?
+          \ b:vimfiler.current_dir :
+          \ unite#substitute_path_separator(fnamemodify(bufname('%'), ':p:h'))
     if path !~ '/$'
       let path .= '/'
     endif

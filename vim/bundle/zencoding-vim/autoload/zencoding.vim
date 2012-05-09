@@ -1,7 +1,7 @@
 "=============================================================================
 " zencoding.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 15-Dec-2011.
+" Last Change: 28-Mar-2012.
 
 let s:save_cpo = &cpo
 set cpo&vim
@@ -69,9 +69,9 @@ function! s:zen_parseIntoTree(abbr, type)
       let rabbr = substitute(abbr, '\([a-zA-Z][a-zA-Z0-9+]*\)+\([()]\|$\)', '\="(".s:zen_getExpandos(type, submatch(1)).")".submatch(2)', 'i')
     endif
     let abbr = rabbr
-    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|{.\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   else
-    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\+\-]*\|{[^}]\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
+    let mx = '\([+>]\|<\+\)\{-}\s*\((*\)\{-}\s*\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\+\-]*\|{.\+}\)\(\%(\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)\|\%(\[[^\]]\+\]\)\|\%(\.{[{}a-zA-Z0-9_\-\$]\+\|\.[a-zA-Z0-9_\-\$]\+\)\)*\)\%(\({[^}]\+}\)\)\{0,1}\%(\s*\*\s*\([0-9]\+\)\s*\)\{0,1}\(\%(\s*)\%(\s*\*\s*[0-9]\+\s*\)\{0,1}\)*\)'
   endif
   let root = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0, 'important': 0 }
   let parent = root
@@ -298,18 +298,19 @@ endfunction
 
 function! s:zen_parseTag(tag)
   let current = { 'name': '', 'attr': {}, 'child': [], 'snippet': '', 'multiplier': 1, 'parent': {}, 'value': '', 'pos': 0 }
-  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|["''][^"'']*["'']\)\s*\)*\)\(/\{0,1}\)>'
+  let mx = '<\([a-zA-Z][a-zA-Z0-9]*\)\(\%(\s[a-zA-Z][a-zA-Z0-9]\+=\%([^"'' \t]\+\|"[^"]\{-}"\|''[^'']\{-}''\)\s*\)*\)\(/\{0,1}\)>'
   let match = matchstr(a:tag, mx)
   let current.name = substitute(match, mx, '\1', 'i')
   let attrs = substitute(match, mx, '\2', 'i')
-  let mx = '\([a-zA-Z0-9]\+\)=["'']\{0,1}\([^"'' \t]*\|[^"'']\+\)["'']\{0,1}'
+  let mx = '\([a-zA-Z0-9]\+\)=\%(\([^"'' \t]\+\)\|"\([^"]\{-}\)"\|''\([^'']\{-}\)''\)'
   while len(attrs) > 0
     let match = matchstr(attrs, mx)
     if len(match) == 0
       break
     endif
-    let name = substitute(match, mx, '\1', 'i')
-    let value = substitute(match, mx, '\2', 'i')
+    let attr_match = matchlist(match, mx)
+    let name = attr_match[1]
+    let value = len(attr_match[2]) ? attr_match[2] : attr_match[3]
     let current.attr[name] = value
     let attrs = attrs[stridx(attrs, match) + len(match):]
   endwhile
@@ -684,7 +685,7 @@ function! zencoding#expandAbbr(mode) range
     if len(leader) == 0
       return
     endif
-    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
     if leader =~ mx
       let filters = split(matchstr(leader, mx)[1:], '\s*,\s*')
       let leader = substitute(leader, mx, '', '')
@@ -702,7 +703,11 @@ function! zencoding#expandAbbr(mode) range
       let part = substitute(line, '^\s*', '', '')
       for n in range(a:firstline, a:lastline)
         let lline = getline(n)
-        let lpart = substitute(lline, '^\s*', '', '')
+        let lpart = substitute(lline, '^\s\+', '', '')
+        if s:zen_useFilter(filters, 't')
+          let lpart = substitute(lpart, '^[0-9.-]\+\s\+', '', '')
+          let lpart = substitute(lpart, '\s\+$', '', '')
+        endif
         let expand = substitute(expand, '\$line'.(n-a:firstline+1).'\$', lpart, 'g')
       endfor
       let expand = substitute(expand, '\$line\d*\$', '', 'g')
@@ -740,7 +745,7 @@ function! zencoding#expandAbbr(mode) range
       let line = matchstr(line, '^\(.*\%'.col('.').'c.\)')
     endif
     if a:mode == 1
-      let part = matchstr(line, '\([a-zA-Z0-9_\@:|]\+\)$')
+      let part = matchstr(line, '\([a-zA-Z0-9:_\-\@|]\+\)$')
     else
       let part = matchstr(line, '\(\S.*\)$')
       if s:zen_isExtends(type, "html")
@@ -753,7 +758,7 @@ function! zencoding#expandAbbr(mode) range
     endif
     let rest = getline('.')[len(line):]
     let str = part
-    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
+    let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
     if str =~ mx
       let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
       let str = substitute(str, mx, '', '')
@@ -780,7 +785,7 @@ function! zencoding#expandAbbr(mode) range
       " TODO: on windows, %z/%Z is 'Tokyo(Standard)'
       let expand = substitute(expand, '${datetime}', strftime("%Y-%m-%dT%H:%M:%S %z"), 'g')
     endif
-    if a:mode != 0 && visualmode() ==# 'v'
+    if a:mode == 2 && visualmode() ==# 'v'
       if a:firstline == a:lastline
         let expand = substitute(expand, '\n\s*', '', 'g')
       else
@@ -934,6 +939,16 @@ function! zencoding#toggleComment()
       let pos2 = searchpairpos('<'. tag_name[1:] . '>', '', '</' . tag_name[1:] . '>', 'bnW')
       let pos1 = searchpos('>', 'cneW')
       let block = [pos2, pos1]
+    elseif tag_name =~ '/$'
+      if !s:point_in_region(orgpos[1:2], block)
+        " it's broken tree
+        call setpos('.', orgpos)
+        let block = s:search_region('>', '<')
+        let content = '><!-- ' . s:get_content(block)[1:-2] . ' --><'
+        call s:change_content(block, content)
+        silent! call setpos('.', orgpos)
+        return
+      endif
     else
       call setpos('.', [0, pos2[0], pos2[1], 0])
       let pos2 = searchpairpos('<'. tag_name . '>', '', '</' . tag_name . '>', 'nW')
@@ -957,10 +972,10 @@ endfunction
 function! zencoding#splitJoinTag()
   let curpos = getpos('.')
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:]*\)[^>]*>'
+    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:]*\).*$', '\1', '')
+    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
     if content[-2:] == '/>' && s:cursor_in_region(block)
       let content = content[:-3] . "></" . tag_name . '>'
@@ -994,13 +1009,20 @@ function! zencoding#splitJoinTag()
   endwhile
 endfunction
 
+function! zencoding#mergeLines() range
+  let lines = join(map(getline(a:firstline, a:lastline), 'matchstr(v:val, "^\\s*\\zs.*\\ze\\s*$")'), '')
+  let indent = substitute(getline('.'), '^\(\s*\).*', '\1', '')
+  silent! exe "normal! gvc"
+  call setline('.', indent . lines)
+endfunction
+
 function! zencoding#removeTag()
   let curpos = getpos('.')
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     let pos1 = searchpos(mx, 'bcnW')
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
+    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9:_\-]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
     if content[-2:] == '/>' && s:cursor_in_region(block)
       call s:change_content(block, '')
@@ -1040,10 +1062,10 @@ function! zencoding#balanceTag(flag) range
     let curpos = getpos('.')
   endif
   while 1
-    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9]*\)[^>]*>'
+    let mx = '<\(/\{0,1}[a-zA-Z][a-zA-Z0-9:_\-]*\)[^>]*>'
     let pos1 = searchpos(mx, (a:flag == -2 ? 'nW' : 'bcnW'))
     let content = matchstr(getline(pos1[0])[pos1[1]-1:], mx)
-    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9]*\).*$', '\1', '')
+    let tag_name = substitute(content, '^<\(/\{0,1}[a-zA-Z0-9:_\-]*\).*$', '\1', '')
     let block = [pos1, [pos1[0], pos1[1] + len(content) - 1]]
     if !s:region_is_valid(block)
       break
@@ -1253,7 +1275,7 @@ endfunction
 "   baz:end
 "   --------------------
 function! s:change_content(region, content)
-  let newlines = split(a:content, '\n')
+  let newlines = split(a:content, '\n', 1)
   let oldlines = getline(a:region[0][0], a:region[1][0])
   call setpos('.', [0, a:region[0][0], a:region[0][1], 0])
   silent! exe "delete ".(a:region[1][0] - a:region[0][0])
@@ -1262,7 +1284,7 @@ function! s:change_content(region, content)
     if a:region[0][1] > 1
       let tmp = oldlines[0][:a:region[0][1]-2]
     endif
-    if a:region[1][1] > 1
+    if a:region[1][1] >= 1
       let tmp .= oldlines[-1][a:region[1][1]:]
     endif
     call setline(line('.'), tmp)
@@ -1270,7 +1292,7 @@ function! s:change_content(region, content)
     if a:region[0][1] > 1
       let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
     endif
-    if a:region[1][1] > 1
+    if a:region[1][1] >= 1
       let newlines[0] .= oldlines[-1][a:region[1][1]:]
     endif
     call setline(line('.'), newlines[0])
@@ -1278,7 +1300,7 @@ function! s:change_content(region, content)
     if a:region[0][1] > 1
       let newlines[0] = oldlines[0][:a:region[0][1]-2] . newlines[0]
     endif
-    if a:region[1][1] > 1
+    if a:region[1][1] >= 1
       let newlines[-1] .= oldlines[-1][a:region[1][1]:]
     endif
     call setline(line('.'), newlines[0])
@@ -1323,7 +1345,7 @@ endfunction
 " search_region : make region from pattern which is composing start/end
 "   this function return array of position
 function! s:search_region(start, end)
-  return [searchpairpos(a:start, '', a:end, 'bcnW'), searchpairpos(a:start, '', a:end, 'nW')]
+  return [searchpairpos(a:start, '', a:end, 'bcnW'), searchpairpos(a:start, '\%#', a:end, 'nW')]
 endfunction
 
 " get_content : get content in region
@@ -1359,7 +1381,7 @@ endfunction
 "==============================================================================
 
 function! zencoding#ExpandWord(abbr, type, orig)
-  let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\)\s*,\{0,1}\s*\)*$'
+  let mx = '|\(\%(html\|haml\|e\|c\|fc\|xsl\|t\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
   let type = a:type
 
@@ -1389,7 +1411,7 @@ function! zencoding#CompleteTag(findstart, base)
   if a:findstart
     let line = getline('.')
     let start = col('.') - 1
-    while start > 0 && line[start - 1] =~ '[a-zA-Z0-9:\@]'
+    while start > 0 && line[start - 1] =~ '[a-zA-Z0-9:_\@\-]'
       let start -= 1
     endwhile
     return start

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: file_rec.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2011.
+" Last Modified: 17 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,7 +29,7 @@ set cpo&vim
 
 " Variables  "{{{
 call unite#util#set_default('g:unite_source_file_rec_ignore_pattern',
-      \'\%(^\|/\)\.$\|\~$\|\.\%(o\|exe\|dll\|bak\|sw[po]\)$\|\%(^\|/\)\.\%(hg\|git\|bzr\|svn\)\%($\|/\)')
+      \'\%(^\|/\)\.$\|\~$\|\.\%(o\|exe\|dll\|bak\|sw[po]\|class\)$\|\%(^\|/\)\.\%(hg\|git\|bzr\|svn\)\%($\|/\)')
 call unite#util#set_default('g:unite_source_file_rec_min_cache_files', 50)
 "}}}
 
@@ -106,13 +106,16 @@ endfunction"}}}
 function! s:source_rec.hooks.on_init(args, context)"{{{
   let a:context.source__directory = s:get_path(a:args, a:context)
 endfunction"}}}
+function! s:source_rec.hooks.on_pre_filter(args, context)"{{{
+  call s:on_pre_filter(a:args, a:context)
+endfunction"}}}
 function! s:source_rec.hooks.on_post_filter(args, context)"{{{
   call s:on_post_filter(a:args, a:context)
 endfunction"}}}
 
 function! s:source_rec.vimfiler_check_filetype(args, context)"{{{
   let path = unite#util#substitute_path_separator(
-        \ expand(join(a:args, ':')))
+        \ unite#util#expand(join(a:args, ':')))
   let path = unite#util#substitute_path_separator(
         \ simplify(fnamemodify(path, ':p')))
 
@@ -157,7 +160,7 @@ function! s:source_rec.vimfiler_gather_candidates(args, context)"{{{
     lcd `=path`
   endif
 
-  let exts = unite#util#is_win() ?
+  let exts = unite#util#is_windows() ?
         \ escape(substitute($PATHEXT . ';.LNK', ';', '\\|', 'g'), '.') : ''
 
   " Set vimfiler property.
@@ -174,7 +177,7 @@ function! s:source_rec.vimfiler_gather_candidates(args, context)"{{{
 endfunction"}}}
 function! s:source_rec.vimfiler_dummy_candidates(args, context)"{{{
   let path = unite#util#substitute_path_separator(
-        \ expand(join(a:args, ':')))
+        \ unite#util#expand(join(a:args, ':')))
   let path = unite#util#substitute_path_separator(
         \ simplify(fnamemodify(path, ':p')))
 
@@ -188,7 +191,7 @@ function! s:source_rec.vimfiler_dummy_candidates(args, context)"{{{
     lcd `=path`
   endif
 
-  let exts = unite#util#is_win() ?
+  let exts = unite#util#is_windows() ?
         \ escape(substitute($PATHEXT . ';.LNK', ';', '\\|', 'g'), '.') : ''
 
   let is_relative_path = path !~ '^\%(/\|\a\+:/\)'
@@ -207,7 +210,12 @@ function! s:source_rec.vimfiler_dummy_candidates(args, context)"{{{
   return candidates
 endfunction"}}}
 function! s:source_rec.vimfiler_complete(args, context, arglead, cmdline, cursorpos)"{{{
-  return filter(split(glob(a:arglead . '*'), '\n'), 'isdirectory(v:val)')
+  return unite#sources#file#complete_directory(
+        \ a:args, a:context, a:arglead, a:cmdline, a:cursorpos)
+endfunction"}}}
+function! s:source_rec.complete(args, context, arglead, cmdline, cursorpos)"{{{
+  return unite#sources#file#complete_directory(
+        \ a:args, a:context, a:arglead, a:cmdline, a:cursorpos)
 endfunction"}}}
 
 " Source async.
@@ -237,7 +245,7 @@ function! s:source_async.gather_candidates(args, context)"{{{
     return continuation.files
   endif
 
-  let a:context.source__proc = vimproc#pgroup_open('ls -R1 '
+  let a:context.source__proc = vimproc#pgroup_open('ls -R1 -a '
         \ . escape(directory, ' '))
 
   " Close handles.
@@ -269,7 +277,7 @@ function! s:source_async.async_gather_candidates(args, context)"{{{
 
   let candidates = []
   for line in map(stdout.read_lines(-1, 300),
-        \ 'iconv(v:val, &termencoding, &encoding)')
+        \ "iconv(v:val, 'char', &encoding)")
     if line =~ ':$'
       " Directory name.
       let continuation.directory = line[: -2]
@@ -303,8 +311,16 @@ function! s:source_async.hooks.on_close(args, context) "{{{
     call a:context.source__proc.waitpid()
   endif
 endfunction "}}}
+function! s:source_async.hooks.on_pre_filter(args, context)"{{{
+  call s:on_pre_filter(a:args, a:context)
+endfunction"}}}
 function! s:source_async.hooks.on_post_filter(args, context)"{{{
   call s:on_post_filter(a:args, a:context)
+endfunction"}}}
+
+function! s:source_async.complete(args, context, arglead, cmdline, cursorpos)"{{{
+  return unite#sources#file#complete_directory(
+        \ a:args, a:context, a:arglead, a:cmdline, a:cursorpos)
 endfunction"}}}
 
 " Add custom action table."{{{
@@ -316,6 +332,16 @@ function! s:cdable_action_rec.func(candidate)
   call unite#start([['file_rec', a:candidate.action__directory]])
 endfunction
 
+let s:cdable_action_rec_parent = {
+      \ 'description' : 'open parent directory by file_rec source',
+      \}
+
+function! s:cdable_action_rec_parent.func(candidate)
+  call unite#start([['file_rec', unite#util#substitute_path_separator(
+        \ fnamemodify(a:candidate.action__directory, ':h'))
+        \ ]])
+endfunction
+
 let s:cdable_action_rec_async = {
       \ 'description' : 'open this directory by file_rec/async source',
       \}
@@ -324,8 +350,20 @@ function! s:cdable_action_rec_async.func(candidate)
   call unite#start([['file_rec/async', a:candidate.action__directory]])
 endfunction
 
+let s:cdable_action_rec_parent_async = {
+      \ 'description' : 'open parent directory by file_rec/async source',
+      \}
+
+function! s:cdable_action_rec_parent_async.func(candidate)
+  call unite#start([['file_rec/async', unite#util#substitute_path_separator(
+        \ fnamemodify(a:candidate.action__directory, ':h'))
+        \ ]])
+endfunction
+
 call unite#custom_action('cdable', 'rec', s:cdable_action_rec)
+call unite#custom_action('cdable', 'rec_parent', s:cdable_action_rec_parent)
 call unite#custom_action('cdable', 'rec/async', s:cdable_action_rec_async)
+call unite#custom_action('cdable', 'rec_parent/async', s:cdable_action_rec_parent_async)
 unlet! s:cdable_action_rec
 unlet! s:cdable_action_rec_async
 "}}}
@@ -363,11 +401,7 @@ function! s:get_files(files, level, max_len)"{{{
       endif
 
       let child_index = 0
-      let childs =
-            \ split(unite#util#substitute_path_separator(
-            \       globpath(file, '*')), '\n') +
-            \ split(unite#util#substitute_path_separator(
-            \       globpath(file, '.*')), '\n')
+      let childs = unite#util#glob(file.'/*') + unite#util#glob(file.'/.*')
       for child in childs
         let child_index += 1
 
@@ -410,7 +444,7 @@ function! s:get_files(files, level, max_len)"{{{
 
   let continuation_files += a:files[files_index :]
   return [continuation_files, map(ret_files,
-        \ 'unite#util#substitute_path_separator(fnamemodify(v:val, ":p"))')]
+        \ "unite#util#substitute_path_separator(fnamemodify(v:val, ':p'))")]
 endfunction"}}}
 function! s:on_post_filter(args, context)"{{{
   let is_relative_path =
@@ -425,6 +459,10 @@ function! s:on_post_filter(args, context)"{{{
           \ candidate.abbr :
           \ unite#util#path2directory(candidate.action__path)
   endfor
+endfunction"}}}
+function! s:on_pre_filter(args, context)"{{{
+  let a:context.candidates = unite#call_filter(
+        \ 'matcher_hide_hidden_files', a:context.candidates, a:context)
 endfunction"}}}
 function! s:init_continuation(context, directory)"{{{
   if a:context.is_redraw

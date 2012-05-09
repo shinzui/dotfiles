@@ -1,5 +1,5 @@
 /MyProjectDir/	dbext.txt	/*\/MyProjectDir\/*
-/MyProjectDir/	dbext.txt	/*\/MyProjectDir\/*
+/MyProjectDir2/	dbext.txt	/*\/MyProjectDir2\/*
 AND	dbext.txt	/*AND*
 DBI	dbext.txt	/*DBI*
 ODBC	dbext.txt	/*ODBC*

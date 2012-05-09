@@ -19,7 +19,7 @@ setlocal nosmartindent
 " Now, set up our indentation expression and keys that trigger it.
 setlocal indentexpr=GetRubyIndent(v:lnum)
 setlocal indentkeys=0{,0},0),0],!^F,o,O,e
-setlocal indentkeys+==end,=elsif,=when,=ensure,=rescue,==begin,==end
+setlocal indentkeys+==end,=else,=elsif,=when,=ensure,=rescue,==begin,==end
 
 " Only define the function once.
 if exists("*GetRubyIndent")
@@ -33,7 +33,7 @@ set cpo&vim
 " ============
 
 " Regex of syntax group names that are or delimit string or are comments.
-let s:syng_strcom = '\<ruby\%(Regexp\|RegexpDelimiter' .
+let s:syng_strcom = '\<ruby\%(Regexp\|RegexpDelimiter\|RegexpEscape' .
       \ '\|String\|StringEscape\|ASCIICode' .
       \ '\|Interpolation\|NoInterpolation\|Comment\|Documentation\)\>'
 
@@ -93,7 +93,7 @@ let s:bracket_continuation_regex = '\%([({[]\)\s*\%(#.*\)\=$'
 
 " Regex that defines blocks.
 let s:block_regex =
-      \ '\%(\<do:\@!\>\|{\)\s*\%(|\%([*@]\=\h\w*,\=\s*\)\%(,\s*[*@]\=\h\w*\)*|\)\=\s*\%(#.*\)\=$'
+      \ '\%(\<do:\@!\>\|{\)\s*\%(|\%([*@&]\=\h\w*,\=\s*\)\%(,\s*[*@&]\=\h\w*\)*|\)\=\s*\%(#.*\)\=$'
 
 " 2. Auxiliary Functions {{{1
 " ======================

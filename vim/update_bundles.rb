@@ -38,7 +38,8 @@ git_bundles = [
   "git://github.com/nelstrom/vim-textobj-rubyblock.git",
   "git://github.com/tsaleh/vim-matchit.git",
   "git://github.com/ecomba/vim-ruby-refactoring.git",
-  "git://github.com/wincent/Command-T.git",
+  #"git://github.com/wincent/Command-T.git",
+  "git://github.com/kien/ctrlp.vim.git",
   "git://github.com/altercation/vim-colors-solarized.git",
   "git://github.com/godlygeek/tabular.git",
   "git://github.com/rygwdn/vim-conque.git",
@@ -53,7 +54,20 @@ git_bundles = [
   "git://github.com/tpope/vim-bundler.git",
   "git://github.com/tpope/gem-ctags.git",
   "git://github.com/sjl/threesome.vim.git",
-  "git://github.com/jeetsukumaran/vim-buffergator.git"
+  "git://github.com/jeetsukumaran/vim-buffergator.git",
+  "git://github.com/sickill/vim-pasta.git",
+  "git://github.com/lunaru/vim-less.git",
+  "git://github.com/cakebaker/scss-syntax.vim.git",
+  "git://github.com/kana/vim-smartinput.git",
+  "git://github.com/gregsexton/gitv.git",
+  "git://github.com/sjl/clam.vim.git",
+  "git://github.com/kurkale6ka/vim-swap.git",
+  "git://github.com/scrooloose/syntastic.git",
+  "git://github.com/mattn/webapi-vim.git",
+  "git://github.com/chrisbra/NrrwRgn",
+  "git://https:github.com/skalnik/vim-vroom",
+  "git://github.com/lucapette/vim-ruby-doc.git"
+
 ]
 
 

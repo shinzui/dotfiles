@@ -218,6 +218,10 @@ http://www.ustream.tv/recorded/11240673
 		いときにはuniteバッファを開かない。絞り込み時のときも、候補
 		が一つになったら即座に実行される。
 
+						*unite-options-no-empty*
+		-no-empty
+		候補がないときはuniteバッファを開かない。
+
 						*unite-options-auto-preview*
 		-auto-preview
 		候補を選択した際、自動的に"preview"アクションを実行する。
@@ -271,6 +275,22 @@ http://www.ustream.tv/recorded/11240673
 						*unite-options-create*
 		-create
 		既に開いているuniteバッファは再利用せず、新しく生成する。
+
+						*unite-options-update-time*
+		-update-time={new-update-time}
+		このuniteバッファが開いている間、'updatetime'を変更する。このオ
+		プションが省略されたとき、|g:unite_update_time|が使用される。
+
+						*unite-options-cursor-line-highlight*
+		-cursor-line-high-light={highlight-name}
+		カーソル行のハイライトを変更する。このオプションが省略されると、
+		|g:unite_cursor_line_highlight|が使用される。
+
+						*unite-options-hide-source-names*
+		-hide-source-names
+		source名を表示しない。
+		Note: このオプションはuniteのステータスラインを表示しないように
+		する。
 
 :UniteWithCurrentDir [{options}] {sources}	*:UniteWithCurrentDir*
 		初期の絞込みテキストが現在のディレクトリである他は|:Unite|と同
@@ -503,6 +523,11 @@ g:unite_source_grep_ignore_pattern		*g:unite_source_grep_ignore_pattern*
 
 		初期値は autoload/unite/sources/grep.vim を参照。
 
+g:unite_source_grep_search_word_highlight	*g:unite_source_grep_search_word_highlight*
+		検索文字列のハイライトを指定する。
+		
+		初期値は"Search"である。
+
 g:unite_source_find_command			*g:unite_source_find_command*
 		"find"コマンドを指定する。
 
@@ -610,10 +635,16 @@ g:unite_source_history_yank_enable		*g:unite_source_history_yank_enable*
 		この変数はデフォルトで定義されない。
 
 g:unite_source_history_yank_limit		*g:unite_source_history_yank_limit*
-		|unite-source-history/yank|が履歴を保存する最大数を指定
-		する。
+		|unite-source-history/yank|がヤンク履歴を保存する最大数を指定す
+		る。
 		
 		初期値は100である。
+
+g:unite_source_history_yank_file		*g:unite_source_history_yank_file*
+		ヤンク履歴を書き出すファイルを指定する。この変数を空にすると、
+		履歴は保存されなくなる。
+		
+		初期値は |g:unite_data_directory| . '/history_yank' である。
 
 g:unite_source_session_default_session_name	*g:unite_source_session_default_session_name*
 		デフォルトで使用されるセッション名。
@@ -722,8 +753,7 @@ g:unite_kind_openable_persist_open_blink_time	*g:unite_kind_openable_persist_ope
 		sourceの順番を逆方向に並び変える。
 
 <Plug>(unite_print_candidate)			*<Plug>(unite_print_candidate)*
-		選択している候補に対するアクションの対象を表示する。例えば、選
-		択している候補のkindが|word|の場合は、対象の内容が表示される。
+		選択している候補の内容を表示する。
 
 <Plug>(unite_cursor_top)			*<Plug>(unite_cursor_top)*
 		uniteバッファの一番上へ移動する。
@@ -973,6 +1003,20 @@ unite#start_complete({sources}, [{context}])			*unite#start_complete()*
 		\ 'start_insert' : 0,
 		\ 'input' : vimshell#get_cur_text()})
 <
+unite#get_candidates({sources}, [, {context}])			*unite#get_candidates()*
+		指定したsourceの全ての候補をリストで得る。uniteバッファは生成さ
+		れない。uniteバッファが存在することを前提としているsourceによっ
+		ては動かないかもしれない。引数の仕様は|unite#start()|と同一であ
+		る。
+		Note: sourceのmax_candidatesオプションは無視される。
+
+unite#do_candidates_action({action-name}, {candidates}, [, {context}])
+								*unite#do_candidates_action()*
+		指定した{candidates}を利用して、{action-name}を実行する。unite
+		バッファは生成されない。uniteバッファが存在することを前提として
+		いるactionによってはうまく動作しないかもしれない。
+		Note: |unite#get_candidates()|と組み合わせて使用する。
+
 unite#get_context()						*unite#get_context()*
 		現在のuniteバッファのコンテキスト情報を得る。
 		|unite#custom_action()|などで、|unite#start()|を内部で呼び出す
@@ -1121,7 +1165,7 @@ unite#custom_action({kind}, {name}, {action})
 		  \ a:candidate.word : fnamemodify(a:candidate.word, ':p:h')
 		  execute g:unite_kind_openable_lcd_command '`=dir`'
 		endfunction
-		call unite#custom_action('file,buffer', 'tabopen', my_tabopen)
+		call unite#custom_action('file,file_new,buffer', 'tabopen', my_tabopen)
 		unlet my_tabopen
 <
 unite#undef_custom_action({kind}, {name})			*unite#undef_custom_action()*
@@ -1226,6 +1270,9 @@ source						*unite-sources*
 file		入力されたファイルを候補とする。
 		Note: デフォルトでは、"../"といった親ディレクトリや隠しファイル
 		は表示されない。絞り込み文字列に.を入力すると表示される。
+
+						*unite-source-file/new*
+file/new	入力を新ファイル名とした候補とする。
 
 						*unite-source-file_mru*
 file_mru	最近使用したファイルを候補とする。使用した順番に整列される。
@@ -1504,7 +1551,8 @@ jump_list	ジャンプリスト
 				ファイルを開いた後に検索するパターン
 
 			action__text		(文字列)		(任意)
-				ジャンプする行の内容
+				ジャンプする行の内容。現在、replace actionでの
+				み使用される。
 
 			action__signature	(文字列)		(任意)
 				action__patternに設定するパターンや
@@ -1632,7 +1680,7 @@ matcher_fuzzy	ユーザーが入力したパターンを曖昧検索として、
 		このmatcherを使用すると、絞り込みが遅くなるので注意すること。
 		|unite-source-file_rec|に対して設定すると便利かもしれない。
 >
-		call unite#custom_filters('file,buffer,file_rec',
+		call unite#custom_filters('file,file_new,buffer,file_rec',
 		\ ['matcher_fuzzy', 'sorter_default', 'converter_default'])
 <
 						*unite-filter-matcher_migemo*
@@ -1666,6 +1714,11 @@ matcher_migemo	migemoを使用して、候補をフィルタリングするmatch
 		call unite#custom_filters('line',
 		\ ['matcher_migemo', 'sorter_default', 'converter_default'])
 <
+						*unite-filter-matcher_hide_hidden_files*
+matcher_hide_hidden_files
+		隠しファイルを隠すmatcher。ユーザーの絞り込み文字列に"."が含ま
+		れていると隠しファイルは表示される。
+
 						*unite-filter-sorter_default*
 sorter_default	|unite-filter-default|により呼び出される、デフォルトのsorter。
 		初期状態では、["sorter_nothing"]のsorterを呼び出す。
@@ -1678,6 +1731,14 @@ sorter_nothing	何もsortをしないsorter。source側のsortがそのまま反
 						*unite-filter-sorter_word*
 sorter_word	wordを比較するsorter。
 
+						*unite-filter-sorter_rank*
+sorter_rank	入力のマッチ度を比較するsorter。マッチ位置が先頭にあるほど、マ
+		ッチ長さが長いほどマッチ度は高くなる。
+		ファイルを候補とするsourceに設定すると良い。
+>
+		call unite#custom_filters('buffer,file,file_mru,file_rec',
+		\ ['matcher_default', 'sorter_rank', 'converter_relative_abbr'])
+<
 						*unite-filter-sorter_reverse*
 sorter_reverse	順番を反転するsorter。
 
@@ -1723,6 +1784,8 @@ common					*unite-action-common*
 	yank_escape	エスケープした候補文字列をヤンクする
 	ex		候補をエスケープして、コマンドラインに入力した状態にする
 	insert		現在のバッファに文字列を挿入する
+	insert_directory
+			現在のバッファにディレクトリ名を挿入する
 	preview		候補の文字列を表示する
 
 openable					*unite-action-openable*
@@ -1755,6 +1818,10 @@ cd可能ファイルのインタフェースを定義している。
 			|vimfiler|がインストールされている場合にのみ有効な
 			アクションである。
 	rec		そのディレクトリで|unite-source-file_rec|を起動する。
+	rec_parent	親ディレクトリで|unite-source-file_rec|を起動する。
+	rec/async	そのディレクトリで|unite-source-file_rec/async|を起動する。
+	rec_parent/async
+			親ディレクトリで|unite-source-file_rec/async|を起動する。
 	file		そのディレクトリで|unite-source-file|を起動する。
 
 file						*unite-action-file*
@@ -1768,6 +1835,7 @@ file						*unite-action-file*
 	rename		ファイル名を変更する
 	grep		ファイルをgrepする
 	grep_directory	ディレクトリをgrepする
+	wunix		改行文字をUnix形式に変換する
 
 buffer						*unite-action-buffer*
 このkindは|unite-action-file|のアクションを継承している。
@@ -1777,6 +1845,7 @@ buffer						*unite-action-buffer*
 	unload		バッファを|:bunload|
 	bookmark	候補をブックマークに追加する
 	rename		バッファのファイル名を変更する
+	goto		バッファのタブに移動する
 
 tab						*unite-action-tab*
 このkindは|gettabvar()|が存在するときのみ、|unite-action-cdable|のアクションを
@@ -1843,11 +1912,14 @@ process						*unite-action-process*
 	sigterm		プロセスにSIGTERMを送る(デフォルト)
 	sigkill		プロセスにSIGKILLを送る
 
-session					*unite-action-session*
+session						*unite-action-session*
 	load		セッションを読み込む(デフォルト)
 	delete		セッションを削除する
 	open		セッションを編集する
 	rename		セッション名を変更する
+
+mapping						*unite-action-mapping*
+	help		ドキュメントを参照する
 
 						*unite-default-action*
 デフォルトアクション
@@ -1940,6 +2012,12 @@ async_gather_candidates	関数		(任意)
 			|unite-source-attribute-gather_candidates|と同一であ
 			る。
 
+						*unite-source-attribute-complete*
+complete		関数		(任意)
+			|:Unite|のsource引数を補完するときに呼ばれる。
+			この関数は{args}, {context}, {arglead}, {cmdline},
+			{cursorpos}を引数に取る。戻り値は候補のリストである。
+
 						*unite-source-attribute-hooks*
 hooks			辞書		(任意)
 			uniteへのフック関数を指定する。キーはフックする位置、値
@@ -1961,6 +2039,8 @@ hooks			辞書		(任意)
 			合は呼び出されない。
 			この関数は{args}と{context}を引数に取る。
 			source毎のハイライト設定はここで行う。
+			Note: "unite#get_current_unite().abbr_head"により、abbr領
+			域の先頭桁を取得することができる。
 
 			ハイライトの設定例：
 >
@@ -1973,6 +2053,10 @@ hooks			辞書		(任意)
 			on_close		*unite-source-attribute-hooks-on_close*
 			<Plug>(unite_exit)を実行したときや、コマンドの実行後に
 			uniteバッファが閉じられた後に呼ばれる。
+			この関数は{args}と{context}を引数に取る。
+
+			on_pre_filter		*unite-source-attribute-hooks-on_pre_filter*
+			filterが呼ばれる前に呼ばれる。
 			この関数は{args}と{context}を引数に取る。
 
 			on_post_filter		*unite-source-attribute-hooks-on_post_filter*
@@ -2401,6 +2485,13 @@ description		文字列		(任意)
 	"let g:unite_source_session_enable_auto_save = 1
 	" Load session automatically.
 	"autocmd VimEnter * UniteSessionLoad
+	
+	" For ack.
+	if executable('ack-grep')
+	  let g:unite_source_grep_command = 'ack-grep'
+	  let g:unite_source_grep_default_opts = '--no-heading --no-color -a'
+	  let g:unite_source_grep_recursive_opt = ''
+	endif
 <
 ==============================================================================
 ユーザーのsource				*unite-user-sources*

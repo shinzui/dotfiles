@@ -20,7 +20,6 @@ set softtabstop=2
 set expandtab
 
 " Search config
-set incsearch
 
 " highlight search result
 set hlsearch
@@ -36,12 +35,20 @@ set directory=/tmp/
 " Enable tab completion. First tab shows all matches, second tab cycles through them
 set wildmenu
 set wildmode=list:longest,full
-set wildignore+=*.o,*.obj,.git,*.rbc
+
+set wildignore+=*.o,*.obj,.git,*.rbc,*.gem,*.zip,*.tar,*.tar.gz
+set wildignore+=*.swp,*~
 set wildignore+=vendor/rails/**
+set wildignore+=vendor/gems/**
 set wildignore+=vendor/ruby/**
 set wildignore+=vendor/cache/**
+set wildignore+=vendor/assets/**
+set wildignore+=.bundle/*
+set wildignore+=.sass-cache/*
+set wildignore+=public/uploads/**
 set wildignore+=doc/yard/**,.yardoc/**
-set wildignore+=log/
+set wildignore+=log/**
+set wildignore+=tmp/**
 
 set nowrap
 
@@ -107,6 +114,11 @@ endif
 "Enable matchit 
 runtime  macros/matchit.vim
 
+if has("user_commands")
+   command! -bang -nargs=? -complete=file W w<bang> <args>
+   command! -bang -nargs=? -complete=file Wq wq<bang> <args>
+endif
+
 """ Bindings
 
 "
@@ -126,6 +138,8 @@ autocmd BufNewFile,BufRead *.json  set filetype=javascript
 
 autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
 autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
+autocmd BufRead,BufNewFile *.scss set filetype=scss
+
 
 autocmd BufReadPost fugitive://* set bufhidden=delete
 
@@ -147,6 +161,11 @@ imap <silent> <F5> <esc> mmgg=G`m
 
 "root save
 cmap w!! %!sudo tee > /dev/null %
+
+
+" upper/lower word
+nmap <leader>u mQviwU`Q
+nmap <leader>l mQviwu`Q
 
 """PLugins
 
@@ -203,4 +222,43 @@ cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
 "BufferGator
 let g:buffergator_viewport_split_policy="T"
 let g:buffergator_sort_regime="mru"
-let g:buffergator_split_size="10"
+let g:buffergator_split_size="50"
+
+"CtrlP
+map <C-t> :CtrlP<CR>
+imap <C-t> <ESC>:CtrlP<CR>
+
+"Chef plugin setup
+function! ChefNerdTreeFind(env)
+    try
+        :NERDTreeFind
+        let scrolloff_orig = &scrolloff
+        let &scrolloff = 15
+        normal! jk
+        wincmd p
+    finally
+        let &scrolloff = scrolloff_orig
+    endtry
+endfunction
+
+let g:chef = {}
+let g:chef.hooks = ['ChefNerdTreeFind']
+
+" remove 'Related' from default, I want to find 'Related' explicitly.
+let g:chef.any_finders = ['Attribute', 'Source', 'Recipe', 'Definition']
+
+function! s:SetupChef()
+    " Mouse:
+    " Left mouse click to GO!
+    nnoremap <buffer> <silent> <2-LeftMouse> :<C-u>ChefFindAny<CR>
+    " Right mouse click to Back!
+    nnoremap <buffer> <silent> <RightMouse> <C-o>
+
+    " Keyboard:
+    nnoremap <buffer> <silent> <M-a>      :<C-u>ChefFindAny<CR>
+    nnoremap <buffer> <silent> <M-f>      :<C-u>ChefFindAnySplit<CR>
+    nnoremap <buffer> <silent> <M-r>      :<C-u>ChefFindRelated<CR>
+endfunction
+
+
+au BufNewFile,BufRead */*cookbooks/*  call s:SetupChef()
