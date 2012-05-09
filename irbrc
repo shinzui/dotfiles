@@ -90,7 +90,7 @@ class Object
 end
 
 def copy(str)
-  IO.popen('pbcopy', 'w') { |f| f << str.to_s }
+  fork { fork { IO.popen('pbcopy', 'w') { |f| f << str.to_s } }; exit!(0) }
 end
 
 def paste

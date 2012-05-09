@@ -24,3 +24,7 @@ function sg {
     script/generate $@
   fi
 }
+
+function alert() {
+  "$@" && growlnotify -a iTerm -m "$@ completed with exit code $?" ;
+}

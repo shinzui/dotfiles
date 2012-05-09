@@ -4,8 +4,10 @@ export CDPATH='.:~'
 export EDITOR='vim'
 export INPUTRC=~/.inputrc 
 
-export HISTCONTROL=erasedups
+export HISTCONTROL=ignoreboth
 export HISTSIZE=5000
+export HISTIGNORE='ls:bg:fg:history'
+export HISTTIMEFORMAT='%F %T '
 shopt -s histappend
 
 export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'

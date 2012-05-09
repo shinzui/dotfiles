@@ -39,5 +39,15 @@
   token = <%= print("GitHub API Token: "); STDOUT.flush; STDIN.gets.chomp %>
 [push]
   default = tracking
-[git-tmbundle]
-  gitx-path = <%= ENV['HOME'] %>/Applications/GitX.app/Contents/Resources/gitx
+[rerere]
+	enabled = 1
+[help]
+	browser = gitscm
+[difftool "sourcetree"]
+	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
+	path = 
+[mergetool "sourcetree"]
+	cmd = /Applications/SourceTree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
+[browser "gitscm"]
+	cmd = /bin/sh -c 'open http://git-scm.com/docs/$(basename $1 .html)' --

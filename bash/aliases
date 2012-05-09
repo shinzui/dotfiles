@@ -33,4 +33,8 @@ alias be='b exec'
 alias bl='b list'
 
 #OSX
-finder='open -a Finder'
+alias finder='open -a Finder'
+alias ql='qlmanage -p'
+
+#Util
+alias json_curl='curl -H "Accept: application/json" -i -X GET'
