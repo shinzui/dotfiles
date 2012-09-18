@@ -8,6 +8,8 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+let s:system = function(get(g:, 'webapi#system_function', 'system'))
+
 function! webapi#xmlrpc#nil()
   return 0
 endfunction
@@ -88,7 +90,7 @@ function! s:to_value(content)
         call base64.value(a:content["bits"])
       elseif has_key(a:content, "path")
         let quote = &shellxquote == '"' ?  "'" : '"'
-        let bits = substitute(system("xxd -ps ".quote.a:content["path"].quote), "[ \n\r]", '', 'g')
+        let bits = substitute(s:system("xxd -ps ".quote.a:content["path"].quote), "[ \n\r]", '', 'g')
         call base64.value(webapi#base64#b64encodebin(bits))
       endif
       return struct
@@ -160,11 +162,11 @@ function! s:to_fault(dom)
   return faultCode.":".faultString
 endfunction
 
-function! webapi#xmlrpc#call(uri, func, args)
-  let methodCall = webapi#xml#createElement("methodCall")
-  let methodName = webapi#xml#createElement("methodName")
-  call methodName.value(a:func)
-  call add(methodCall.child, methodName)
+"add_node_params
+"Add list of args on the xml tree.
+"input: list of args
+"output: none
+function! s:add_node_params(args)
   let params = webapi#xml#createElement("params")
   for Arg in a:args
     let param = webapi#xml#createElement("param")
@@ -175,6 +177,17 @@ function! webapi#xmlrpc#call(uri, func, args)
     unlet Arg
   endfor
   call add(methodCall.child, params)
+  return
+endfunction
+
+function! webapi#xmlrpc#call(uri, func, args)
+  let methodCall = webapi#xml#createElement("methodCall")
+  let methodName = webapi#xml#createElement("methodName")
+  call methodName.value(a:func)
+  call add(methodCall.child, methodName)
+  if !empty(a:args)
+       s:add_node_params(args)
+  endif
   let xml = iconv(methodCall.toString(), &encoding, "utf-8")
   let res = webapi#http#post(a:uri, xml, {"Content-Type": "text/xml"})
   let dom = webapi#xml#parse(res.content)
@@ -196,6 +209,7 @@ function! webapi#xmlrpc#wrap(contexts)
           let target[ns] = {".uri": context.uri}
         endif
         let target = target[ns]
+        let api['.uri'] = target['.uri']
       endfor
     endif
     if len(context.argnames) && context.argnames[-1] == '...'

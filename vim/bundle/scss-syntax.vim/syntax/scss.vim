@@ -9,6 +9,7 @@ if exists("b:current_syntax")
 endif
 
 runtime! syntax/css.vim
+runtime! syntax/css/*.vim
 
 syn case ignore
 
@@ -61,6 +62,8 @@ syn match scssIn " in "
 syn cluster scssControl contains=scssIf,scssElse,scssElseIf,scssWhile,scssFor,scssFrom,scssTo,scssThrough,scssEach,scssIn
 
 syn match scssComment "//.*$" contains=@Spell
+syn region scssImportStr start="\"" end="\""
+syn region scssImport start="@import" end=";" contains=scssImportStr,scssComment,cssComment,cssUnicodeEscape,cssMediaType
 
 hi def link scssVariable  Identifier
 hi def link scssVariableValue Constant
@@ -93,5 +96,7 @@ hi def link scssThrough   Repeat
 hi def link scssEach      Repeat
 hi def link scssIn        Repeat
 hi def link scssInterpolation Delimiter
+hi def link scssImport    Include
+hi def link scssImportStr Include
 
 let b:current_syntax = "scss"

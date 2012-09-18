@@ -66,15 +66,15 @@ git_bundles = [
   "git://github.com/mattn/webapi-vim.git",
   "git://github.com/chrisbra/NrrwRgn",
   "git://https:github.com/skalnik/vim-vroom",
-  "git://github.com/lucapette/vim-ruby-doc.git"
-
+  "git://github.com/lucapette/vim-ruby-doc.git",
+  "git://github.com/majutsushi/tagbar.git",
+  "git://github.com/29decibel/codeschool-vim-theme.git"
 ]
 
 
 vim_org_scripts = [
   ["IndexedSearch", "7062",  "plugin"],
   ["jquery",        "12107", "syntax"],
-  ["taglist",       "7701",  "zip"],
   ["color-sampler", "12179", "zip"]
 ]
 

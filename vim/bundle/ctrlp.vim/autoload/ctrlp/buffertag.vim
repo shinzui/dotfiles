@@ -25,41 +25,23 @@ cal add(g:ctrlp_ext_vars, {
 
 let s:id = g:ctrlp_builtins + len(g:ctrlp_ext_vars)
 
-fu! ctrlp#buffertag#opts()
-	let [pref, opts] = ['g:ctrlp_buftag_', {
-		\ 'systemenc': ['s:enc', &enc],
-		\ 'ctags_bin': ['s:bin', ''],
-		\ 'types': ['s:usr_types', ''],
-		\ }]
-	for [ke, va] in items(opts)
-		exe 'let' va[0] '=' string(exists(pref.ke) ? eval(pref.ke) : va[1])
-	endfo
-endf
-cal ctrlp#buffertag#opts()
+let [s:pref, s:opts] = ['g:ctrlp_buftag_', {
+	\ 'systemenc': ['s:enc', &enc],
+	\ 'ctags_bin': ['s:bin', ''],
+	\ 'types': ['s:usr_types', {}],
+	\ }]
 
-fu! s:bins()
-	let bins = [
-		\ 'ctags-exuberant',
-		\ 'exuberant-ctags',
-		\ 'exctags',
-		\ '/usr/local/bin/ctags',
-		\ '/opt/local/bin/ctags',
-		\ 'ctags',
-		\ 'ctags.exe',
-		\ 'tags',
-		\ ]
-	if empty(s:bin)
-		for bin in bins | if executable(bin)
-			let s:bin = bin
-			brea
-		en | endfo
-	el
-		let s:bin = expand(s:bin, 1)
-	en
-endf
-cal s:bins()
+let s:bins = [
+	\ 'ctags-exuberant',
+	\ 'exuberant-ctags',
+	\ 'exctags',
+	\ '/usr/local/bin/ctags',
+	\ '/opt/local/bin/ctags',
+	\ 'ctags',
+	\ 'ctags.exe',
+	\ 'tags',
+	\ ]
 
-" s:types {{{2
 let s:types = {
 	\ 'asm'    : '%sasm%sasm%sdlmt',
 	\ 'aspperl': '%sasp%sasp%sfsv',
@@ -106,9 +88,22 @@ if executable('jsctags')
 	cal extend(s:types, { 'javascript': { 'args': '-f -', 'bin': 'jsctags' } })
 en
 
-if type(s:usr_types) == 4
+fu! ctrlp#buffertag#opts()
+	for [ke, va] in items(s:opts)
+		let {va[0]} = exists(s:pref.ke) ? {s:pref.ke} : va[1]
+	endfo
+	" Ctags bin
+	if empty(s:bin)
+		for bin in s:bins | if executable(bin)
+			let s:bin = bin
+			brea
+		en | endfo
+	el
+		let s:bin = expand(s:bin, 1)
+	en
+	" Types
 	cal extend(s:types, s:usr_types)
-en
+endf
 " Utilities {{{1
 fu! s:validfile(fname, ftype)
 	if ( !empty(a:fname) || !empty(a:ftype) ) && filereadable(a:fname)
@@ -190,7 +185,7 @@ endf
 fu! s:parseline(line)
 	let eval = '\v^([^\t]+)\t(.+)\t\/\^(.+)\$\/\;\"\t(.+)\tline(no)?\:(\d+)'
 	let vals = matchlist(a:line, eval)
-	if empty(vals) | retu '' | en
+	if vals == [] | retu '' | en
 	let [bufnr, bufname] = [bufnr('^'.vals[2].'$'), fnamemodify(vals[2], ':p:t')]
 	retu vals[1].'	'.vals[4].'|'.bufnr.':'.bufname.'|'.vals[6].'| '.vals[3]
 endf
@@ -222,8 +217,10 @@ endf
 
 fu! ctrlp#buffertag#accept(mode, str)
 	let vals = matchlist(a:str, '\v^[^\t]+\t+[^\t|]+\|(\d+)\:[^\t|]+\|(\d+)\|')
-	let [bufnm, linenr] = [fnamemodify(bufname(str2nr(vals[1])), ':p'), vals[2]]
-	cal ctrlp#acceptfile(a:mode, bufnm, linenr)
+	let bufnr = str2nr(get(vals, 1))
+	if bufnr
+		cal ctrlp#acceptfile(a:mode, bufname(bufnr), get(vals, 2))
+	en
 endf
 
 fu! ctrlp#buffertag#cmd(mode, ...)

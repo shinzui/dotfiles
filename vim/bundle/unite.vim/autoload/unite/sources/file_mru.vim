@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: file_mru.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Mar 2012.
+" Last Modified: 10 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -47,7 +47,7 @@ call unite#util#set_default('g:unite_source_file_mru_limit',
 call unite#util#set_default('g:unite_source_file_mru_ignore_pattern',
       \'\~$\|\.\%(o\|exe\|dll\|bak\|sw[po]\)$'
       \'\|\%(^\|/\)\.\%(hg\|git\|bzr\|svn\)\%($\|/\)'
-      \'\|^\%(\\\\\|/mnt/\|/media/\|/temp/\|/tmp/\|/private/var/folders/\)')
+      \'\|^\%(\\\\\|/mnt/\|/media/\|/temp/\|/tmp/\|\%(/private\)\=/var/folders/\)')
 "}}}
 
 function! unite#sources#file_mru#define()"{{{
@@ -62,8 +62,6 @@ function! unite#sources#file_mru#_append()"{{{
 
   " Append the current buffer to the mru list.
   if !s:is_exists_path(path) || &buftype =~ 'help'
-  \   || (g:unite_source_file_mru_ignore_pattern != ''
-  \      && path =~# g:unite_source_file_mru_ignore_pattern)
     return
   endif
 
@@ -91,27 +89,21 @@ let s:source = {
       \ 'hooks' : {},
       \ 'action_table' : {},
       \ 'syntax' : 'uniteSource__FileMru',
+      \ 'ignore_pattern' : g:unite_source_file_mru_ignore_pattern,
       \}
 
 function! s:source.hooks.on_syntax(args, context)"{{{
   syntax match uniteSource__FileMru_Time
-        \ /\s\+\zs([^)]*)/
+        \ /([^)]*)\s\+/
         \ contained containedin=uniteSource__FileMru
   highlight default link uniteSource__FileMru_Time Statement
 endfunction"}}}
 function! s:source.hooks.on_post_filter(args, context)"{{{
-  for mru in filter(copy(a:context.candidates), "!has_key(v:val, 'abbr')")
-    let path = (g:unite_source_file_mru_filename_format == '') ?
-          \ mru.action__path :
-          \ unite#util#substitute_path_separator(
-          \     fnamemodify(mru.action__path, g:unite_source_file_mru_filename_format))
-    if path == ''
-      let path = mru.action__path
-    endif
-
-    " Set default abbr.
-    let mru.abbr = (g:unite_source_file_mru_time_format == '' ? '' :
-          \ strftime(g:unite_source_file_mru_time_format, mru.source__time)) .path
+  for mru in a:context.candidates
+    let mru.action__directory =
+          \ unite#util#path2directory(mru.action__path)
+    let mru.kind =
+          \ (isdirectory(mru.action__path) ? 'directory' : 'file')
   endfor
 endfunction"}}}
 
@@ -135,6 +127,32 @@ function! s:source.action_table.delete.func(candidates)"{{{
 
   call s:save()
 endfunction"}}}
+"}}}
+
+" Filters"{{{
+function! s:source.source__converter(candidates, context)"{{{
+  for mru in filter(copy(a:candidates),
+        \ "!has_key(v:val, 'abbr')")
+    let path = (g:unite_source_file_mru_filename_format == '') ?
+          \ mru.action__path :
+          \ unite#util#substitute_path_separator(
+          \     fnamemodify(mru.action__path,
+          \      g:unite_source_file_mru_filename_format))
+    if path == ''
+      let path = mru.action__path
+    endif
+
+    " Set default abbr.
+    let mru.abbr = (g:unite_source_file_mru_time_format == '' ? '' :
+          \ strftime(g:unite_source_file_mru_time_format, mru.source__time)) .path
+  endfor
+
+  return a:candidates
+endfunction"}}}
+
+let s:source.filters =
+      \ ['matcher_default', 'sorter_default',
+      \      s:source.source__converter]
 "}}}
 
 " Misc
@@ -171,17 +189,12 @@ function! s:load()  "{{{
   let s:mru_file_mtime = getftime(g:unite_source_file_mru_file)
 endfunction"}}}
 function! s:is_exists_path(path)  "{{{
-  return a:path =~ '^\a\w\+:' ||
-        \ (getftype(a:path) != '' && !isdirectory(a:path))
+  return a:path !~ '^\a\w\+:' &&
+        \ getftype(a:path) != '' && !isdirectory(a:path)
 endfunction"}}}
 function! s:convert2dictionary(list)  "{{{
-  return {
-        \ 'word' : a:list[0],
-        \ 'kind' : (isdirectory(a:list[0]) ? 'directory' : 'file'),
-        \ 'source__time' : a:list[1],
-        \ 'action__path' : a:list[0],
-        \ 'action__directory' : unite#util#path2directory(a:list[0]),
-        \   }
+  return { 'word' : a:list[0], 'source__time' : a:list[1],
+        \ 'action__path' : a:list[0], }
 endfunction"}}}
 function! s:convert2list(dict)  "{{{
   return [ a:dict.action__path, a:dict.source__time ]

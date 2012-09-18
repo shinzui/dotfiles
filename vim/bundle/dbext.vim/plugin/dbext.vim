@@ -1,11 +1,11 @@
 " dbext.vim - Commn Database Utility
 " Copyright (C) 2002-10, Peter Bagyinszki, David Fishburn
 " ---------------------------------------------------------------
-" Version:       13.00
+" Version:       16.00
 " Maintainer:    David Fishburn <dfishburn dot vim at gmail dot com>
 " Authors:       Peter Bagyinszki <petike1 at dpg dot hu>
 "                David Fishburn <dfishburn dot vim at gmail dot com>
-" Last Modified: 2010 Sep 07
+" Last Modified: 2012 Jun 11
 " Based On:      sqlplus.vim (author: Jamis Buck)
 " Created:       2002-05-24
 " Homepage:      http://vim.sourceforge.net/script.php?script_id=356
@@ -31,14 +31,18 @@
 " along with this program; if not, write to the Free Software
 " Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-if exists('g:loaded_dbext') || &cp
+if exists('g:loaded_dbext')
     finish
 endif
 if v:version < 700
     echomsg "dbext: Version 4.00 or higher requires Vim7.  Version 3.50 can stil be used with Vim6."
     finish
 endif
-let g:loaded_dbext = 1300
+let g:loaded_dbext = 1600
+
+" Turn on support for line continuations when creating the script
+let s:cpo_save = &cpo
+set cpo&vim
 
 if !exists('g:dbext_default_menu_mode')
     let g:dbext_default_menu_mode = 3
@@ -400,7 +404,7 @@ if has("gui_running") && has("menu") && g:dbext_default_menu_mode != 0
     exec 'inoremenu <script> '.menuRoot.'.View\ List<TAB>'.leader.'slv  <C-O>:DBListView<CR>'
     exec 'vnoremenu <script> '.menuRoot.'.Assign\ Variable\ (Visual\ selection)<TAB>'.leader.'sa :DBVarRangeAssign<CR>'
     exec 'noremenu  <script> '.menuRoot.'.Assign\ Variable\ (Current\ line)<TAB>'.leader.'sal :.,.DBVarRangeAssign<CR>'
-    exec 'noremenu  <script> '.menuRoot.'.List\ Variables<TAB>'.leader.'svl :DBListVar<CR>'
+    exec 'noremenu  <script> '.menuRoot.'.List\ Variables<TAB>'.leader.'slr :DBListVar<CR>'
     exec 'noremenu  <script> '.menuRoot.'.Complete\ Tables :DBCompleteTables<CR>'
     exec 'noremenu  <script> '.menuRoot.'.Complete\ Procedures :DBCompleteProcedures<CR>'
     exec 'noremenu  <script> '.menuRoot.'.Complete\ Views :DBCompleteViews<CR>'
@@ -450,9 +454,18 @@ endfunction
 
 function! DB_getVisualBlock() range
     let save = @"
+    " Mark the current line to return to
+    let curline     = line("'>")
+    let curcol      = virtcol("'>")
+
     silent normal gvy
     let vis_cmd = @"
     let @" = save
+
+    " Return to previous location
+    " Accounting for beginning of the line
+    call cursor(curline, curcol)
+
     return vis_cmd
 endfunction 
 
@@ -488,5 +501,8 @@ augroup dbext
     autocmd BufDelete   * if exists('g:loaded_dbext_auto') != 0 | exec 'call dbext#DB_auBufDelete( expand("<abuf>") )' | endif
     autocmd VimLeavePre * if exists('g:loaded_dbext_auto') != 0 | exec 'call dbext#DB_auVimLeavePre()' | endif
 augroup END
+
+let &cpo = s:cpo_save
+unlet s:cpo_save
 
 " vim:fdm=marker:nowrap:ts=4:expandtab:

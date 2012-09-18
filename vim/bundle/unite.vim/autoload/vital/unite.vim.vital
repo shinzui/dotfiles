@@ -1,2 +1,7 @@
-0c76985
+671b6f0
 
+Data.List
+System.File
+System.Cache
+Data.String
+Vim.Buffer.Manager

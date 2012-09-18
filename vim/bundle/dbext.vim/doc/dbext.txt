@@ -1,13 +1,13 @@
-*dbext.txt*	For Vim version 7.0.  Last change: 2011 Jun 03
+*dbext.txt*	For Vim version 7.0.  Last change: 2012 Jun 11
 
 
                 	  VIM REFERENCE MANUAL 
                                 by 
                      David Fishburn <dfishburn dot vim at gmail dot com>
-                     Peter Bagyinszki <petike1 at dpg dot hu>
+                     Peter Bagyinszki 
 
 	  	Database extension plugin (dbext.vim) manual
-	  	dbext.vim version 13.00
+	  	dbext.vim version 16.00
 
 For instructions on installing this file, type
 	:help add-local-help
@@ -91,6 +91,60 @@ David Fishburn
 
 ==============================================================================
 2. What's New						*dbext-new*
+
+Version 16.00
+
+ Bug Fixes
+ ---------
+ - For Oracle databases, the SQLPlus command had unmatched quotation marks 
+   which could lead to errors displayed by dbext indicating it could not 
+   open the file to execute the SQL (JustinF Zhang).
+
+
+Version 15.00
+
+ New Features
+ ---------
+ - A new database confirguration parameter, g:dbext_default_DBTYPE_extra, is 
+   available to allow the user to customize command line parameters passed to
+   the database binary used to execute the statement.  This can be overriden
+   affecting all new connections via your .vimr.  Or for a specific buffer
+   via connection profile or :DBPromptForBufferParameters (Ken Inglis, 
+   Michael Berkowski).
+
+ Bug Fixes
+ ---------
+ - The dbext menu for List Variables displayed the wrong mapping.
+ - For SQLite databases, if no database is specified now a warning message
+   is displayed instead of an error message.
+
+
+Version 14.00
+
+ New Features
+ ---------
+ - For Oracle connection profiles, support this form of server name, 
+   srvname=(description=(address=(protocol=TCP)(host=dbhost.our.domain.com)(port=1521))(connect_data=(server=dedicated)(service_name=gps03tst.our.domain.com)))
+   (Fredrik Acosta).
+ - Added a new buffer option to specify which filetype dbext should use when 
+   parsing the query.  If an existing language already works as you need 
+   you can tell dbext to use it via the modeline or DBSetOption
+   (Albie Janse van Rensburg).
+ - Added an example of a function I use to execute blocks of stored procedures
+   using dbext's commands.
+ - For PostgreSQL, dbext will check for the existance of a .pgpass file.  If
+   not found, execution will abort and a warning message will be displayed.
+   By default $HOME/.pgpass will be validated (Frank Schwach).
+
+ Bug Fixes
+ ---------
+ - When closing or deleting buffers it was possible to loose syntax, filetype 
+   and hidden settings (Alexey Radkov).
+ - Parsing VisualBasic and Basic variables let to errors in DB_parseVB
+   (Albie Janse van Rensburg).
+ - Generating a column list for an ASA database left an extra , at the end
+   of the list.  This also affected the SQLComplete plugin.
+
 
 Version 13.00
 
@@ -1271,6 +1325,16 @@ Version 2.00
         prompted, the value will be stored for later use.  To turn
         this feature off, add the following to your .vimrc: >
             let g:dbext_default_variable_remember = '0'
+    dbext_default_filetype
+<       Default: &filetype
+        New feature to version 14.0.  By default, dbext will use
+        Vim's filetype when parsing queries.  But depending on your
+        setup and your language, a different filetype might already
+        prompt for variables they way you need.  This will allow 
+        you to override the dbext default and use the value you 
+        specify. >
+            :DBSetOption filetype=sql
+            let g:dbext_default_profile_test = 'type=ASA:user=DBA:passwd=SQL:filetype=sql'
 
 
 <
@@ -1334,6 +1398,7 @@ Version 2.00
 <
           From within a profile (set within your vimrc): >
               let g:dbext_default_profile_mysql = 'type=MYSQL:user=root:passwd=:dbname=mysql:extra=-t'
+              let g:dbext_default_profile_mysql_local = 'type=MYSQL:user=root:passwd=whatever:dbname=mysql:extra=--batch --raw --silent'
 <
           This has the net result of creating the following command line: >
               dbisql -c "UID=dba;PWD=sql;CON=myconn"
@@ -1400,6 +1465,20 @@ Version 2.00
     cmd_options
 <       - Optionally specify (or override) additional command line switches
           for the database tool. >
+    extra
+<       - If additional parameters are required on a particular database
+          type's command line they can be specified using this option.
+          MySQL defaults this to '-t', to format the output with tabs.
+          This value can be overriden three different ways:
+              1.  Changing the default for a specific database type: >
+                  let g:dbext_default_MYSQL_extra = '--batch --raw'
+<             2.  Using the "extra" parameter specified in a connection
+                  profile: >
+                  let g:dbext_default_profile_mysql_local = 'type=MYSQL:user=root:passwd=whatever:dbname=mysql:extra=--batch --raw'
+<             3.  Using :DBPromptForBufferParameters and specifying a value
+                  for the extra parameter.  If this value is set to an empty
+                  string, it will default to #1.  If it is set to a value
+                  or a blank space it can be overridden. >
     on_error
 <       - Dictates the behaviour of the tool if an error is encountered during
           execution. >
@@ -1425,34 +1504,43 @@ Version 2.00
         dbext_default_PGSQL_cmd_header         = ''
         dbext_default_PGSQL_cmd_terminator     = ''
         dbext_default_PGSQL_cmd_options        = ''
+        dbext_default_PGSQL_extra              = ''
+        dbext_default_PGSQL_pgpass             = expand('$HOME/.pgpass')
         dbext_default_MYSQL_bin                = 'isql'
         dbext_default_MYSQL_cmd_header         = ''
         dbext_default_MYSQL_cmd_terminator     = ''
         dbext_default_MYSQL_cmd_options        = ''
+        dbext_default_MYSQL_extra              = '-t'
         dbext_default_MYSQL_version            = '5'
         dbext_default_ASA_bin                  = 'dbisql'
         dbext_default_ASA_cmd_header           = ''
         dbext_default_ASA_cmd_terminator       = ';'
         dbext_default_ASA_cmd_options          = '-nogui'
+        dbext_default_ASA_extra                = ''
         dbext_default_INGRES_bin               = 'sql'
         dbext_default_INGRES_cmd_header        = ''
         dbext_default_INGRES_cmd_terminator    = '\p\g'
         dbext_default_INGRES_cmd_options       = ''
+        dbext_default_INGRES_extra             = ''
         dbext_default_ASE_bin                  = "isql"
         dbext_default_ASE_cmd_header           = ""
         dbext_default_ASE_cmd_terminator       = "\ngo\n"
         dbext_default_ASE_cmd_options          = '-w 10000'
+        dbext_default_ASE_extra                = ''
         dbext_default_INTERBASE_bin            = ''
         dbext_default_INTERBASE_cmd_header     = ''
         dbext_default_INTERBASE_cmd_terminator = ''
         dbext_default_INTERBASE_cmd_options    = ''
+        dbext_default_INTERBASE_extra          = ''
         dbext_default_SQLITE_bin               = 'sqlite'
         dbext_default_SQLITE_cmd_header        = ".mode column\n.headers ON\n"
         dbext_default_SQLITE_cmd_terminator    = ';'
+        dbext_default_SQLITE_extra             = ''
         dbext_default_SQLSRV_bin               = "osql"
         dbext_default_SQLSRV_cmd_header        = ""
         dbext_default_SQLSRV_cmd_terminator    = ""
         dbext_default_SQLSRV_cmd_options       = '-w 10000 -r -b -n'
+        dbext_default_SQLSRV_extra             = ''
         dbext_default_ORA_bin                  = "sqlplus"
         dbext_default_ORA_cmd_header           = 
                                 \ "set pagesize 10000\n" .
@@ -1464,11 +1552,13 @@ Version 2.00
                                 \ "set tab off\n\n"
         dbext_default_ORA_cmd_terminator       = ";"
         dbext_default_ORA_cmd_options          = '-S'
+        dbext_default_ORA_extra                = ''
         dbext_default_DB2_use_db2batch         = 0
         dbext_default_DB2_bin                  = 'db2batch'
         dbext_default_DB2_cmd_header           = ''
         dbext_default_DB2_cmd_terminator       = ';'
         dbext_default_DB2_cmd_options          = '-q del -s off'
+        dbext_default_DB2_extra                = ''
         dbext_default_DB2_db2cmd_bin           = 'db2cmd'
         dbext_default_DB2_db2cmd_cmd_options   = '-c -w -i -t db2 -s'
 
@@ -2043,6 +2133,7 @@ To specify the type of database you connect to most often, you can place the
     
     " MySQL
     let g:dbext_default_profile_mysql_local = 'type=MYSQL:user=root:passwd=whatever:dbname=mysql:extra=-t'
+    let g:dbext_default_profile_mysql_local = 'type=MYSQL:user=root:passwd=whatever:dbname=mysql:extra=--batch --raw --silent'
     let g:dbext_default_profile_mysql_local_DBI = 'type=DBI:user=root:passwd=whatever:driver=mysql:conn_parms=database=mysql;host=localhost'
     let g:dbext_default_profile_mysql_local_ODBC = 'type=ODBC:user=root:passwd=whatever:dsnname=mysql'
     
@@ -2050,7 +2141,9 @@ To specify the type of database you connect to most often, you can place the
     let g:dbext_default_profile_ORA = 'type=ORA:srvname=ffs42ga:user=john:passwd=whatever'
     " Oracle SQL Connect URL string (notice the : is escaped for the port option)
     let g:dbext_default_profile_ORA_URL = 'type=ORA:srvname=//localhost\:3333/instance_name:user=scott:passwd=tiger'
-    
+    " Different form of Oracle server name
+    let g:dbext_default_profile_ORA_Extended = 'type=ORA:user=scott:passwd=tiger:srvname=(description=(address=(protocol=TCP)(host=localhost)(port=1521))(connect_data=(server=dedicated)(service_name=10gR2)))'
+
     " Postgress
     let g:dbext_default_profile_PG = 'type=PGSQL:user=postgres'
     
@@ -2171,6 +2264,7 @@ To specify the type of database you connect to most often, you can place the
 
  dbext's commands can be used within mappings.  Here is a simple example 
  that you can place in your |.vimrc|:
+
      a) Sets connection information (based on "your_profile"). >
            profile=your_profile
 <       This assumes you have the following in your |.vimrc| >
@@ -2190,6 +2284,66 @@ To specify the type of database you connect to most often, you can place the
            \ :let sql_cmd = "DBExecSQL delete from xsl " .
            \      "where name = '" . expand("%:t") . "';"<CR>
            \ :exec sql_cmd<CR>
+<
+ Here is an example of a custom map which I use to execute a block of SQL from
+ a file full of stored procedures.  The function finds the necessary SQL and
+ calls dbext's DBExecRangeSQL command.  Add the function to your vimrc.
+>
+    " Since I repeatedly need to edit stored procedures, the CREATE PROCEDURE
+    " statement is preceeded by an IF ... END IF block which will drop
+    " the procedure or it uses the CREATE OR REPLACE syntax.  
+    " This function will visually select the IF block to the END; statement
+    " of the stored procedure and execute it.  Or check for the 
+    " CREATE OR REPLACE and stop there and look to the end.
+    function! SQLExecuteIfCreateReplace()
+        let l:old_sel = &sel
+        let &sel = 'inclusive'
+        let saveWrapScan=&wrapscan
+        let saveSearch=@/ 
+        let l:reg_z = @z
+        let &wrapscan=0
+        let @z = ''
+        let found = 0
+        let startLine = 0
+        let endLine = 0
+        let curLine = line(".")
+        let curCol  = virtcol(".")
+    
+        " Must default the command terminator
+        let l:dbext_cmd_terminator = ";"
+    
+        try
+            " Search backwards and do NOT wrap
+            " Find the line beginning with an IF clause
+            "     IF EXISTS( SELECT 1 ...
+            " or find an or replace clause
+            "     CREATE OR REPLACE PROCEDURE ...
+            " And execute it until we find an 
+            "     END 
+            " at the beginning of a line.
+            let startLine = search('\c\(^\<if\>\|\<or\s\+replace\>\)', 'bcnW' )
+    
+            if startLine > 0
+                " Search forward and visually select all lines
+                " until we find an END; clause
+                let endLine = search('^END'.l:dbext_cmd_terminator.'\s*$', 'cnW')
+                exec startLine.','.endLine.'DBExecRangeSQL'
+            endif
+        finally
+            call cursor(curLine, curCol)
+            noh
+            let l:query = @z
+            let @z = l:reg_z
+            let @/=saveSearch
+            let &wrapscan=saveWrapScan
+            let &sel = l:old_sel
+        endtry
+    endfunction
+<
+ The mapping I use to trigger the function is <Leader>sbe using the 
+ mnemonic sql - begin - end
+>
+    nnoremap <Leader>sbe :call SQLExecuteIfCreateReplace()<CR>
 <
 ==============================================================================
 11. Object Completion                                 	*dbext-completion*
