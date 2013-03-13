@@ -139,6 +139,7 @@ autocmd BufNewFile,BufRead *.json  set filetype=javascript
 autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
 autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
 autocmd BufRead,BufNewFile *.scss set filetype=scss
+autocmd BufRead,BufNewFile /usr/local/etc/nginx/* set ft=nginx 
 
 
 autocmd BufReadPost fugitive://* set bufhidden=delete

@@ -1,8 +1,8 @@
 " NrrwRgn.vim - Narrow Region plugin for Vim
 " -------------------------------------------------------------
-" Version:	   0.28
+" Version:	   0.31
 " Maintainer:  Christian Brabandt <cb@256bit.org>
-" Last Change: Sun, 03 Jun 2012 13:47:04 +0200
+" Last Change: Sat, 16 Feb 2013 22:28:31 +0100
 "
 " Script: http://www.vim.org/scripts/script.php?script_id=3075
 " Copyright:   (c) 2009, 2010 by Christian Brabandt
@@ -11,7 +11,7 @@
 "			   instead of "Vim".
 "			   No warranty, express or implied.
 "	 *** ***   Use At-Your-Own-Risk!   *** ***
-" GetLatestVimScripts: 3075 28 :AutoInstall: NrrwRgn.vim
+" GetLatestVimScripts: 3075 31 :AutoInstall: NrrwRgn.vim
 "
 " Init: {{{1
 let s:cpo= &cpo
@@ -40,7 +40,7 @@ com! -bang NRLast :NRL
 " Define the actual Commands "{{{2
 com! -range -bang NR	 :<line1>, <line2>call nrrwrgn#NrrwRgn(<q-bang>)
 com! -range NRP  :exe ":" . <line1> . ',' . <line2> . 'call nrrwrgn#Prepare()'
-com! NRV :call nrrwrgn#VisualNrrwRgn(visualmode())
+com! -bang -range NRV :call nrrwrgn#VisualNrrwRgn(visualmode(), <q-bang>)
 com! NUD :call nrrwrgn#UnifiedDiff()
 com! -bang NW	 :exe ":" . line('w0') . ',' . line('w$') . "call nrrwrgn#NrrwRgn(<q-bang>)"
 com! -bang NRM :call nrrwrgn#NrrwRgnDoPrepare(<q-bang>)

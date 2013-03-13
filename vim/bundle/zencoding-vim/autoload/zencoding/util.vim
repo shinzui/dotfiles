@@ -149,7 +149,7 @@ function! zencoding#util#getContentFromURL(url)
   let s1 = len(split(res, '?'))
   let utf8 = iconv(res, 'utf-8', &encoding)
   let s2 = len(split(utf8, '?'))
-  return s2 > s1 * 2 ? utf8 : res
+  return (s2 == s1 || s2 >= s1 * 2) ? utf8 : res
 endfunction
 
 function! zencoding#util#getTextFromHTML(buf)
@@ -191,6 +191,11 @@ endfunction
 
 function! zencoding#util#getImageSize(fn)
   let fn = a:fn
+
+  if zencoding#util#isImageMagickInstalled()
+    return zencoding#util#imageSizeWithImageMagick(fn)
+  endif
+
   if filereadable(fn)
     let hex = substitute(system('xxd -p "'.fn.'"'), '\n', '', 'g')
   else
@@ -228,3 +233,17 @@ function! zencoding#util#getImageSize(fn)
   return [width, height]
 endfunction
 
+function! zencoding#util#imageSizeWithImageMagick(fn)
+  let img_info = system('identify -format "%wx%h" "'.a:fn.'"')
+  let img_size = split(img_info, 'x')
+  let width = img_size[0]
+  let height = substitute(img_size[1], '\n', '', '')
+  return [width, height]
+endfunction
+
+function! zencoding#util#isImageMagickInstalled()
+  if !get(s:, 'zencoding_use_identify', 1)
+    return 0
+  endif
+  return executable('identify')
+endfunction

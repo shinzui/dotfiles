@@ -1,7 +1,6 @@
 #!/usr/bin/env ruby
 
 git_bundles = [
-  #"git://github.com/astashov/vim-ruby-debugger.git",
   "git://github.com/msanders/snipmate.vim.git",
   "git://github.com/scrooloose/nerdtree.git",
   "git://github.com/shinzui/nerdcommenter.git",
@@ -30,7 +29,7 @@ git_bundles = [
   "git://github.com/sjl/gundo.vim.git",
   "git://github.com/vim-scripts/scratch.vim.git",
   "git://github.com/shinzui/vim-snipmate-ruby-snippets.git",
-  "git://github.com/vim-scripts/ZoomWin.git",
+  "git://github.com/itspriddle/ZoomWin.git",
   "git://github.com/kchmck/vim-coffee-script.git",
   "git://github.com/tpope/vim-unimpaired.git",
   "git://github.com/kogakure/vim-sparkup.git",
@@ -65,10 +64,13 @@ git_bundles = [
   "git://github.com/scrooloose/syntastic.git",
   "git://github.com/mattn/webapi-vim.git",
   "git://github.com/chrisbra/NrrwRgn",
-  "git://https:github.com/skalnik/vim-vroom",
+  "git://github.com/skalnik/vim-vroom",
   "git://github.com/lucapette/vim-ruby-doc.git",
   "git://github.com/majutsushi/tagbar.git",
-  "git://github.com/29decibel/codeschool-vim-theme.git"
+  "git://github.com/29decibel/codeschool-vim-theme.git",
+  "git://github.com/vim-scripts/nginx.vim.git",
+  "git://github.com/mattn/gist-vim",
+  "git://github.com/airblade/vim-gitgutter.git"
 ]
 
 

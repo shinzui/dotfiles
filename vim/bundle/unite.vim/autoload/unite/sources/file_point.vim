@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: file_point.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jan 2012.
+" Last Modified: 16 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,7 +27,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! unite#sources#file_point#define()"{{{
+function! unite#sources#file_point#define() "{{{
   return s:source
 endfunction"}}}
 
@@ -36,8 +36,8 @@ let s:source = {
       \ 'description' : 'file candidate from cursor point',
       \ 'hooks' : {},
       \}
-function! s:source.hooks.on_init(args, context)"{{{
-  let filename_pattern = '[[:alnum:];/?:@&=+$_.!~|()-]\+'
+function! s:source.hooks.on_init(args, context) "{{{
+  let filename_pattern = '[[:alnum:];/?:@&=+$_.!~|()#-]\+'
   let filename = unite#util#expand(
         \ matchstr(getline('.')[: col('.')-1], filename_pattern . '$')
         \ . matchstr(getline('.')[col('.') :], '^'.filename_pattern))
@@ -46,8 +46,14 @@ function! s:source.hooks.on_init(args, context)"{{{
         \ filename : fnamemodify(filename, ':p')
 endfunction"}}}
 
-function! s:source.gather_candidates(args, context)"{{{
+function! s:source.gather_candidates(args, context) "{{{
   if a:context.source__filename =~ '^\%(https\?\|ftp\)://'
+    if exists('*vimproc#host_exists') &&
+          \ !vimproc#host_exists(a:context.source__filename)
+      " URI is invalid.
+      return []
+    endif
+
     " URI.
     return [{
           \   'word' : a:context.source__filename,

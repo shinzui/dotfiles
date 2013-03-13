@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mapping.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2012.
+" Last Modified: 21 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,20 +30,20 @@ set cpo&vim
 " Variables  "{{{
 "}}}
 
-function! unite#sources#mapping#define()"{{{
+function! unite#sources#mapping#define() "{{{
   return s:source
 endfunction"}}}
 
 let s:source = {
       \ 'name' : 'mapping',
       \ 'description' : 'candidates from Vim mappings',
-      \ 'max_candidates' : 100,
       \ 'hooks' : {},
       \ 'action_table' : {},
+      \ 'default_kind' : 'command',
       \ }
 
 let s:cached_result = []
-function! s:source.hooks.on_init(args, context)"{{{
+function! s:source.hooks.on_init(args, context) "{{{
   " Get buffer number.
   let bufnr = get(a:args, 0, bufnr('%'))
   let oldnr = bufnr('%')
@@ -79,31 +79,38 @@ function! s:source.hooks.on_init(args, context)"{{{
 
     call add(s:cached_result, {
           \ 'word' : line,
-          \ 'kind' : 'command',
           \ 'action__command' : 'execute "normal ' . map . '"',
           \ 'action__mapping' : map,
           \ })
   endfor
 endfunction"}}}
-function! s:source.gather_candidates(args, context)"{{{
+function! s:source.gather_candidates(args, context) "{{{
   return s:cached_result
 endfunction"}}}
-function! s:source.complete(args, context, arglead, cmdline, cursorpos)"{{{
+function! s:source.complete(args, context, arglead, cmdline, cursorpos) "{{{
   return filter(range(1, bufnr('$')), 'buflisted(v:val)')
 endfunction"}}}
 
-" Actions"{{{
-let s:source.action_table.help = {
-      \ 'description' : 'view help documentation',
+" Actions "{{{
+let s:source.action_table.preview = {
+      \ 'description' : 'view the help documentation',
+      \ 'is_quit' : 0,
       \ }
-function! s:source.action_table.help.func(candidate)"{{{
-  if a:candidate.word !~ '<Plug>\S\+'
-    call unite#print_error('Sorry, this help format is not supported.')
-    return
-  endif
+function! s:source.action_table.preview.func(candidate) "{{{
+  let winnr = winnr()
 
-  execute 'help' matchstr(
+  try
+    execute 'help' matchstr(
         \ a:candidate.word, '<Plug>\S\+')
+    normal! zv
+    normal! zt
+    setlocal previewwindow
+    setlocal winfixheight
+  catch /^Vim\%((\a\+)\)\?:E149/
+    " Ignore
+  endtry
+
+  execute winnr.'wincmd w'
 endfunction"}}}
 "}}}
 

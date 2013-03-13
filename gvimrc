@@ -7,7 +7,7 @@ set guioptions-=T
 " remove ugly scrollbars
 set guioptions=aAce
 
-colorscheme solarized
+colorscheme codeschool
 set guifont=Menlo:h11
 
 "Used by Rails plugin
