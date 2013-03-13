@@ -1,12 +1,39 @@
 set editing-mode vi
 set keymap vi
-set convert-meta on
 
-# ^l clear screen
-bind -m vi-insert "\C-l":clear-screen
+#use Unicode & do NOT use the "8bit hack" to input/output non-ASCII characters
+# See http://code.google.com/p/iterm2/wiki/Keybindings
+set input-meta on
+set output-meta on
+set convert-meta off
 
-# ^p check for partial match in history
-bind -m vi-insert "\C-p":dynamic-complete-history
+# When pressing up or down arrows,
+# show only history entries that match what was already typed
+"\e[A":history-search-backward
+"\e[B":history-search-forward
+"\e[C":forward-char
+"\e[D":backward-char
 
-# ^n cycle through the list of partial matches
-bind -m vi-insert "\C-n":menu-complete
+$if mode=vi
+set keymap vi-command
+# these are for vi-command mode
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+"\e[C":forward-char
+"\e[D":backward-char
+set keymap vi-insert
+# these are for vi-insert mode
+"\e[A": history-search-backward
+"\e[B": history-search-forward
+"\e[C":forward-char
+"\e[D":backward-char
+"\C-l":clear-screen
+"\C-p":dynamic-complete-history
+"\C-n":menu-complete
+$endif
+
+
+# Turn on case insensitivity for tab-completion
+set completion-ignore-case On
+
+set completion-prefix-display-length 2

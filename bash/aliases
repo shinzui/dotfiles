@@ -32,6 +32,9 @@ alias bu='b update'
 alias be='b exec'
 alias bl='b list'
 
+#zeus
+alias zr='zeus rake'
+
 #OSX
 alias finder='open -a Finder'
 alias ql='qlmanage -p'
