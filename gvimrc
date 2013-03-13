@@ -8,7 +8,7 @@ set guioptions-=T
 set guioptions=aAce
 
 colorscheme codeschool
-set guifont=Menlo:h11
+set guifont=Menlo:h10
 
 "Used by Rails plugin
 command-bar -nargs=1 OpenURL :!open <args> 

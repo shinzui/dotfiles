@@ -48,7 +48,6 @@ git_bundles = [
   "git://github.com/h1mesuke/unite-outline.git",
   "git://github.com/tpope/vim-endwise.git",
   "git://github.com/chrismetcalf/vim-yankring.git",
-  "git://github.com/robgleeson/hammer.vim.git",
   "git://github.com/mattn/zencoding-vim.git",
   "git://github.com/tpope/vim-bundler.git",
   "git://github.com/tpope/gem-ctags.git",
@@ -70,7 +69,9 @@ git_bundles = [
   "git://github.com/29decibel/codeschool-vim-theme.git",
   "git://github.com/vim-scripts/nginx.vim.git",
   "git://github.com/mattn/gist-vim",
-  "git://github.com/airblade/vim-gitgutter.git"
+  "git://github.com/airblade/vim-gitgutter.git",
+  "git://github.com/benmills/vimux.git",
+  "git://github.com/epmatsw/ag.vim.git"
 ]
 
 

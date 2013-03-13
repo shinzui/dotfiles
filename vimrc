@@ -188,10 +188,6 @@ let NERDSpaceDelims=1
 let NERDCreateDefaultMappings=0 "disable default mapping
 map <D-/> <plug>NERDCommenterToggle
 
-"Hammer
-let g:HammerQuiet=1 
-map <leader>p :Hammer<CR>
-
 " CTags
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
 map <C-\> :tnext<CR>
@@ -229,6 +225,7 @@ let g:buffergator_split_size="50"
 map <C-t> :CtrlP<CR>
 imap <C-t> <ESC>:CtrlP<CR>
 
+
 "Chef plugin setup
 function! ChefNerdTreeFind(env)
     try
@@ -263,3 +260,38 @@ endfunction
 
 
 au BufNewFile,BufRead */*cookbooks/*  call s:SetupChef()
+
+"TagBar
+nmap <F8> :TagbarToggle<CR>
+
+if executable('coffeetags')
+  let g:tagbar_type_coffee = {
+        \ 'ctagsbin' : 'coffeetags',
+        \ 'ctagsargs' : '',
+        \ 'kinds' : [
+        \ 'f:functions',
+        \ 'o:object',
+        \ ],
+        \ 'sro' : ".",
+        \ 'kind2scope' : {
+        \ 'f' : 'object',
+        \ 'o' : 'object',
+        \ }
+        \ }
+endif
+
+let g:tagbar_type_javascript = {
+    \ 'ctagsbin' : '/path/to/jsctags'
+    \ }
+
+"Unite
+nnoremap [unite] <Nop>
+nmap f [unite]
+
+noremap <silent> [unite]o :<C-u>Unite -buffer-name=outline outline<CR>
+nnoremap <silent> [unite]r :<C-u>Unite -buffer-name=register register<CR>
+nnoremap <silent> [unite]b  :<C-u>UniteWithBufferDir  -buffer-name=files -prompt=%\  buffer file_mru bookmark file<CR>
+
+
+let g:unite_enable_start_insert = 1
+let g:unite_enable_start_inserte_short_source_names = 1
