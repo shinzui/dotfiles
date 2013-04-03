@@ -27,7 +27,7 @@ alias gic='gi --no-rdoc --no-ri'
 
 #bundler
 alias b='bundle'
-alias bi='b install --path vendor'
+alias bi='b install'
 alias bu='b update'
 alias be='b exec'
 alias bl='b list'

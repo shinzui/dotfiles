@@ -26,5 +26,10 @@ function sg {
 }
 
 function alert() {
-  "$@" && growlnotify -a iTerm -m "$@ completed with exit code $?" ;
+  "$@" && terminal-notifier -message "$@ completed with exit code $?" ;
+}
+
+
+function bsearch() {
+  ag "$@" `bundle show --paths`
 }

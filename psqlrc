@@ -1,0 +1,11 @@
+\set QUIET yes
+\pset null 'NULL'
+\set HISTFILE ~/.psql_history- :DBNAME
+\set HISTSIZE 10000
+
+\x auto
+
+
+\unset QUIET
+
+\set HISTCONTROL ignoredups

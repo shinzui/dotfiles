@@ -5,10 +5,10 @@ export EDITOR='vim'
 export INPUTRC=~/.inputrc 
 
 export HISTCONTROL=ignoreboth
-export HISTSIZE=5000
-export HISTIGNORE='ls:bg:fg:history'
+export HISTSIZE=1000000
+export HISTFILESIZE=1000000
+export HISTIGNORE='ls:bg:fg:history:exit'
 export HISTTIMEFORMAT='%F %T '
-shopt -s histappend
 
 export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'
 

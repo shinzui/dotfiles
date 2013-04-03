@@ -35,5 +35,6 @@ $endif
 
 # Turn on case insensitivity for tab-completion
 set completion-ignore-case On
+set completion-query-items 10000
 
 set completion-prefix-display-length 2
