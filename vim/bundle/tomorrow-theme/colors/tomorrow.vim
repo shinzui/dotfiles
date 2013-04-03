@@ -256,7 +256,7 @@ Please, don't. https://github.com/styleguide/templates/2.0
       <div id="suggestions">
         <a href="https://github.com/contact">Contact Support</a> &mdash;
         <a href="https://status.github.com">GitHub Status</a> &mdash;
-        <a href="https://twitter.com/github">@github</a>
+        <a href="https://twitter.com/githubstatus">@githubstatus</a>
       </div>
 
       <div id="logo">
@@ -288,7 +288,7 @@ Please, don't. https://github.com/styleguide/templates/2.0
       $.plax.enable()
 
       $.ajax({
-        url: '/sessions/login_404',
+        url: '/sessions/login_404?return_to='+window.location.pathname,
         success: function(data) {
           if (data != ' ') {
             $('#auth').html(data).slideDown(100)

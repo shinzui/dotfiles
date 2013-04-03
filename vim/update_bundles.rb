@@ -36,8 +36,6 @@ git_bundles = [
   "git://github.com/kana/vim-textobj-user.git",
   "git://github.com/nelstrom/vim-textobj-rubyblock.git",
   "git://github.com/tsaleh/vim-matchit.git",
-  "git://github.com/ecomba/vim-ruby-refactoring.git",
-  #"git://github.com/wincent/Command-T.git",
   "git://github.com/kien/ctrlp.vim.git",
   "git://github.com/altercation/vim-colors-solarized.git",
   "git://github.com/godlygeek/tabular.git",

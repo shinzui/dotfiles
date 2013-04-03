@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: unite.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Mar 2013.
+" Last Modified: 02 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -248,6 +248,24 @@ function! unite#get_unite_winnr(buffer_name) "{{{
         let buffer_context.old_buffer_info = []
       endif
       return winnr
+    endif
+  endfor
+
+  return -1
+endfunction"}}}
+function! unite#get_unite_bufnr(buffer_name) "{{{
+  for bufnr in filter(range(1, bufnr('$')),
+        \ "getbufvar(v:val, '&filetype') ==# 'unite'")
+    let buffer_context = getbufvar(bufnr, 'unite').context
+    if buffer_context.buffer_name ==# a:buffer_name
+      if buffer_context.temporary
+            \ && !empty(filter(copy(buffer_context.old_buffer_info),
+            \ 'v:val.buffer_name ==# context.buffer_name'))
+        " Disable resume.
+        let buffer_context.old_buffer_info = []
+      endif
+
+      return bufnr
     endif
   endfor
 
@@ -1180,6 +1198,9 @@ function! unite#start_temporary(sources, ...) "{{{
 
   let new_context = get(a:000, 0, {})
 
+  " Overwrite context.
+  let context = extend(context, new_context)
+
   let context.temporary = 1
   let context.unite__direct_switch = 1
   let context.input = ''
@@ -1189,9 +1210,6 @@ function! unite#start_temporary(sources, ...) "{{{
   let context.unite__old_winwidth = 0
   let context.unite__old_winheight = 0
   let context.is_resize = 0
-
-  " Overwrite context.
-  let context = extend(context, new_context)
 
   let buffer_name = get(a:000, 1,
         \ matchstr(context.buffer_name, '^\S\+')
@@ -1210,7 +1228,9 @@ function! unite#start_temporary(sources, ...) "{{{
   let unite = unite#get_current_unite()
   let unite.prev_bufnr = unite_save.prev_bufnr
   let unite.prev_winnr = unite_save.prev_winnr
-  let unite.update_time_save = unite_save.update_time_save
+  if has_key(unite, 'update_time_save')
+    let unite.update_time_save = unite_save.update_time_save
+  endif
   let unite.winnr = unite_save.winnr
 
   " Restore current directory.
@@ -1387,7 +1407,7 @@ function! unite#resume(buffer_name, ...) "{{{
   endif
   call extend(context, new_context)
 
-  call s:switch_unite_buffer(bufname(bufnr), context)
+  call s:switch_unite_buffer(context.buffer_name, context)
 
   " Set parameters.
   let unite = unite#get_current_unite()
@@ -1440,15 +1460,8 @@ function! unite#close(buffer_name)  "{{{
           \ prefix, 0, tabpagebuflist(tabpagenr()))
   endif
 
-  let quit_winnr = 0
-
   " Search unite window.
-  " Note: must escape file-pattern.
-  let buffer_name = unite#util#escape_file_searching(buffer_name)
-
-  let quit_winnr = bufwinnr(buffer_name) > 0 ?
-        \ bufwinnr(buffer_name) :
-        \ unite#get_unite_winnr(a:buffer_name)
+  let quit_winnr = unite#get_unite_winnr(a:buffer_name)
 
   if quit_winnr > 0
     " Quit unite buffer.
@@ -1537,6 +1550,23 @@ function! s:quit_session(is_force, ...)  "{{{
     endif
 
     call s:on_buf_unload(bufname)
+
+    if !unite.has_preview_window
+      let preview_windows = filter(range(1, winnr('$')),
+            \ 'getwinvar(v:val, "&previewwindow") != 0')
+      if !empty(preview_windows)
+        " Close preview window.
+        pclose!
+
+      endif
+    endif
+
+    call unite#clear_previewed_buffer_list()
+
+    if winnr('$') != 1 && !unite.context.temporary
+      execute unite.win_rest_cmd
+      execute unite.prev_winnr 'wincmd w'
+    endif
   else
     let winnr = bufwinnr(unite.prev_bufnr)
     if winnr < 0
@@ -1741,8 +1771,7 @@ function! s:initialize_loaded_sources(sources, context) "{{{
   let sources = []
 
   let number = 0
-  for [source, args] in map(a:sources,
-        \ 'type(v:val) == type([]) ? [v:val[0], v:val[1:]] : [v:val, []]')
+  for [source, args] in s:get_source_args(a:sources)
     if type(source) == type('')
       let source_name = source
       unlet source
@@ -2403,7 +2432,8 @@ function! s:initialize_current_unite(sources, context) "{{{
   " Quit previous unite buffer.
   if !context.create && !context.temporary
     let winnr = unite#get_unite_winnr(context.buffer_name)
-    if winnr > 0
+    if winnr > 0 && s:get_source_args(a:sources) !=#
+          \ getbufvar(winbufnr(winnr), 'unite').args
       " Quit unite buffer.
       execute winnr 'wincmd w'
 
@@ -2451,6 +2481,7 @@ function! s:initialize_current_unite(sources, context) "{{{
         \ unite.buffer_name
   let unite.prev_bufnr = bufnr('%')
   let unite.prev_winnr = winnr()
+  let unite.update_time_save = &updatetime
 
   " Create new buffer name.
   let postfix = s:get_postfix(
@@ -2478,6 +2509,7 @@ function! s:initialize_current_unite(sources, context) "{{{
   let unite.candidates = []
   let unite.max_source_candidates = 0
   let unite.is_multi_line = 0
+  let unite.args = s:get_source_args(a:sources)
 
   if context.here
     let context.winheight = winheight(0) - winline() +
@@ -2504,8 +2536,11 @@ function! s:initialize_current_unite(sources, context) "{{{
 endfunction"}}}
 function! s:initialize_unite_buffer() "{{{
   let is_bufexists = bufexists(s:current_unite.real_buffer_name)
+  let s:current_unite.context.real_buffer_name =
+        \ s:current_unite.real_buffer_name
+
   call s:switch_unite_buffer(
-        \ s:current_unite.real_buffer_name, s:current_unite.context)
+        \ s:current_unite.buffer_name, s:current_unite.context)
 
   let b:unite = s:current_unite
   let unite = unite#get_current_unite()
@@ -2580,42 +2615,26 @@ function! s:initialize_unite_buffer() "{{{
 endfunction"}}}
 function! s:switch_unite_buffer(buffer_name, context) "{{{
   " Search unite window.
-  " Note: must escape file-pattern.
-  let buffer_name = unite#util#escape_file_searching(a:buffer_name)
-  if !a:context.no_split && bufwinnr(buffer_name) > 0
-    silent execute bufwinnr(buffer_name) 'wincmd w'
+  let winnr = unite#get_unite_winnr(a:buffer_name)
+  if !a:context.no_split && winnr > 0
+    silent execute winnr 'wincmd w'
     return
   endif
 
+  " Search unite buffer.
+  let bufnr = unite#get_unite_bufnr(a:buffer_name)
+
   if !a:context.no_split && !a:context.unite__direct_switch
     " Split window.
-    execute a:context.direction (bufexists(a:buffer_name) ?
+    execute a:context.direction ((bufnr > 0) ?
           \ ((a:context.vertical) ? 'vsplit' : 'split') :
           \ ((a:context.vertical) ? 'vnew' : 'new'))
   endif
 
-  if bufexists(a:buffer_name)
-    " Search buffer name.
-    let found = 0
-    let bufnr = 1
-    let max = bufnr('$')
-    while bufnr <= max
-      if unite#util#substitute_path_separator(
-            \ bufname(bufnr)) ==# a:buffer_name
-        silent execute bufnr 'buffer'
-        let found = 1
-        break
-      endif
-
-      let bufnr += 1
-    endwhile
-
-    if !found
-      call unite#print_error('[Bug] Not found buffer name: '
-            \ . string(a:buffer_name))
-    endif
+  if bufnr > 0
+    silent execute bufnr 'buffer'
   else
-    silent! edit `=a:buffer_name`
+    silent! edit `=a:context.real_buffer_name`
   endif
 
   call s:on_bufwin_enter(bufnr('%'))
@@ -2980,23 +2999,6 @@ function! s:on_buf_unload(bufname)  "{{{
 
   call s:restore_updatetime()
 
-  if !unite.has_preview_window
-    let preview_windows = filter(range(1, winnr('$')),
-          \ 'getwinvar(v:val, "&previewwindow") != 0')
-    if !empty(preview_windows)
-      " Close preview window.
-      pclose!
-
-    endif
-  endif
-
-  call unite#clear_previewed_buffer_list()
-
-  if winnr('$') != 1 && !unite.context.temporary
-    execute unite.win_rest_cmd
-    execute unite.prev_winnr 'wincmd w'
-  endif
-
   " Call finalize functions.
   call s:call_hook(unite#loaded_sources_list(), 'on_close')
   let unite.is_finalized = 1
@@ -3225,6 +3227,7 @@ function! s:do_auto_preview() "{{{
 
   let unite.preview_candidate = unite#get_current_candidate()
 
+  call unite#clear_previewed_buffer_list()
   call unite#mappings#do_action('preview', [], {})
 
   " Restore window size.
@@ -3343,12 +3346,12 @@ function! unite#set_highlight() "{{{
     execute 'highlight default link'
           \ source.syntax g:unite_abbr_highlight
 
-    execute printf('syntax region %s start="^- %s" end="$" '.
-          \ 'keepend contains=uniteCandidateMarker,%s%s',
+    execute printf('syntax match %s "^- %s" '.
+          \ 'nextgroup='.source.syntax.
+          \ ' keepend contains=uniteCandidateMarker,%s',
           \ 'uniteSourceLine__'.source.syntax,
           \ (name == '' ? '' : name . '\>'),
-          \ (name == '' ? '' : 'uniteCandidateSourceName,'),
-          \    source.syntax
+          \ (name == '' ? '' : 'uniteCandidateSourceName')
           \ )
 
     call s:call_hook([source], 'on_syntax')
@@ -3368,8 +3371,8 @@ function! s:set_syntax() "{{{
   " Set syntax.
   for source in filter(copy(unite.sources), 'v:val.syntax != ""')
     execute 'syntax clear' source.syntax
-    execute 'syntax region' source.syntax 'start=/\%'
-          \ .(abbr_head).'c/ end=/$/ keepend contained'
+    execute 'syntax region' source.syntax
+          \ 'start=// end=/$/ keepend contained'
   endfor
 endfunction"}}}
 function! s:get_resume_buffer(buffer_name) "{{{
@@ -3397,6 +3400,10 @@ function! s:get_source_names(sources) "{{{
         \ "type(v:val) == type([]) ? v:val[0] : v:val"),
         \ "type(v:val) == type('') ? v:val : v:val.name")
 endfunction"}}}
+function! s:get_source_args(sources)
+  return map(copy(a:sources),
+        \ 'type(v:val) == type([]) ? [v:val[0], v:val[1:]] : [v:val, []]')
+endfunction
 "}}}
 
 let &cpo = s:save_cpo

@@ -4,6 +4,8 @@ set cpo&vim
 let s:V = vital#of('unite.vim')
 let s:List = vital#of('unite.vim').import('Data.List')
 
+let s:is_windows = has('win16') || has('win32') || has('win64')
+
 function! unite#util#truncate_smart(...)
   return call(s:V.truncate_smart, a:000)
 endfunction
@@ -26,10 +28,10 @@ function! unite#util#wcswidth(...)
   return call(s:V.wcswidth, a:000)
 endfunction
 function! unite#util#is_win(...)
-  return call(s:V.is_windows, a:000)
+  return s:is_windows
 endfunction
 function! unite#util#is_windows(...)
-  return call(s:V.is_windows, a:000)
+  return s:is_windows
 endfunction
 function! unite#util#is_mac(...)
   return call(s:V.is_mac, a:000)
@@ -37,8 +39,8 @@ endfunction
 function! unite#util#print_error(...)
   return call(s:V.print_error, a:000)
 endfunction
-function! unite#util#smart_execute_command(...)
-  return call(s:V.smart_execute_command, a:000)
+function! unite#util#smart_execute_command(action, word)
+  execute a:action . ' ' . (a:word == '' ? '' : '`=a:word`')
 endfunction
 function! unite#util#escape_file_searching(...)
   return call(s:V.escape_file_searching, a:000)
@@ -52,9 +54,17 @@ endfunction
 function! unite#util#set_dictionary_helper(...)
   return call(s:V.set_dictionary_helper, a:000)
 endfunction
-function! unite#util#substitute_path_separator(...)
-  return call(s:V.substitute_path_separator, a:000)
-endfunction
+
+if unite#util#is_windows()
+  function! unite#util#substitute_path_separator(...)
+    return call(s:V.substitute_path_separator, a:000)
+  endfunction
+else
+  function! unite#util#substitute_path_separator(path)
+    return a:path
+  endfunction
+endif
+
 function! unite#util#path2directory(...)
   return call(s:V.path2directory, a:000)
 endfunction
@@ -135,8 +145,9 @@ function! unite#util#iconv(...)
 endfunction
 
 function! unite#util#alternate_buffer() "{{{
-  if bufnr('%') != bufnr('#') && s:buflisted(bufnr('#'))
-    buffer #
+  let unite = unite#get_current_unite()
+  if s:buflisted(unite.prev_bufnr)
+    execute 'buffer' unite.prev_bufnr
     return
   endif
 

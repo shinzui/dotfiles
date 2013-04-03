@@ -1,6 +1,6 @@
 " bundler.vim - Support for Ruby's Bundler
 " Maintainer:   Tim Pope <http://tpo.pe/>
-" Version:      1.1
+" Version:      2.0
 
 if exists('g:loaded_bundler') || &cp || v:version < 700
   finish
@@ -284,13 +284,20 @@ function! s:project_paths(...) dict abort
       endtry
     endif
 
-    if filereadable(self.path('.bundle/config'))
-      let body = join(readfile(self.path('.bundle/config')), "\n")
-      let bundle_path = matchstr(body, "\\CBUNDLE_PATH: \\zs[^\n]*")
-      if !empty(bundle_path)
-        let gem_paths = [self.path(bundle_path, 'ruby', matchstr(get(gem_paths, 0, '1.9.1'), '[0-9.]\+$'))]
+    let abi_version = matchstr(get(gem_paths, 0, '1.9.1'), '[0-9.]\+$')
+    for config in [expand('~/.bundle/config'), self.path('.bundle/config')]
+      if filereadable(config)
+        let body = join(readfile(config), "\n")
+        let bundle_path = matchstr(body, "\\C\\<BUNDLE_PATH: \\zs[^\n]*")
+        if !empty(bundle_path)
+          if body =~# '\C\<BUNDLE_DISABLE_SHARED_GEMS:'
+            let gem_paths = [self.path(bundle_path, 'ruby', abi_version)]
+          else
+            let gem_paths = [self.path(bundle_path)]
+          endif
+        endif
       endif
-    endif
+    endfor
 
     for source in self._locked.git
       for [name, ver] in items(source.versions)
@@ -337,41 +344,22 @@ function! s:project_paths(...) dict abort
       endfor
     endfor
 
-    if !exists('g:bundler_strict') || len(versions) == len(gems)
-      let self._path_time = time
-      let self._paths = paths
-      call self.alter_buffer_paths()
-      return paths
+    let self._path_time = time
+    let self._paths = paths
+    let self._sorted = sort(values(paths))
+    let index = index(self._sorted, self.path())
+    if index > 0
+      call insert(self._sorted, remove(self._sorted,index))
     endif
-
-    if &verbose
-      let label = empty(gems) ? 'any gems' : len(failed) == 1 ? 'gem ' : 'gems '
-      unsilent echomsg "Couldn't find ".label.string(failed)[1:-2].". Falling back to Ruby."
-    endif
-
-    try
-      exe chdir s:fnameescape(self.path())
-      let output = system(prefix.'ruby -rubygems -e "require %{bundler}; Bundler.load.specs.map {|s| puts %[#{s.name} #{s.full_gem_path}]}"')
-    finally
-      exe chdir s:fnameescape(cwd)
-    endtry
-    if v:shell_error
-      for line in split(output,"\n")
-        if line !~ '^\t'
-          call s:warn(line)
-        endif
-      endfor
-    else
-      let self._paths = {}
-      for line in split(output,"\n")
-        let name = split(line, ' ')[0]
-        let self._paths[name] = matchstr(line,' \zs.*')
-      endfor
-      let self._path_time = time
-      call self.alter_buffer_paths()
-    endif
+    call self.alter_buffer_paths()
+    return paths
   endif
   return get(self,'_paths',{})
+endfunction
+
+function! s:project_sorted() dict abort
+  call self.paths()
+  return get(self, '_sorted', [])
 endfunction
 
 function! s:project_gems() dict abort
@@ -388,7 +376,7 @@ function! s:project_has(gem) dict abort
   return has_key(self.versions(), a:gem)
 endfunction
 
-call s:add_methods('project', ['locked', 'gems', 'paths', 'versions', 'has'])
+call s:add_methods('project', ['locked', 'gems', 'paths', 'sorted', 'versions', 'has'])
 
 " }}}1
 " Buffer {{{1
@@ -397,6 +385,7 @@ let s:buffer_prototype = {}
 
 function! s:buffer(...) abort
   let buffer = {'#': bufnr(a:0 ? a:1 : '%')}
+  let g:buffer = buffer
   call extend(extend(buffer,s:buffer_prototype,'keep'),s:abstract_prototype,'keep')
   if buffer.getvar('bundler_root') !=# ''
     return buffer
@@ -425,16 +414,6 @@ call s:add_methods('buffer',['getvar','setvar','project'])
 " }}}1
 " Bundle {{{1
 
-let s:errorformat = ''
-      \.'%+E%f:%l:\ parse\ error,'
-      \.'%W%f:%l:\ warning:\ %m,'
-      \.'%E%f:%l:in\ %*[^:]:\ %m,'
-      \.'%E%f:%l:\ %m,'
-      \.'%-C%\tfrom\ %f:%l:in\ %.%#,'
-      \.'%-Z%\tfrom\ %f:%l,'
-      \.'%-Z%p^,'
-      \.'%-G%.%#'
-
 function! s:push_chdir()
   if !exists("s:command_stack") | let s:command_stack = [] | endif
   let chdir = exists("*haslocaldir") && haslocaldir() ? "lchdir " : "chdir "
@@ -451,9 +430,9 @@ endfunction
 function! s:Bundle(bang,arg)
   let old_makeprg = &l:makeprg
   let old_errorformat = &l:errorformat
+  let old_compiler = get(b:, 'current_compiler', '')
   try
-    let &l:makeprg = 'bundle'
-    let &l:errorformat = s:errorformat
+    compiler bundler
     execute 'make! '.a:arg
     if a:bang ==# ''
       return 'if !empty(getqflist()) | cfirst | endif'
@@ -463,6 +442,10 @@ function! s:Bundle(bang,arg)
   finally
     let &l:errorformat = old_errorformat
     let &l:makeprg = old_makeprg
+    let b:current_compiler = old_compiler
+    if empty(b:current_compiler)
+      unlet b:current_compiler
+    endif
   endtry
 endfunction
 
@@ -474,8 +457,7 @@ function! s:BundleComplete(A,L,P)
 endfunction
 
 function! s:SetupMake() abort
-  setlocal makeprg=bundle
-  let &l:errorformat = s:errorformat
+  compiler bundler
 endfunction
 
 call s:command("-bar -bang -nargs=? -complete=customlist,s:BundleComplete Bundle :execute s:Bundle('<bang>',<q-args>)")
@@ -493,7 +475,7 @@ augroup bundler_make
   autocmd QuickFixCmdPost *make*
         \ if &makeprg =~# '^bundle' && exists('b:bundler_root') |
         \   call s:pop_command() |
-        \   execute 'call s:project().paths(exists("g:bundler_strict") ? "" : "refresh")' |
+        \   call s:project().paths("refresh") |
         \ endif
 augroup END
 
@@ -548,11 +530,7 @@ endfunction
 
 function! s:buffer_alter_paths() dict abort
   if self.getvar('&suffixesadd') =~# '\.rb\>'
-    let new = sort(values(self.project().paths()))
-    let index = index(new, self.project().path())
-    if index > 0
-      call insert(new,remove(new,index))
-    endif
+    let new = self.project().sorted()
     let old = type(self.getvar('bundler_paths')) == type([]) ? self.getvar('bundler_paths') : []
     for [option, suffix] in [['path', 'lib'], ['tags', 'tags']]
       let value = self.getvar('&'.option)
