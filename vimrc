@@ -286,7 +286,7 @@ let g:tagbar_type_javascript = {
 
 "Unite
 nnoremap [unite] <Nop>
-nmap f [unite]
+nmap <leader>u [unite]
 
 noremap <silent> [unite]o :<C-u>Unite -buffer-name=outline outline<CR>
 nnoremap <silent> [unite]r :<C-u>Unite -buffer-name=register register<CR>
