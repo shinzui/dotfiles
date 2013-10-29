@@ -25,6 +25,9 @@ if has("gui_macvim")
 
   " Command-e for ConqueTerm
   map <D-e> :call StartTerm()<CR>
+
+  let g:fullscreen_colorscheme = "iawriter"
+  let g:fullscreen_font = "Cousine:h14"
 endif
 
 " Project Tree

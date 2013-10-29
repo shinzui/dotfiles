@@ -22,7 +22,7 @@ class Gem::Commands::CtagsCommand < Gem::Command
 
     Dir.chdir(spec.full_gem_path) do
 
-      if !File.file?('tags') || File.read('tags', 1) != '!'
+      if !(File.file?('tags') && File.read('tags', 1) == '!') && !File.directory?('tags')
         yield "Generating ctags for #{spec.full_name}" if block_given?
         paths = spec.require_paths.select { |p| File.directory?(p) }
         system('ctags', '-R', '--languages=ruby', *paths)
@@ -37,5 +37,8 @@ class Gem::Commands::CtagsCommand < Gem::Command
       end
 
     end
+  rescue => e
+    raise unless block_given?
+    yield "Failed processing ctags for #{spec.full_name}:\n  (#{e.class}) #{e}"
   end
 end

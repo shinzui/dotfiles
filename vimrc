@@ -4,8 +4,8 @@ set encoding=utf-8
 set nocompatible
 
 filetype off 
+execute pathogen#infect()
 call pathogen#helptags()
-call pathogen#runtime_append_all_bundles()
 
 set modelines=0
 syntax on
@@ -15,6 +15,7 @@ set backspace=indent,eol,start
 
 set nowrap "don't wrap lines
 set tabstop=2 "tab is 2 spaces
+set tabstop=2 shiftwidth=2 expandtab
 set shiftwidth=2
 set softtabstop=2
 set expandtab
@@ -82,9 +83,14 @@ set title
 set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
 
 "default color scheme
-colorscheme solarized 
+set t_Co=256
+colorscheme lucius
 set background=dark
 
+let g:kolor_italic=1                    " Enable italic. Default: 1
+let g:kolor_bold=1                      " Enable bold. Default: 1
+let g:kolor_underlined=0                " Enable underline for 'Underlined'. Default: 0
+let g:kolor_alternative_matchparen=0    " Gray 'MatchParen' color. Default: 0
 
 
 "disable beep 
@@ -225,6 +231,10 @@ let g:buffergator_split_size="50"
 map <C-t> :CtrlP<CR>
 imap <C-t> <ESC>:CtrlP<CR>
 
+let g:ctrlp_custom_ignore = {
+    \ 'dir':  '\.git$\|\.hg$\|\.svn$',
+    \ 'file': '\.pyc$\|\.pyo$\|\.rbc$|\.rbo$\|\.class$\|\.o$\|\~$\',
+    \ }
 
 "Chef plugin setup
 function! ChefNerdTreeFind(env)

@@ -7,8 +7,9 @@
 --known-types
 --type-add=ruby=.haml,.rake,.rsel,.builder
 --type-add=html=.html.erb,.html.haml
---type-add=js=.js.erb,.coffee
+--type-add=js=.js.erb,.coffee,hbs
 --type-add=css=.sass,.less,.scss
 --type-set=cucumber=.feature
 --ignore-dir=log
+--ignore-dir=tmp
 
