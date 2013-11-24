@@ -153,6 +153,8 @@ autocmd BufRead,BufNewFile /usr/local/etc/nginx/* set ft=nginx
 autocmd BufReadPost fugitive://* set bufhidden=delete
 
 autocmd User Rails Rnavcommand fabricator spec/fabricators -suffix=_fabricator.rb -default=model()
+autocmd BufRead,BufNewFile *.md setlocal spell
+autocmd FileType gitcommit setlocal spell
 
 "Windows
 map <C-h> <C-w>h
