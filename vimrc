@@ -298,6 +298,18 @@ let g:tagbar_type_javascript = {
     \ 'ctagsbin' : '/path/to/jsctags'
     \ }
 
+"Silver Searcher
+if executable('ag')
+  " Use ag over grep
+  set grepprg=ag\ --nogroup\ --nocolor
+
+  " Use ag in CtrlP
+  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
+
+  " Don't need to cache with ag
+  let g:ctrlp_use_caching = 0
+endif
+
 "Unite
 nnoremap [unite] <Nop>
 nmap <leader>u [unite]
