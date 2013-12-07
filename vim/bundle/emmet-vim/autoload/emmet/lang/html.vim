@@ -1,6 +1,6 @@
 let s:mx = '\([+>]\|[<^]\+\)\{-}\s*'
 \     .'\((*\)\{-}\s*'
-\       .'\([@#.]\{-}[a-zA-Z\!][a-zA-Z0-9:_\!\-$]*\|{\%([^$}]\+\|\$#\|\${\w\+}\|\$\+\)*}*[ \t\r\n}]*\)'
+\       .'\([@#.]\{-}[a-zA-Z_\!][a-zA-Z0-9:_\!\-$]*\|{\%([^$}]\+\|\$#\|\${\w\+}\|\$\+\)*}*[ \t\r\n}]*\)'
 \       .'\('
 \         .'\%('
 \           .'\%(#{[{}a-zA-Z0-9_\-\$]\+\|#[a-zA-Z0-9_\-\$]\+\)'
@@ -82,7 +82,7 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
       let attributes = tag_name . attributes
       let tag_name = 'div'
     endif
-    if tag_name =~ '.!$'
+    if tag_name =~ '[^!]!$'
       let tag_name = tag_name[:-2]
       let important = 1
     endif
@@ -197,15 +197,20 @@ function! emmet#lang#html#parseIntoTree(abbr, type)
               break
             endif
             let key = split(amat, '=')[0]
-            let val = amat[len(key)+1:]
-            if val =~ '^["'']'
-              let val = val[1:-2]
+            let Val = amat[len(key)+1:]
+            if key =~ '\.$' && Val == ''
+              let key = key[:-2]
+              unlet Val
+              let Val = function('emmet#types#true')
+            elseif Val =~ '^["'']'
+              let Val = Val[1:-2]
             endif
-            let current.attr[key] = val
+            let current.attr[key] = Val
             if index(current.attrs_order, key) == -1
               let current.attrs_order += [key]
             endif
             let atts = atts[stridx(atts, amat) + len(amat):]
+            unlet Val
           endwhile
         endif
         let attr = substitute(strpart(attr, len(item)), '^\s*', '', '')
@@ -320,6 +325,7 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
   let itemno = a:itemno
   let indent = a:indent
   let dollar_expr = emmet#getResource(type, 'dollar_expr', 1)
+  let q = emmet#getResource(type, 'quote_char', '"')
 
   if emmet#useFilter(filters, 'haml')
     return emmet#lang#haml#toString(settings, current, type, inline, filters, itemno, indent)
@@ -355,22 +361,60 @@ function! emmet#lang#html#toString(settings, current, type, inline, filters, ite
     if !has_key(current.attr, attr)
       continue
     endif
-    let val = current.attr[attr]
-    if dollar_expr
-      while val =~ '\$\([^#{]\|$\)'
-        " TODO: regexp engine specified
-        if exists('&regexpengine')
-          let val = substitute(val, '\%#=1\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-        else
-          let val = substitute(val, '\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
-        endif
-      endwhile
-      let attr = substitute(attr, '\$$', itemno+1, '')
-    endif
-    let str .= ' ' . attr . '="' . val . '"'
-    if emmet#useFilter(filters, 'c')
-      if attr == 'id' | let comment .= '#' . val | endif
-      if attr == 'class' | let comment .= '.' . val | endif
+    let Val = current.attr[attr]
+    if type(Val) == 2 && Val == function('emmet#types#true')
+      unlet Val
+      let Val = 'true'
+      if g:emmet_html5
+        let str .= ' ' . attr
+      else
+        let str .= ' ' . attr . '=' . q . attr . q
+      endif
+      if emmet#useFilter(filters, 'c')
+        if attr == 'id' | let comment .= '#' . Val | endif
+        if attr == 'class' | let comment .= '.' . Val | endif
+      endif
+    else
+      if dollar_expr
+        while Val =~ '\$\([^#{]\|$\)'
+          " TODO: regexp engine specified
+          if exists('&regexpengine')
+            let Val = substitute(Val, '\%#=1\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+          else
+            let Val = substitute(Val, '\(\$\+\)\([^{#]\|$\)', '\=printf("%0".len(submatch(1))."d", itemno+1).submatch(2)', 'g')
+          endif
+        endwhile
+        let attr = substitute(attr, '\$$', itemno+1, '')
+      endif
+      if attr == 'class' && emmet#useFilter(filters, 'bem')
+        let vals = split(Val, '\s\+')
+        let Val = ''
+        let lead = ''
+        for _val in vals
+          if len(Val) > 0
+            let Val .= ' '
+          endif
+          if _val =~ '^\a_'
+            let lead = _val[0]
+            let Val .= lead . ' ' .  _val
+          elseif _val =~ '^_'
+            if len(lead) == 0
+              let pattr = current.parent.attr
+              if has_key(pattr, 'class')
+                let lead = pattr['class']
+              endif
+            endif
+            let Val .= lead . ' ' . lead . _val
+          else
+            let Val .= _val
+          endif
+        endfor
+      endif
+      let str .= ' ' . attr . '=' . q . Val . q
+      if emmet#useFilter(filters, 'c')
+        if attr == 'id' | let comment .= '#' . Val | endif
+        if attr == 'class' | let comment .= '.' . Val | endif
+      endif
     endif
   endfor
   if len(comment) > 0

@@ -21,6 +21,7 @@ endif
 
 let s:buf_min_count = get(g:, 'airline#extensions#tabline#buffer_min_count', 0)
 let s:tab_min_count = get(g:, 'airline#extensions#tabline#tab_min_count', 0)
+let s:spc = g:airline_symbols.space
 
 function! airline#extensions#tabline#init(ext)
   if has('gui_running')
@@ -178,9 +179,15 @@ function! s:get_visible_buffers()
   return buffers
 endfunction
 
+let s:current_bufnr = -1
+let s:current_tabline = ''
 function! s:get_buffers()
-  let b = airline#builder#new(s:builder_context)
   let cur = bufnr('%')
+  if cur == s:current_bufnr
+    return s:current_tabline
+  endif
+
+  let b = airline#builder#new(s:builder_context)
   let tab_bufs = tabpagebuflist(tabpagenr())
   for nr in s:get_visible_buffers()
     if nr < 0
@@ -200,13 +207,16 @@ function! s:get_buffers()
         let group = 'airline_tabhid'
       endif
     endif
-    call b.add_section(group, '%( %{airline#extensions#tabline#get_buffer_name('.nr.')} %)')
+    call b.add_section(group, s:spc.'%(%{airline#extensions#tabline#get_buffer_name('.nr.')}%)'.s:spc)
   endfor
 
   call b.add_section('airline_tabfill', '')
   call b.split()
   call b.add_section('airline_tabtype', ' buffers ')
-  return b.build()
+
+  let s:current_bufnr = cur
+  let s:current_tabline = b.build()
+  return s:current_tabline
 endfunction
 
 function! s:get_tabs()

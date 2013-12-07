@@ -1,10 +1,12 @@
 "=============================================================================
 " emmet.vim
 " Author: Yasuhiro Matsumoto <mattn.jp@gmail.com>
-" Last Change: 22-Oct-2013.
+" Last Change: 06-Dec-2013.
 
 let s:save_cpo = &cpo
 set cpo&vim
+
+let s:filtermx = '|\(\%(bem\|html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
 
 function! emmet#getExpandos(type, key)
   let expandos = emmet#getResource(a:type, 'expandos', {})
@@ -254,10 +256,11 @@ function! emmet#toString(...)
       endif
       let inner = ''
       if len(current.child)
-        let render_type = emmet#getFileType(1)
         for n in current.child
           let inner .= emmet#toString(n, type, inline, filters, s:itemno(group_itemno, n), indent)
         endfor
+      else
+        let inner = current.value[1:-2]
       endif
       let inner = substitute(inner, "\n", "\n" . indent, 'g')
       let str = substitute(str, '\${child}', inner, '')
@@ -277,6 +280,9 @@ function! emmet#getFilters(type)
 endfunction
 
 function! emmet#getResource(type, name, default)
+  if exists('b:emmet_' . a:name)
+    return get(b:, 'emmet_' . a:name)
+  endif
   if !has_key(s:emmet_settings, a:type)
     return a:default
   endif
@@ -321,19 +327,20 @@ function! emmet#getFileType(...)
       let type = part
       break
     endif
-  endfor
-  if type == ''
-    let base = emmet#getBaseType(type)
-    if base != ""
+    let base = emmet#getBaseType(part)
+    if base != ''
       if flg
         let type = &ft
       else
         let type = base
       endif
+      unlet base
+      break
     endif
-  endif
+  endfor
   if type == 'html'
-    let type = synIDattr(synID(line("."), col("."), 1), "name")
+    let pos = emmet#util#getcurpos()
+    let type = synIDattr(synID(pos[1], pos[2], 1), "name")
     if type =~ '^css\w'
       let type = 'css'
     endif
@@ -459,10 +466,9 @@ function! emmet#expandAbbr(mode, abbr) range
     if len(leader) == 0
       return ''
     endif
-    let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
-    if leader =~ mx
-      let filters = map(split(matchstr(leader, mx)[1:], '\s*[^\\]\zs,\s*'), 'substitute(v:val, "\\\\\\\\zs.\\\\ze", "&", "g")')
-      let leader = substitute(leader, mx, '', '')
+    if leader =~ s:filtermx
+      let filters = map(split(matchstr(leader, s:filtermx)[1:], '\s*[^\\]\zs,\s*'), 'substitute(v:val, "\\\\\\\\zs.\\\\ze", "&", "g")')
+      let leader = substitute(leader, s:filtermx, '', '')
     endif
     if leader =~ '\*'
       let query = substitute(leader, '*', '*' . (a:lastline - a:firstline + 1), '')
@@ -476,7 +482,7 @@ function! emmet#expandAbbr(mode, abbr) range
       endif
       let items = emmet#parseIntoTree(query, type).child
       for item in items
-        let expand .= emmet#toString(item, type, 0, filters, 0, indent)
+        let expand .= emmet#toString(item, rtype, 0, filters, 0, indent)
       endfor
       if emmet#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
@@ -531,7 +537,7 @@ function! emmet#expandAbbr(mode, abbr) range
         let items = emmet#parseIntoTree(leader . "{".str."}", type).child
       endif
       for item in items
-        let expand .= emmet#toString(item, type, 0, filters, 0, '')
+        let expand .= emmet#toString(item, rtype, 0, filters, 0, '')
       endfor
       if emmet#useFilter(filters, 'e')
         let expand = substitute(expand, '&', '\&amp;', 'g')
@@ -569,10 +575,9 @@ function! emmet#expandAbbr(mode, abbr) range
       let rest = getline('.')[len(line):]
     endif
     let str = part
-    let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
-    if str =~ mx
-      let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
-      let str = substitute(str, mx, '', '')
+    if str =~ s:filtermx
+      let filters = split(matchstr(str, s:filtermx)[1:], '\s*,\s*')
+      let str = substitute(str, s:filtermx, '', '')
     endif
     let items = emmet#parseIntoTree(str, rtype).child
     for item in items
@@ -780,15 +785,14 @@ function! emmet#codePretty() range
 endfunction
 
 function! emmet#expandWord(abbr, type, orig)
-  let mx = '|\(\%(html\|haml\|slim\|e\|c\|fc\|xsl\|t\|\/[^ ]\+\)\s*,\{0,1}\s*\)*$'
   let str = a:abbr
   let type = a:type
   let indent = emmet#getIndentation(type)
 
   if len(type) == 0 | let type = 'html' | endif
-  if str =~ mx
-    let filters = split(matchstr(str, mx)[1:], '\s*,\s*')
-    let str = substitute(str, mx, '', '')
+  if str =~ s:filtermx
+    let filters = split(matchstr(str, s:filtermx)[1:], '\s*,\s*')
+    let str = substitute(str, s:filtermx, '', '')
   else
     let filters = emmet#getFilters(a:type)
     if len(filters) == 0
@@ -1357,6 +1361,13 @@ let s:emmet_settings = {
 \    },
 \    'html': {
 \        'snippets': {
+\            '!!!': "<!doctype html>",
+\            '!!!4t':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\" \"http://www.w3.org/TR/html4/loose.dtd\">",
+\            '!!!4s':  "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\" \"http://www.w3.org/TR/html4/strict.dtd\">",
+\            '!!!xt':  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">",
+\            '!!!xs':  "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">",
+\            '!!!xxs': "<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.1//EN\" \"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd\">",
+\            'c': "<!-- |${child} -->",
 \            'cc:ie6': "<!--[if lte IE 6]>\n\t${child}|\n<![endif]-->",
 \            'cc:ie': "<!--[if IE]>\n\t${child}|\n<![endif]-->",
 \            'cc:noie': "<!--[if !IE]><!-->\n\t${child}|\n<!--<![endif]-->",

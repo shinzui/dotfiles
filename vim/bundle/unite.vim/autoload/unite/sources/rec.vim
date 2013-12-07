@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: rec.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2013.
+" Last Modified: 18 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -61,8 +61,8 @@ let s:source_file_rec = {
       \ 'default_kind' : 'file',
       \ 'max_candidates' : 50,
       \ 'ignore_pattern' : g:unite_source_rec_ignore_pattern,
-      \ 'matchers' : [ 'matcher_default', 'matcher_hide_hidden_files' ],
-      \ 'converters' : 'converter_relative_word',
+      \ 'matchers' : [ 'converter_relative_word',
+      \                'matcher_default', 'matcher_hide_hidden_files' ],
       \ }
 
 function! s:source_file_rec.gather_candidates(args, context) "{{{
@@ -103,8 +103,10 @@ function! s:source_file_rec.async_gather_candidates(args, context) "{{{
         \   1, g:unite_source_rec_unit,
         \   a:context.source.ignore_pattern)
 
-  if empty(continuation.rest) || len(continuation.files) >
-        \                    g:unite_source_rec_max_cache_files
+  if empty(continuation.rest) || (
+        \  g:unite_source_rec_max_cache_files > 0 &&
+        \    len(continuation.files) >
+        \        g:unite_source_rec_max_cache_files)
     if empty(continuation.rest)
       call unite#print_source_message(
             \ 'Directory traverse was completed.', self.name)
@@ -347,8 +349,10 @@ function! s:source_file_async.async_gather_candidates(args, context) "{{{
     endif
   endfor
 
-  if stdout.eof || len(continuation.files) >
-        \        g:unite_source_rec_max_cache_files
+  if stdout.eof || (
+        \  g:unite_source_rec_max_cache_files > 0 &&
+        \    len(continuation.files) >
+        \        g:unite_source_rec_max_cache_files)
     " Disable async.
     if stdout.eof
       call unite#print_source_message(

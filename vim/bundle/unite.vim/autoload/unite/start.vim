@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: start.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Oct 2013.
+" Last Modified: 30 Oct 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -65,7 +65,7 @@ function! unite#start#standard(sources, ...) "{{{
 
   try
     call unite#init#_current_unite(a:sources, context)
-  catch /^unite.vim: Invalid source/
+  catch /^unite.vim: Invalid /
     call unite#print_error('[unite.vim] ' . v:exception)
     return
   endtry
@@ -204,7 +204,7 @@ function! unite#start#vimfiler_check_filetype(sources, ...) "{{{
 
   try
     call unite#init#_current_unite(a:sources, context)
-  catch /^unite.vim: Invalid source/
+  catch /^unite.vim: Invalid /
     return []
   endtry
 
@@ -275,7 +275,7 @@ function! unite#start#get_vimfiler_candidates(sources, ...) "{{{
 
     let candidates = s:get_candidates(a:sources, context)
 
-    " Converts utf-8-mac to utf-8.
+    " Converts utf-8-mac to the current encoding.
     if unite#util#is_mac() && has('iconv')
       for item in filter(copy(candidates),
             \ "v:val.action__path =~# '[^\\x00-\\x7f]'")
@@ -403,7 +403,7 @@ endfunction "}}}
 function! s:get_candidates(sources, context) "{{{
   try
     let current_unite = unite#init#_current_unite(a:sources, a:context)
-  catch /^unite.vim: Invalid source/
+  catch /^unite.vim: Invalid /
     return []
   endtry
 
