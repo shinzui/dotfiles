@@ -310,6 +310,8 @@ if executable('ag')
   let g:ctrlp_use_caching = 0
 endif
 
+nnoremap <leader>sw :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>"
+
 "Unite
 nnoremap [unite] <Nop>
 nmap <leader>u [unite]
