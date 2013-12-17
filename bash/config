@@ -1,5 +1,9 @@
 shopt -s histappend
 
+# disable xon so Ctrl-S doesn't break in vim
+stty stop undef
+stty -ixon
+
 # Colors from http://wiki.archlinux.org/index.php/Color_Bash_Prompt
 # misc
 NO_COLOR='\e[0m' #disable any colors
