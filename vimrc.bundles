@@ -99,6 +99,9 @@ Bundle "godlygeek/tabular"
 Bundle "kana/vim-textobj-user"
 Bundle "nelstrom/vim-textobj-rubyblock"
 
+"undo
+Bundle "mbbill/undotree"
+
 """Search
 
 Bundle "epmatsw/ag.vim"
