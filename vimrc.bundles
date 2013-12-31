@@ -1,0 +1,108 @@
+Bundle 'gmarik/vundle'
+
+"""snippets and completion
+
+Bundle "mattn/emmet-vim"
+Bundle "othree/html5.vim"
+
+"" File explorer
+
+Bundle "tpope/vim-vinegar"
+
+"""ruby
+
+Bundle "vim-ruby/vim-ruby"
+Bundle "tpope/vim-rails"
+Bundle "tpope/vim-rake"
+Bundle "tpope/gem-ctags"
+Bundle "tpope/vim-bundler"
+Bundle "tpope/vim-cucumber"
+Bundle "tpope/vim-endwise"
+
+"""color schemes
+
+Bundle "jonathanfilip/vim-lucius"
+
+"""Documentation
+
+Bundle "rizzatti/dash.vim"
+Bundle "rizzatti/funcoo.vim"
+
+"""Status line
+Bundle "bling/vim-airline"
+
+"""Git & Github
+
+Bundle "tpope/vim-fugitive"
+Bundle "airblade/vim-gitgutter"
+Bundle "gregsexton/gitv"
+Bundle "mattn/gist-vim"
+
+"change root dir based on .git
+Bundle "airblade/vim-rooter"
+
+"""Buffers
+Bundle "duff/vim-scratch"
+Bundle "vits/ZoomWin"
+
+"""web development
+
+"javascript
+Bundle "pangloss/vim-javascript"
+
+"coffeescript
+Bundle "kchmck/vim-coffee-script"
+
+"sass support
+Bundle "cakebaker/scss-syntax.vim"
+
+"handlebars
+Bundle "mustache/vim-mustache-handlebars"
+
+"""Utilities
+
+"Syntax checker
+Bundle "scrooloose/syntastic"
+
+"Syntax highlighting
+Bundle "vim-scripts/nginx.vim"
+
+"Pasting
+Bundle "sickill/vim-pasta"
+
+"Repeat command
+Bundle "tpope/vim-repeat"
+
+"Surrounding text
+Bundle "tpope/vim-surround"
+
+"mappings
+Bundle "tpope/vim-unimpaired"
+
+"commenting
+Bundle "tomtom/tcomment_vim"
+
+"matching %
+Bundle "vim-scripts/matchit.zip"
+
+"aligning
+Bundle "godlygeek/tabular"
+
+"vim text objects
+Bundle "kana/vim-textobj-user"
+Bundle "nelstrom/vim-textobj-rubyblock"
+
+"""Search
+
+Bundle "epmatsw/ag.vim"
+Bundle "henrik/vim-qargs"
+
+""" Writing
+
+Bundle "laktek/distraction-free-writing-vim"
+Bundle "tpope/vim-markdown"
+
+
+""" Tmux integration
+Bundle "christoomey/vim-tmux-navigator"
+Bundle "benmills/vimux"

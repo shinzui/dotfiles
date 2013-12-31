@@ -186,8 +186,12 @@ nmap <leader>l mQviwu`Q
 
 """PLugins
 
-"ToggleBG included in solarized
-call togglebg#map("<F4>")
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+if filereadable(expand("~/.vimrc.bundles"))
+  source ~/.vimrc.bundles
+endif
 
 "Gundo
 nnoremap <F6> :GundoToggle<cr>
@@ -207,9 +211,6 @@ map <D-/> <plug>NERDCommenterToggle
 " CTags
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
 map <C-\> :tnext<CR>
-
-"ConqueTerm
-let g:ConqueTerm_SendVisKey = '<F7>'
 
 "Command-T
 let g:CommandTMaxHeight=30
@@ -246,40 +247,6 @@ let g:ctrlp_custom_ignore = {
     \ 'file': '\.pyc$\|\.pyo$\|\.rbc$|\.rbo$\|\.class$\|\.o$\|\~$\',
     \ }
 
-"Chef plugin setup
-function! ChefNerdTreeFind(env)
-    try
-        :NERDTreeFind
-        let scrolloff_orig = &scrolloff
-        let &scrolloff = 15
-        normal! jk
-        wincmd p
-    finally
-        let &scrolloff = scrolloff_orig
-    endtry
-endfunction
-
-let g:chef = {}
-let g:chef.hooks = ['ChefNerdTreeFind']
-
-" remove 'Related' from default, I want to find 'Related' explicitly.
-let g:chef.any_finders = ['Attribute', 'Source', 'Recipe', 'Definition']
-
-function! s:SetupChef()
-    " Mouse:
-    " Left mouse click to GO!
-    nnoremap <buffer> <silent> <2-LeftMouse> :<C-u>ChefFindAny<CR>
-    " Right mouse click to Back!
-    nnoremap <buffer> <silent> <RightMouse> <C-o>
-
-    " Keyboard:
-    nnoremap <buffer> <silent> <M-a>      :<C-u>ChefFindAny<CR>
-    nnoremap <buffer> <silent> <M-f>      :<C-u>ChefFindAnySplit<CR>
-    nnoremap <buffer> <silent> <M-r>      :<C-u>ChefFindRelated<CR>
-endfunction
-
-
-au BufNewFile,BufRead */*cookbooks/*  call s:SetupChef()
 
 "TagBar
 nmap <F8> :TagbarToggle<CR>
@@ -325,7 +292,6 @@ nmap <leader>u [unite]
 noremap <silent> [unite]o :<C-u>Unite -buffer-name=outline outline<CR>
 nnoremap <silent> [unite]r :<C-u>Unite -buffer-name=register register<CR>
 nnoremap <silent> [unite]b  :<C-u>UniteWithBufferDir  -buffer-name=files -prompt=%\  buffer file_mru bookmark file<CR>
-
 
 let g:unite_enable_start_insert = 1
 let g:unite_enable_start_inserte_short_source_names = 1
