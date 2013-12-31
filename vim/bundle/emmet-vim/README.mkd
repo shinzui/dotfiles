@@ -18,8 +18,9 @@ To install using pathogen.vim:
     cd ~/.vim/bundle
     git clone https://github.com/mattn/emmet-vim.git
     
-To install using [Vundle|https://github.com/gmarik/vundle]:
-    #add this line to your .vimrc file
+To install using [Vundle](https://github.com/gmarik/vundle):
+
+    # add this line to your .vimrc file
     Bundle "mattn/emmet-vim"
 
 To checkout the source from repository:
@@ -80,6 +81,12 @@ let g:user_emmet_mode='a'    "enable all function in all mode.
 ```vim
 let g:user_emmet_install_global = 0
 autocmd FileType html,css EmmetInstall
+```
+
+## Redefine trigger key
+
+```vim
+let g:user_emmet_leader_key='<C-Z>'
 ```
 
 ## Project Authors

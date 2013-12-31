@@ -336,8 +336,16 @@ fun! <sid>GeneratePattern(startl, endl, mode, ...) "{{{1
 		return '\%>'. (a:startl[0]-1). 'l\&\%>'. (a:startl[1]-1).
 			\ 'v\&\%<'. (a:endl[0]+1). 'l\&\%<'. (a:endl[1]+1). 'v'
 	elseif a:mode ==# 'v' && a:startl[0] > 0 && a:startl[1] > 0
-		return '\%>'. (a:startl[0]-1). 'l\&\%>'. (a:startl[1]-1).
-			\ 'v\_.*\%<'. (a:endl[0]+1). 'l\&\%<'. (a:endl[1]+1). 'v'
+		" Need to generate concat 3 patterns:
+		"  1) from startline, startcolumn till end of line
+		"  2) all lines between startline and end line
+		"  3) from start of endline until end column
+		"
+		" example: Start at line 1 col. 6 until line 3 column 12:
+		" \%(\%1l\%>6v.*\)\|\(\%>1l\%<3l.*\)\|\(\%3l.*\%<12v\)
+		return  '\%(\%'.  (a:startl[0]). 'l\%>'.   (a:startl[1]-1). 'v.*\)\|'.
+			\	'\%(\%>'. (a:startl[0]). 'l\%<'.   (a:endl[0]).     'l.*\)\|'.
+			\   '\%(\%'.  (a:endl[0]).   'l.*\%<'. (a:endl[1]+1).   'v\)'
 	elseif a:startl[0] > 0
 		return '\%>'. (a:startl[0]-1). 'l\&\%<'. (a:endl[0]+1). 'l'
 	else
@@ -753,8 +761,9 @@ fun! nrrwrgn#NrrwRgnDoPrepare(...) "{{{1
 endfun
 
 fun! nrrwrgn#NrrwRgn(mode, ...) range  "{{{1
+	let visual = !empty(a:mode)
     " a:mode is set when using visual mode
-    if (a:mode)
+    if visual
 	" This beeps, when called from command mode
 	" e.g. by using :NRV, so using :sil!
 	" else exiting visual mode
@@ -765,7 +774,7 @@ fun! nrrwrgn#NrrwRgn(mode, ...) range  "{{{1
 	let s:o_s  = @/
 	set lz
 	call <sid>Init()
-	if (a:mode)
+	if visual
 	    let s:nrrw_rgn_lines[s:instn].vmode=a:mode
 	endif
 	" Protect the original buffer,
@@ -775,7 +784,7 @@ fun! nrrwrgn#NrrwRgn(mode, ...) range  "{{{1
 	let _opts = <sid>SaveRestoreRegister([])
 
 	call <sid>CheckProtected()
-	if (a:mode)
+	if visual
 	    let [ s:nrrw_rgn_lines[s:instn].start,
 		    \s:nrrw_rgn_lines[s:instn].end ] = <sid>RetVisRegionPos()
 	    norm! gv"ay
@@ -785,8 +794,9 @@ fun! nrrwrgn#NrrwRgn(mode, ...) range  "{{{1
 			" remove trailing "\n"
 			let @a=substitute(@a, '\n$', '', '') 
 	    endif
+		let a = split(@a, "\n")
 
-	    if a:mode == '' && <sid>CheckRectangularRegion(@a)
+	    if visual && a:mode ==# '' && <sid>CheckRectangularRegion(@a)
 			" Rectangular selection
 			let s:nrrw_rgn_lines[s:instn].blockmode = 1
 	    else
@@ -817,7 +827,7 @@ fun! nrrwrgn#NrrwRgn(mode, ...) range  "{{{1
 	    noa wincmd p
 	    let s:nrrw_rgn_lines[s:instn].winnr  = winnr()
 	    " Set highlighting in original window
-	    if a:mode
+	    if visual
 			call <sid>AddMatches(<sid>GeneratePattern(
 		    \s:nrrw_rgn_lines[s:instn].start[1:2],
 		    \s:nrrw_rgn_lines[s:instn].end[1:2],
@@ -835,7 +845,7 @@ fun! nrrwrgn#NrrwRgn(mode, ...) range  "{{{1
 	endif
 	let b:orig_buf = orig_buf
 	let s:nrrw_rgn_lines[s:instn].orig_buf  = orig_buf
-	call setline(1, a:mode ? @a : a)
+	call setline(1, a)
 	let b:nrrw_instn = s:instn
 	setl nomod
 	call <sid>SetupBufLocalCommands()
@@ -894,7 +904,7 @@ fun! nrrwrgn#WidenRegion(force)  "{{{1
 	if (orig_win == -1)
 		if bufexists(orig_buf)
 			" buffer not in current window, switch to it!
-			exe winnr "wincmd w"
+			exe "noa" winnr "wincmd w"
 			exe "noa" orig_buf "b!"
 			" Make sure highlighting will be removed
 			let close = (&g:hid ? 0 : 1)
@@ -945,7 +955,7 @@ fun! nrrwrgn#WidenRegion(force)  "{{{1
 					\ s:nrrw_rgn_lines[instn].vmode)
 		if s:nrrw_rgn_lines[instn].vmode == 'v' &&
 			\ s:nrrw_rgn_lines[instn].end[1] -
-			\ s:nrrw_rgn_lines[instn].start[1] + 1 == len(cont) + 1
+			\ s:nrrw_rgn_lines[instn].start[1] + 1 == len(cont)
 		   " in characterwise selection, remove trailing \n
 		   call setreg('a', substitute(@a, '\n$', '', ''), 
 			\ s:nrrw_rgn_lines[instn].vmode)
@@ -1096,7 +1106,7 @@ fun! nrrwrgn#UnifiedDiff() "{{{1
 			.+,$NR
 		endif
 	   " Split vertically
-	   wincmd H
+	   noa wincmd H
 	   if i==0
 		   silent! g/^-/d _
 	   else

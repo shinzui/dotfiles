@@ -4,6 +4,7 @@ endif
 let g:loaded_syntastic_registry = 1
 
 let s:defaultCheckers = {
+        \ 'actionscript':['mxmlc'],
         \ 'ada':         ['gcc'],
         \ 'applescript': ['osacompile'],
         \ 'asciidoc':    ['asciidoc'],
@@ -19,7 +20,7 @@ let s:defaultCheckers = {
         \ 'cucumber':    ['cucumber'],
         \ 'cuda':        ['nvcc'],
         \ 'd':           ['dmd'],
-        \ 'dart':        ['dart_analyzer'],
+        \ 'dart':        ['dartanalyzer'],
         \ 'docbk':       ['xmllint'],
         \ 'dustjs':      ['swiffer'],
         \ 'elixir':      ['elixir'],
@@ -142,6 +143,15 @@ function! g:SyntasticRegistry.availableCheckersFor(ftalias)
     endif
 
     return self._cachedCheckersFor[a:ftalias]
+endfunction
+
+function! g:SyntasticRegistry.knownFiletypes()
+    let types = keys(s:defaultCheckers)
+    call extend(types, keys(s:defaultFiletypeMap))
+    if exists('g:syntastic_filetype_map')
+        call extend(types, keys(g:syntastic_filetype_map))
+    endif
+    return syntastic#util#unique(types)
 endfunction
 
 function! g:SyntasticRegistry.echoInfoFor(ftalias_list)
