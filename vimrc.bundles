@@ -46,7 +46,6 @@ Bundle "mattn/gist-vim"
 Bundle "airblade/vim-rooter"
 
 """Buffers
-Bundle "duff/vim-scratch"
 Bundle "vits/ZoomWin"
 
 """web development
@@ -120,5 +119,8 @@ Bundle "benmills/vimux"
 
 """Unite
 Bundle "Shougo/unite.vim"
-Bundle "h1mesuke/unite-outline"
+Bundle "Shougo/unite-outline"
+Bundle "Shougo/unite-help"
+Bundle "tsukkee/unite-tag"
+Bundle "Shougo/junkfile.vim"
 Bundle "Shougo/vimproc"
