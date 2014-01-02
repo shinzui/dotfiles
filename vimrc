@@ -112,10 +112,23 @@ set foldnestmax=10
 
 "Swap and backup
 set directory=~/.vim/swapfiles,/tmp,.
-set backupdir=~/.vim/backup
+
+if !isdirectory(expand("~/.vim/cache"))
+  call mkdir(expand("~/.vim/cache"))
+endif
+if !isdirectory(expand("~/.vim/cache/backup"))
+  call mkdir(expand("~/.vim/cache/backup"))
+endif
+set backupdir=~/.vim/cache/backup
 
 "Persistent undo
 set undofile
+if !isdirectory(expand("~/.vim/cache/undo"))
+  call mkdir(expand("~/.vim/cache/undo"))
+endif
+set undodir=~/.vim/cache/undo
+
+
 
 "Highlight conflict markers 
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
@@ -202,9 +215,6 @@ call vundle#rc()
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
 endif
-
-"Gundo
-nnoremap <F6> :GundoToggle<cr>
 
 "Yank Ring
 nnoremap <silent> <Leader>y :YRShow<cr>
@@ -366,6 +376,7 @@ set completeopt-=preview
 
 "Unite
 let g:unite_source_history_yank_enable = 1
+let g:unite_source_file_rec_max_cache_files = 0
 let g:unite_prompt='» '
 
 call unite#filters#matcher_default#use(['matcher_fuzzy'])
@@ -381,12 +392,7 @@ autocmd FileType unite call s:unite_settings()
 function! s:unite_settings()
   " Play nice with supertab
   let b:SuperTabDisabled=1
-  " Enable navigation with control-j and control-k in insert mode
-  imap <buffer> <C-j>   <Plug>(unite_select_next_line)
-  imap <buffer> <C-k>   <Plug>(unite_select_previous_line)
 
-  nmap <buffer> <esc> <plug>(unite_exit)
-  imap <buffer> <esc> <plug>(unite_exit)
 endfunction
 
 if executable('ag')
