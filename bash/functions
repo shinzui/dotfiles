@@ -2,7 +2,6 @@ pdfman () {
   man -t $1 | open -a /Applications/Preview.app -f
 }
 
-
 function ss {
   if [ -e script/rails ]; then
     script/rails server $@

@@ -129,7 +129,6 @@ endif
 set undodir=~/.vim/cache/undo
 
 
-
 "Highlight conflict markers 
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
@@ -219,14 +218,6 @@ endif
 "Yank Ring
 nnoremap <silent> <Leader>y :YRShow<cr>
 
-"NERDTree 
-map <leader>f :NERDTreeToggle<cr>
-map <leader>r :NERDTreeFind<cr>
-
-"NERDCommenter
-let NERDSpaceDelims=1 
-let NERDCreateDefaultMappings=0 "disable default mapping
-map <D-/> <plug>NERDCommenterToggle
 
 " CTags
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
@@ -253,11 +244,6 @@ map <Leader>z :ZoomWin<CR>
 "Current path
 cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
 
-"BufferGator
-let g:buffergator_viewport_split_policy="T"
-let g:buffergator_sort_regime="mru"
-let g:buffergator_split_size="50"
-
 "CtrlP
 "map <C-t> :CtrlP<CR>
 "imap <C-t> <ESC>:CtrlP<CR>
@@ -267,9 +253,6 @@ let g:ctrlp_custom_ignore = {
     \ 'file': '\.pyc$\|\.pyo$\|\.rbc$|\.rbo$\|\.class$\|\.o$\|\~$\',
     \ }
 
-
-"TagBar
-nmap <F8> :TagbarToggle<CR>
 
 if executable('coffeetags')
   let g:tagbar_type_coffee = {
