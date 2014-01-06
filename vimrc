@@ -4,8 +4,6 @@ set encoding=utf-8
 set nocompatible
 
 filetype off 
-execute pathogen#infect()
-call pathogen#helptags()
 
 set modelines=0
 syntax on
