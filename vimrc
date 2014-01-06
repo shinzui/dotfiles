@@ -4,6 +4,12 @@ set encoding=utf-8
 set nocompatible
 
 filetype off 
+set rtp+=~/.vim/bundle/vundle/
+call vundle#rc()
+
+if filereadable(expand("~/.vimrc.bundles"))
+  source ~/.vimrc.bundles
+endif
 
 set modelines=0
 syntax on
@@ -206,12 +212,6 @@ nmap <leader>l mQviwu`Q
 
 """PLugins
 
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
-
-if filereadable(expand("~/.vimrc.bundles"))
-  source ~/.vimrc.bundles
-endif
 
 "Yank Ring
 nnoremap <silent> <Leader>y :YRShow<cr>
