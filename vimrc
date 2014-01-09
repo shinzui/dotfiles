@@ -242,15 +242,6 @@ map <Leader>z :ZoomWin<CR>
 "Current path
 cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
 
-"CtrlP
-"map <C-t> :CtrlP<CR>
-"imap <C-t> <ESC>:CtrlP<CR>
-
-let g:ctrlp_custom_ignore = {
-    \ 'dir':  '\.git$\|\.hg$\|\.svn$',
-    \ 'file': '\.pyc$\|\.pyo$\|\.rbc$|\.rbo$\|\.class$\|\.o$\|\~$\',
-    \ }
-
 
 if executable('coffeetags')
   let g:tagbar_type_coffee = {
