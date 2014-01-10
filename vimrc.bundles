@@ -116,6 +116,9 @@ Bundle "tpope/vim-markdown"
 Bundle "christoomey/vim-tmux-navigator"
 Bundle "benmills/vimux"
 
+""" Database
+Bundle "vim-scripts/dbext.vim"
+
 
 """Unite
 Bundle "Shougo/unite.vim"
