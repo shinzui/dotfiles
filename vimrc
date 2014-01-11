@@ -3,7 +3,7 @@ set encoding=utf-8
 
 set nocompatible
 
-filetype off 
+filetype off
 set rtp+=~/.vim/bundle/vundle/
 call vundle#rc()
 
@@ -71,7 +71,7 @@ set relativenumber
 set autoread
 
 " Do not force writing modified files to switch buffers
-set hidden 
+set hidden
 
 " statusbar
 set laststatus=2
@@ -104,12 +104,11 @@ let g:kolor_bold=1                      " Enable bold. Default: 1
 let g:kolor_underlined=0                " Enable underline for 'Underlined'. Default: 0
 let g:kolor_alternative_matchparen=0    " Gray 'MatchParen' color. Default: 0
 
-
-"disable beep 
+"disable beep
 set vb t_vb=
 
 "Folding options
-set nofoldenable 
+set nofoldenable
 set foldmethod=syntax
 set foldnestmax=10
 "set foldlevel=1
@@ -132,8 +131,7 @@ if !isdirectory(expand("~/.vim/cache/undo"))
 endif
 set undodir=~/.vim/cache/undo
 
-
-"Highlight conflict markers 
+"Highlight conflict markers
 match ErrorMsg '^\(<\|=\|>\)\{7\}\([^=].\+\)\?$'
 
 " Include user's local vim config
@@ -141,7 +139,7 @@ if filereadable(expand("~/.vimrc.local"))
   source ~/.vimrc.local
 endif
 
-"Enable matchit 
+"Enable matchit
 runtime  macros/matchit.vim
 
 if has("user_commands")
@@ -158,7 +156,6 @@ inoremap jk <esc>
 map <leader>[ :bprevious<CR>
 map <leader>] :bnext<CR>
 
-
 "File types
 autocmd BufNewFile,BufRead {Rakefile,Gemfile,Thorfile,Vagrantfile} set filetype=ruby
 autocmd BufNewFile,BufRead config.ru  set filetype=ruby
@@ -169,8 +166,7 @@ autocmd BufNewFile,BufRead *.json  set filetype=javascript
 autocmd BufNewFile,BufRead ~/.vim/*  setfiletype vim
 autocmd BufNewFile,BufRead ~/.bash/* setfiletype sh
 autocmd BufRead,BufNewFile *.scss set filetype=scss
-autocmd BufRead,BufNewFile /usr/local/etc/nginx/* set ft=nginx 
-
+autocmd BufRead,BufNewFile /usr/local/etc/nginx/* set ft=nginx
 
 autocmd BufReadPost fugitive://* set bufhidden=delete
 
@@ -185,7 +181,6 @@ autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
 autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
 autocmd FileType ruby setlocal omnifunc=rubycomplete#Complete
-
 
 "Windows
 map <C-h> <C-w>h
@@ -205,17 +200,14 @@ imap <silent> <F5> <esc> mmgg=G`m
 "root save
 cmap w!! %!sudo tee > /dev/null %
 
-
 " upper/lower word
 nmap <leader>u mQviwU`Q
 nmap <leader>l mQviwu`Q
 
 """PLugins
 
-
 "Yank Ring
 nnoremap <silent> <Leader>y :YRShow<cr>
-
 
 " CTags
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
@@ -225,23 +217,22 @@ map <C-\> :tnext<CR>
 let g:CommandTMaxHeight=30
 
 " Git
-vmap <Leader>g :<C-U>!git blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR> 
+vmap <Leader>g :<C-U>!git blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR>
 
 "Strip all trailing whitespace
-nnoremap <leader>W :%s/\s\+$//<cr>:let @/=''<CR>
+nnoremap <leader>W :%!git stripspace<CR>
 
-"Unimpaired 
+"Unimpaired
 nmap <C-Up> [e
 nmap <C-Down> ]e
 vmap <C-Up> [egv
 vmap <C-Down> ]egv
 
-" ZoomWin 
+" ZoomWin
 map <Leader>z :ZoomWin<CR>
 
 "Current path
 cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
-
 
 if executable('coffeetags')
   let g:tagbar_type_coffee = {
