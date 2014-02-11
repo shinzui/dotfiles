@@ -8,7 +8,7 @@ set guioptions-=T
 set guioptions=aAce
 
 colorscheme lucius
-set background dark
+"set background dark
 set guifont=Menlo:h12
 
 "Used by Rails plugin

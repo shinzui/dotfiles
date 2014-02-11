@@ -91,7 +91,7 @@ set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
 "default color scheme
 set t_Co=256
 colorscheme lucius
-set background=dark
+"set background=dark
 
 if &term =~ '256color'
     " Disable Background Color Erase (BCE) so that color schemes
