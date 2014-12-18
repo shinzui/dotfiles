@@ -13,4 +13,3 @@ export HISTTIMEFORMAT='%F %T '
 export GREP_OPTIONS='--color=auto' GREP_COLOR='1;32'
 
 export SVN_EDITOR='${EDITOR}'
-

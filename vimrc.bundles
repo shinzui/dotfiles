@@ -98,6 +98,9 @@ Bundle "godlygeek/tabular"
 Bundle "kana/vim-textobj-user"
 Bundle "nelstrom/vim-textobj-rubyblock"
 
+"refactoring
+Bundle "terryma/vim-multiple-cursors"
+
 "undo
 Bundle "mbbill/undotree"
 
@@ -127,3 +130,7 @@ Bundle "Shougo/unite-help"
 Bundle "tsukkee/unite-tag"
 Bundle "Shougo/junkfile.vim"
 Bundle "Shougo/vimproc"
+Bundle "Shougo/neomru.vim"
+
+"""heroku
+Bundle "tpope/vim-heroku"
