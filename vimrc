@@ -4,8 +4,7 @@ set encoding=utf-8
 set nocompatible
 
 filetype off
-set rtp+=~/.vim/bundle/vundle/
-call vundle#rc()
+set rtp+=~/.vim/bundle/Vundle.vim
 
 if filereadable(expand("~/.vimrc.bundles"))
   source ~/.vimrc.bundles
@@ -213,9 +212,6 @@ nnoremap <silent> <Leader>y :YRShow<cr>
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
 map <C-\> :tnext<CR>
 
-"Command-T
-let g:CommandTMaxHeight=30
-
 " Git
 vmap <Leader>g :<C-U>!git blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR>
 
@@ -251,8 +247,11 @@ if executable('coffeetags')
 endif
 
 let g:tagbar_type_javascript = {
-    \ 'ctagsbin' : '/path/to/jsctags'
+    \ 'ctagsbin' : '/usr/local/bin/jsctags'
     \ }
+
+"syntastic
+let g:syntastic_javascript_checkers = ['jshint']
 
 "Silver Searcher
 if executable('ag')
@@ -363,7 +362,7 @@ endfunction
 
 if executable('ag')
   let g:unite_source_find_command = 'ag -f --nocolor --nogroup --hidden -g ""'
-  let g:unite_source_rec_async_command = 'ag --nocolor --nogroup --hidden -g ""'
+  let g:unite_source_rec_async_command = 'ag --nocolor --ignore "node_modules" --ignore "bower_components" --ignore "tmp" --nogroup --hidden -g ""'
   let g:unite_source_grep_command='ag'
   let g:unite_source_grep_default_opts='--nocolor --nogroup -S -C4'
   let g:unite_source_grep_recursive_opt=''
