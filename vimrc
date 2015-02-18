@@ -89,7 +89,7 @@ set titlestring=VIM:\ %-25.55F\ %a%r%m titlelen=70
 
 "default color scheme
 set t_Co=256
-colorscheme lucius
+colorscheme base16-ocean
 set background=dark
 
 if &term =~ '256color'

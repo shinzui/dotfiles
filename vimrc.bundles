@@ -26,6 +26,7 @@ Plugin 'tpope/vim-endwise'
 """color schemes
 
 Plugin 'jonathanfilip/vim-lucius'
+Plugin 'chriskempson/base16-vim'
 
 """Documentation
 
@@ -53,6 +54,9 @@ Plugin 'vits/ZoomWin'
 
 "javascript
 Plugin 'pangloss/vim-javascript'
+
+"react
+Plugin 'mxw/vim-jsx'
 
 "coffeescript
 Plugin 'kchmck/vim-coffee-script'
