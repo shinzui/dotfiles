@@ -3,7 +3,7 @@ Plugin 'gmarik/Vundle.vim'
 
 """snippets and completion
 
-Plugin 'Shougo/neocomplcache'
+Plugin 'Shougo/neocomplete.vim'
 Plugin 'Shougo/neosnippet'
 Plugin 'honza/vim-snippets'
 Plugin 'mattn/emmet-vim'
@@ -19,7 +19,6 @@ Plugin 'vim-ruby/vim-ruby'
 Plugin 'tpope/vim-rails'
 Plugin 'tpope/vim-rake'
 Plugin 'tpope/gem-ctags'
-Plugin 'tpope/vim-Pluginr'
 Plugin 'tpope/vim-cucumber'
 Plugin 'tpope/vim-endwise'
 
@@ -72,6 +71,9 @@ Plugin 'mustache/vim-mustache-handlebars'
 
 """Utilities
 
+Plugin 'aaronjensen/vitality.vim'
+Plugin 'nathanaelkane/vim-indent-guides'
+
 "Syntax checker
 Plugin 'scrooloose/syntastic'
 
@@ -106,12 +108,15 @@ Plugin 'nelstrom/vim-textobj-rubyblock'
 "refactoring
 Plugin 'terryma/vim-multiple-cursors'
 
+"expand regions
+Plugin 'terryma/vim-expand-region'
+
 "undo
 Plugin 'mbbill/undotree'
 
 """Search
 
-Plugin 'epmatsw/ag.vim'
+Plugin 'rking/ag.vim'
 Plugin 'henrik/vim-qargs'
 
 """ Writing
