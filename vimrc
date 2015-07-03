@@ -98,6 +98,7 @@ if &term =~ '256color'
     set t_ut=
 endif
 
+"configure Kolor scheme
 let g:kolor_italic=1                    " Enable italic. Default: 1
 let g:kolor_bold=1                      " Enable bold. Default: 1
 let g:kolor_underlined=0                " Enable underline for 'Underlined'. Default: 0
@@ -147,6 +148,9 @@ if has("user_commands")
 endif
 
 """ Bindings
+
+"remap Leader
+let mapleader = "\<Space>"
 
 "
 inoremap jk <esc>
