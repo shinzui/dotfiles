@@ -264,7 +264,7 @@ let g:tagbar_type_javascript = {
     \ }
 
 "syntastic
-let g:syntastic_javascript_checkers = ['jshint']
+let g:syntastic_javascript_checkers = ['eslint']
 
 "Silver Searcher
 if executable('ag')
