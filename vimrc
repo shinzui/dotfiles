@@ -67,6 +67,9 @@ set autoindent
 
 set relativenumber
 
+"highlight current line
+set cursorline
+
 set autoread
 
 " Do not force writing modified files to switch buffers
@@ -208,20 +211,24 @@ cmap w!! %!sudo tee > /dev/null %
 nmap <leader>u mQviwU`Q
 nmap <leader>l mQviwu`Q
 
-"""PLugins
-
-"Yank Ring
-nnoremap <silent> <Leader>y :YRShow<cr>
-
-" CTags
-map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
-map <C-\> :tnext<CR>
-
 " Git
 vmap <Leader>g :<C-U>!git blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR>
 
 "Strip all trailing whitespace
 nnoremap <leader>W :%!git stripspace<CR>
+
+"Current path
+cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
+
+"""PLugins
+
+"Yank Ring
+"nnoremap <silent> <Leader>y :YRShow<cr>
+
+" CTags
+map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
+map <C-\> :tnext<CR>
+
 
 "Unimpaired
 nmap <C-Up> [e
@@ -231,10 +238,6 @@ vmap <C-Down> ]egv
 
 " ZoomWin
 map <Leader>z :ZoomWin<CR>
-
-"Current path
-cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
-
 
 "vim-expand-region
 vmap v <Plug>(expand_region_expand)
@@ -277,6 +280,21 @@ if executable('ag')
 endif
 
 nnoremap <leader>sw :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>"
+
+"""vim-multiple-cursors
+
+"make vim-multiple-cursors work with neocomplete
+
+function! Multiple_cursors_before()
+    exe 'NeoCompleteLock'
+    echo 'Disabled autocomplete'
+endfunction
+
+function! Multiple_cursors_after()
+    exe 'NeoCompleteUnlock'
+    echo 'Enabled autocomplete'
+endfunction
+
 
 "Neocomplete
 let g:acp_enableAtStartup = 0
@@ -357,8 +375,9 @@ function! s:unite_settings()
   let b:SuperTabDisabled=1
   inoremap <silent><buffer><expr> <C-s>     unite#do_action('split')
   inoremap <silent><buffer><expr> <C-v>     unite#do_action('vsplit')
-
+  inoremap <silent><buffer><expr> <C-t>     unite#do_action('tabopen')
 endfunction
+
 
 if executable('ag')
   let g:unite_source_find_command = 'ag -f --nocolor --nogroup --hidden -g ""'
