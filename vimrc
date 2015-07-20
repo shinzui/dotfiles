@@ -33,7 +33,6 @@ set incsearch
 set ignorecase
 set smartcase
 set gdefault
-nnoremap <leader><space> :noh<cr>
 
 " Set temp directory for swp/tmp files
 set directory=/tmp/
@@ -50,6 +49,8 @@ set wildignore+=vendor/ruby/**
 set wildignore+=vendor/cache/**
 set wildignore+=vendor/assets/**
 set wildignore+=.bundle/*
+set wildignore+=bower_components/*
+set wildignore+=node_modules/*
 set wildignore+=.sass-cache/*
 set wildignore+=public/uploads/**
 set wildignore+=doc/yard/**,.yardoc/**
@@ -65,6 +66,7 @@ filetype plugin indent on
 set smartindent
 set autoindent
 
+set number
 set relativenumber
 
 "highlight current line
@@ -155,6 +157,10 @@ endif
 "remap Leader
 let mapleader = "\<Space>"
 
+
+"search
+nnoremap <leader>\ :noh<cr>
+
 "
 inoremap jk <esc>
 
@@ -222,13 +228,13 @@ cmap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
 
 """PLugins
 
-"Yank Ring
-"nnoremap <silent> <Leader>y :YRShow<cr>
+
+"vim-airline
+let g:airline_powerline_fonts = 1
 
 " CTags
 map <Leader>rt :!ctags --extra=+f -R *<CR><CR>
 map <C-\> :tnext<CR>
-
 
 "Unimpaired
 nmap <C-Up> [e
@@ -239,25 +245,15 @@ vmap <C-Down> ]egv
 " ZoomWin
 map <Leader>z :ZoomWin<CR>
 
+"smooth_scroll
+noremap <silent> <c-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
+noremap <silent> <c-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
+noremap <silent> <c-b> :call smooth_scroll#up(&scroll*2, 0, 4)<CR>
+noremap <silent> <c-f> :call smooth_scroll#down(&scroll*2, 0, 4)<CR>
+
 "vim-expand-region
 vmap v <Plug>(expand_region_expand)
 vmap <C-v> <Plug>(expand_region_shrink)
-
-if executable('coffeetags')
-  let g:tagbar_type_coffee = {
-        \ 'ctagsbin' : 'coffeetags',
-        \ 'ctagsargs' : '',
-        \ 'kinds' : [
-        \ 'f:functions',
-        \ 'o:object',
-        \ ],
-        \ 'sro' : ".",
-        \ 'kind2scope' : {
-        \ 'f' : 'object',
-        \ 'o' : 'object',
-        \ }
-        \ }
-endif
 
 let g:tagbar_type_javascript = {
     \ 'ctagsbin' : '/usr/local/bin/jsctags'
@@ -266,20 +262,33 @@ let g:tagbar_type_javascript = {
 "syntastic
 let g:syntastic_javascript_checkers = ['eslint']
 
+"rainbow parentheses
+" augroup rainbow_javascript
+"   autocmd!
+"   autocmd FileType javascript RainbowParentheses
+" augroup END
+
 "Silver Searcher
 if executable('ag')
   " Use ag over grep
   set grepprg=ag\ --nogroup\ --nocolor
   let g:ackprg = 'ag --nogroup --nocolor --column --smart-case'
-
-  " Use ag in CtrlP
-  let g:ctrlp_user_command = 'ag %s -l --nocolor -g ""'
-
-  " Don't need to cache with ag
-  let g:ctrlp_use_caching = 0
 endif
 
-nnoremap <leader>sw :grep! "\b<C-R><C-W>\b"<CR>:cw<CR>"
+"search for string under cursor
+nnoremap <leader>sw :Ag! "\b<C-R><C-W>\b"<CR>:cw<CR>"
+
+"vimfiler
+let g:vimfiler_as_default_explorer = 1
+call vimfiler#custom#profile('default', 'context', {
+    \   'safe' : 0
+    \ })
+
+let g:vimfiler_quick_look_command = 'qlmanage -p'
+nnoremap <silent> <Leader>E  :VimFiler <CR>
+
+nmap <silent> - :VimFilerBufferDir <CR>
+
 
 """vim-multiple-cursors
 
@@ -294,7 +303,6 @@ function! Multiple_cursors_after()
     exe 'NeoCompleteUnlock'
     echo 'Enabled autocomplete'
 endfunction
-
 
 "Neocomplete
 let g:acp_enableAtStartup = 0
@@ -314,14 +322,17 @@ if !exists('g:neocomplete#keyword_patterns')
 endif
 let g:neocomplete#keyword_patterns['default'] = '\h\w*'
 
+imap <C-s>     <Plug>(neosnippet_expand_or_jump)
+smap <C-s>     <Plug>(neosnippet_expand_or_jump)
+xmap <C-s>     <Plug>(neosnippet_expand_target)
 
 " SuperTab like snippets behavior.
-imap <silent><expr><TAB> neosnippet#expandable() ?
-        \ "\<Plug>(neosnippet_expand_or_jump)" : (pumvisible() ?
-        \ "\<C-e>" : "\<TAB>")
-smap <TAB> <Right><Plug>(neosnippet_jump_or_expand)
-
-
+imap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+      \ "\<Plug>(neosnippet_expand_or_jump)"
+      \: pumvisible() ? "\<C-n>" : "\<TAB>"
+smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
+      \ "\<Plug>(neosnippet_expand_or_jump)"
+      \: "\<TAB>"
 
 " <TAB>: completion.
 inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
@@ -337,7 +348,6 @@ if !exists('g:neocomplete#sources#omni#input_patterns')
     let g:neocomplete#sources#omni#input_patterns = {}
 endif
 
-
 " Use honza's snippets.
 let g:neosnippet#snippets_directory='~/.vim/bundle/vim-snippets/snippets'
 
@@ -346,7 +356,7 @@ let g:neosnippet#enable_snipmate_compatibility = 1
 
 " For snippet_complete marker.
 if has('conceal')
-  set conceallevel=2 concealcursor=i
+  set conceallevel=2 concealcursor=niv
 endif
 
 " Disable the neosnippet preview candidate window
@@ -366,7 +376,7 @@ nnoremap <leader>f :<C-u>Unite -no-split -buffer-name=files   -start-insert file
 nnoremap <leader>r :<C-u>Unite -no-split -buffer-name=mru     -start-insert file_mru<cr>
 nnoremap <leader>o :<C-u>Unite -no-split -buffer-name=outline -start-insert outline<cr>
 nnoremap <leader>y :<C-u>Unite -no-split -buffer-name=yank    history/yank<cr>
-nnoremap <leader>e :<C-u>Unite -no-split -buffer-name=buffer  buffer<cr>
+nnoremap <leader>e :<C-u>Unite -no-split -buffer-name=buffer  -start-insert buffer<cr>
 
 " Custom mappings for the unite buffer
 autocmd FileType unite call s:unite_settings()
@@ -377,7 +387,6 @@ function! s:unite_settings()
   inoremap <silent><buffer><expr> <C-v>     unite#do_action('vsplit')
   inoremap <silent><buffer><expr> <C-t>     unite#do_action('tabopen')
 endfunction
-
 
 if executable('ag')
   let g:unite_source_find_command = 'ag -f --nocolor --nogroup --hidden -g ""'
