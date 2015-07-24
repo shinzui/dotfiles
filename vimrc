@@ -168,6 +168,9 @@ inoremap jk <esc>
 map <leader>[ :bprevious<CR>
 map <leader>] :bnext<CR>
 
+"save file
+nnoremap <Leader>w :w<CR>
+
 "File types
 autocmd BufNewFile,BufRead {Rakefile,Gemfile,Thorfile,Vagrantfile} set filetype=ruby
 autocmd BufNewFile,BufRead config.ru  set filetype=ruby
@@ -278,6 +281,10 @@ endif
 "search for string under cursor
 nnoremap <leader>sw :Ag! "\b<C-R><C-W>\b"<CR>:cw<CR>"
 
+"accelerated j k
+nmap j <Plug>(accelerated_jk_gj)
+nmap k <Plug>(accelerated_jk_gk)
+
 "vimfiler
 let g:vimfiler_as_default_explorer = 1
 call vimfiler#custom#profile('default', 'context', {
@@ -288,7 +295,15 @@ let g:vimfiler_quick_look_command = 'qlmanage -p'
 nnoremap <silent> <Leader>E  :VimFiler <CR>
 
 nmap <silent> - :VimFilerBufferDir <CR>
+" set fillchars=vert:│,fold:─
+" let g:vimfiler_tree_leaf_icon = "⋮"
+let g:vimfiler_tree_opened_icon = "▼"
+let g:vimfiler_tree_closed_icon = "▷"
+let g:vimfiler_readonly_file_icon = '✗'
+let g:vimfiler_marked_file_icon = '✓'
 
+"disable netrw
+let g:loaded_netrwPlugin = 1
 
 """vim-multiple-cursors
 
@@ -322,6 +337,9 @@ if !exists('g:neocomplete#keyword_patterns')
 endif
 let g:neocomplete#keyword_patterns['default'] = '\h\w*'
 
+
+"neosnippet
+let g:neosnippet#enable_snipmate_compatibility = 1
 imap <C-s>     <Plug>(neosnippet_expand_or_jump)
 smap <C-s>     <Plug>(neosnippet_expand_or_jump)
 xmap <C-s>     <Plug>(neosnippet_expand_target)
