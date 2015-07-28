@@ -206,7 +206,7 @@ map <C-l> <C-w>l
 
 "ruby specific
 " bind control-l to hashrocket
-imap <C-l> <Space>=><Space>
+imap <C-l> =><Space>
 let g:rubycomplete_rails = 1
 
 "Format file
@@ -353,8 +353,8 @@ smap <expr><TAB> neosnippet#expandable_or_jumpable() ?
       \: "\<TAB>"
 
 " <TAB>: completion.
-inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
-inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<TAB>"
+" inoremap <expr><TAB> pumvisible() ? "\<C-n>" : "\<TAB>"
+" inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<TAB>"
 
 " <CR>: close popup
 inoremap <expr><C-h> neocomplete#smart_close_popup()."\<C-h>"
