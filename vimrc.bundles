@@ -6,7 +6,7 @@ Plugin 'gmarik/Vundle.vim'
 Plugin 'Shougo/neocomplete.vim'
 Plugin 'Shougo/neosnippet.vim'
 Plugin 'Shougo/neosnippet-snippets'
-"Plugin 'SirVer/ultisnips'
+" Plugin 'SirVer/ultisnips'
 Plugin 'honza/vim-snippets'
 Plugin 'mattn/emmet-vim'
 Plugin 'othree/html5.vim'
@@ -129,7 +129,7 @@ Plugin 'terryma/vim-expand-region'
 Plugin 'mbbill/undotree'
 
 "auto match and insert pairs
-" Plugin 'jiangmiao/auto-pairs'
+Plugin 'jiangmiao/auto-pairs'
 
 "Parentheses
 " Plugin 'junegunn/rainbow_parentheses.vim'
