@@ -129,14 +129,15 @@ Plugin 'terryma/vim-expand-region'
 Plugin 'mbbill/undotree'
 
 "auto match and insert pairs
-Plugin 'jiangmiao/auto-pairs'
+" Plugin 'jiangmiao/auto-pairs'
 
 "Parentheses
 " Plugin 'junegunn/rainbow_parentheses.vim'
 
-"Scrolling
+"Scrolling & movement
 Plugin 'terryma/vim-smooth-scroll'
 Plugin 'rhysd/accelerated-jk'
+Plugin 'unblevable/quick-scope'
 
 """Search
 
