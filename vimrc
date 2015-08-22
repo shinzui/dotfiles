@@ -217,9 +217,9 @@ imap <silent> <F5> <esc> mmgg=G`m
 "root save
 cmap w!! %!sudo tee > /dev/null %
 
-" upper/lower word
+" upcase/downcase word
 nmap <leader>u mQviwU`Q
-nmap <leader>l mQviwu`Q
+nmap <leader>d mQviwu`Q
 
 " Git
 vmap <Leader>g :<C-U>!git blame <C-R>=expand("%:p") <CR> \| sed -n <C-R>=line("'<") <CR>,<C-R>=line("'>") <CR>p <CR>
@@ -401,6 +401,7 @@ nnoremap <leader>r :<C-u>Unite -no-split -buffer-name=mru     -start-insert file
 nnoremap <leader>o :<C-u>Unite -no-split -buffer-name=outline -start-insert outline<cr>
 nnoremap <leader>y :<C-u>Unite -no-split -buffer-name=yank    history/yank<cr>
 nnoremap <leader>e :<C-u>Unite -no-split -buffer-name=buffer  -start-insert buffer<cr>
+nnoremap <leader>l :<C-u>Unite -no-split -buffer-name=line  -start-insert line<cr>
 
 " Custom mappings for the unite buffer
 autocmd FileType unite call s:unite_settings()

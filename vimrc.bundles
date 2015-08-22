@@ -66,7 +66,7 @@ Plugin 'vits/ZoomWin'
 "javascript
 Plugin 'pangloss/vim-javascript'
 " Plugin 'marijnh/tern_for_vim'
-" Plugin 'elzr/vim-json'
+Plugin 'elzr/vim-json'
 
 "react
 Plugin 'mxw/vim-jsx'
@@ -142,7 +142,7 @@ Plugin 'unblevable/quick-scope'
 """Search
 
 Plugin 'rking/ag.vim'
-Plugin 'henrik/vim-qargs'
+Plugin 'Peeja/vim-cdo'
 
 """ Writing
 
@@ -164,6 +164,7 @@ Plugin 'Shougo/unite.vim'
 Plugin 'Shougo/unite-outline'
 Plugin 'Shougo/unite-help'
 Plugin 'tsukkee/unite-tag'
+Plugin 'junkblocker/unite-codesearch'
 Plugin 'Shougo/junkfile.vim'
 Plugin 'Shougo/vimproc'
 Plugin 'Shougo/neomru.vim'
