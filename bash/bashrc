@@ -16,5 +16,4 @@ then
   source `brew --prefix`/etc/grc.bashrc
 fi
 
-eval "$(rbenv init -)"
-
+source $(brew --prefix nvm)/nvm.sh
