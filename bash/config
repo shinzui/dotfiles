@@ -50,3 +50,5 @@ COLOR1=$ECYAN
 PS1="\n\[$EBLUE\]\u@\[$COLOR1\]\h:\[$NO_COLOR\]\W \n→ "
 
 set -o vi
+
+complete -C aws_completer aws

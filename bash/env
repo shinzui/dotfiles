@@ -1,4 +1,4 @@
-export PATH=$HOME/bin:`brew --prefix`/bin:`brew --prefix`/sbin:/usr/local/share/npm/bin:$PATH
+export PATH=./node_modules/.bin:$HOME/bin:`brew --prefix`/bin:`brew --prefix`/sbin:/usr/local/share/npm/bin:$PATH
 
 export CDPATH='.:~'
 export EDITOR='vim'
